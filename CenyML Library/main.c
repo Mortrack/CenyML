@@ -82,8 +82,6 @@ int main(int argc, char** argv) {
     }
     */
 	
-	// -------------------- CPU MEMORY ALLOCATION -------------------- //
-	
 	// ------------- MATRIX INITIALIZATION THORUGH CPU --------------- //
 
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //

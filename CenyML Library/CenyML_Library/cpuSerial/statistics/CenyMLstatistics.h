@@ -13,16 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-#ifndef CSVMANAGER_H
-#define CSVMANAGER_H
+#ifndef CENYMLSTATISTICS_H
+#define CENYMLSTATISTICS_H
 
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
 
-double* getCsvFileDimensions(char*, char*, double); //TODO: Find a way to unify the "getCsvFileDimensions" and the "getCsvFileData" functions into a single one.
-double* getCsvFileData(char*, char*, double, double, double); //TODO: Add an array type variable to the struct "csvManager" that saves the headers of the file.
-void createCsvFile(char*, char*, double*, double, double);
+double* getMean(double*, double, double);
 
 #endif
 
