@@ -3,7 +3,7 @@ Inspired in the "Mortrack_ML_Library", CenyML provides a Machine Learning librar
 
 Latest public stable version of the CenyML software: 0.0.0.0 (released on September 21, 2021 in master branch)
 
-Latest public stable version of the CenyML Library: 0.0.0.0 (released on September 21, 2021 in master_library branch)
+Latest public stable version of the CenyML Library: 0.1.0.0 (released on September 23, 2021 in master_library branch)
 
 Latest public stable version of the CenyML API: 0.0.0.0 (released on September 21, 2021 in master_api branch)
 
