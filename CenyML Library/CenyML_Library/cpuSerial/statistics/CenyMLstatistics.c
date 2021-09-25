@@ -19,11 +19,11 @@
 
 /**
 * The "getMean()" function is used to calculate the mean of all the
-* columns of the input matrix "X" and is returned as a vector (B_x_bar).
+* columns of the input matrix "X" and is returned as a vector (mean).
 * 
-* @param double* X - This argument will contain the input matrix
-*					 values of "X", from which the mean will be
-*					 calculated.
+* @param double* X - This argument will contain a memory allocated
+*					 input matrix values of "X", from which the
+* 					 mean will be calculated.
 *
 * @param int n - This argument will represent the total number
 *				 of rows that the "data" variable argument will
@@ -32,34 +32,37 @@
 * @param int m - This argument will represent the total number
 *				 of columns that the "data" variable argument
 *				 will have.
+*
+* @param double* mean - This argument will contain a memory
+*						allocated variable in which we will store
+*						the mean for each column contained in
+*						the argument variable "X".
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED VARIABLE "mean".
 * 
-* @return double[m]
-* 
+* @return void
+*
 * @author Miranda Meza Cesar
 * CREATEION DATE: SEPTEMBER 23, 2021
-* UPDATE DATE: N/A
+* UPDATE DATE: SEPTEMBER 25, 2021
 */
-double* getMean(double* X, double n, double m) {
+void getMean(double*  matrix, double n, double m, double* mean) {
 	// Allocate the memory required for the struct variable "X", which will contain the input data of the system.
-	double totalElementsPerMatrix = m;
-	double nBytes = totalElementsPerMatrix * sizeof(double);
-	double* B_x_bar = (double*)malloc(nBytes);
 	double currentRow;
     double currentColumn;
-    // We innitialize the values of "B_x_bar".
+    // We initialize the values of "B_x_bar".
 	for (currentColumn = 0; currentColumn < m; currentColumn++) {
-		B_x_bar[(int)currentColumn] = 0;
+		mean[(int)currentColumn] = 0;
 	}
 	// We obtain the mean for each of the columns of the matrix "X".
     for (currentRow = 0; currentRow < n; currentRow++) {
     	for (currentColumn = 0; currentColumn < m; currentColumn++) {
-    		B_x_bar[(int)currentColumn] += X[(int)(currentColumn + currentRow * m)];
+    		mean[(int)currentColumn] += matrix[(int)(currentColumn + currentRow * m)];
 		}
 	}
 	for (currentColumn = 0; currentColumn < m; currentColumn++) {
-		B_x_bar[(int)currentColumn] = B_x_bar[(int)currentColumn]/n;
+		mean[(int)currentColumn] = mean[(int)currentColumn]/n;
 	}
 	
-	return B_x_bar;
 }
 
