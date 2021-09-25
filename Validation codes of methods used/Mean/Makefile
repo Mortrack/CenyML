@@ -1,4 +1,6 @@
+# Create the following directory variables.
+oLib = ../../"CenyML Library"/otherLibraries
+cM = ../../"CenyML Library"/CenyML_Library
 
-	gcc main.c ../../"CenyML Library"/otherLibraries/csv/csvManager.c ../../"CenyML Library"/CenyML_Library/cpuSerial/statistics/CenyMLstatistics.c -O3 -o main.x
-	
-	
+main.x:
+	gcc main.c $(oLib)/csv/csvManager.c $(cM)/cpuSerial/statistics/CenyMLstatistics.c -O3 -o main.x
