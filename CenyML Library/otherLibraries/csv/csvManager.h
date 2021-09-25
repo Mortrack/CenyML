@@ -20,8 +20,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-double* getCsvFileDimensions(char*, char*, double); //TODO: Find a way to unify the "getCsvFileDimensions" and the "getCsvFileData" functions into a single one.
-double* getCsvFileData(char*, char*, double, double, double); //TODO: Add an array type variable to the struct "csvManager" that saves the headers of the file.
+struct csvManager {
+   char* fileDirectory; // Stores the directory path of the .csv file that wants to be managed.
+   int maxRowChars; // Defines the expected maximum number of characters for any row contained in the .csv file of interest.
+   double* allData; // Stores all the data contained in the .csv file of interest.
+   double* rowsAndColumnsDimensions; // This variable must be innitialized as a 2-array, where the index 0 will contain the rows dimension (excluding headers) and index 1 the columns dimension of the .csv file data.
+};
+
+void getCsvRowsAndColumnsDimensions(struct csvManager*);
+void getCsvFileData(struct csvManager*); //TODO: Add an array type variable to the struct "csvManager" that saves the headers of the file.
 void createCsvFile(char*, char*, double*, double, double);
 
 #endif

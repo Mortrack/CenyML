@@ -18,42 +18,35 @@
 
 /**
 * The function "getCsvFileDimensions()" is used to obtain the dimensions
-* of the rows and columns of a certain .csv file.
+* of the rows and columns of a certain .csv file, excluding its headers.
+* The results will be stored in the structure variable whose pointer is
+* "csv" (csv->rowsAndColumnsDimensions[0] = rows dimension)
+* (csv->rowsAndColumnsDimensions[1] = columns dimension)
 * 
-* @param char* directory - This argument has to contain the string of the
-*						   directory that leads to the root location of
-*						   the .csv file whose dimensions want to be known.
-*
-* @param char* fileName - This argument has to contain the string of the
-*						  name of the .csv file whose dimensions want to
-*						  be known.
-*
-* @param double maxRowChars - This argument declares what is the maximum
-*							  expected number of characters from any row
-*							  contained in the .csv file of interest.
+* @param struct csvManager* csv - This argument is defined as a pointer
+*								  of a structure variable that is used
+*								  to store the parameter required for
+*								  the management of a certain .csv file
+*								  (for more details see the header file).
 * 
-* @return double[2]
+* @return void
 * 
 * @author Cesar Miranda Meza
 * CREATION DATE: SEPTEMBER 23, 2021
-* UPDATE DATE: N/A
+* UPDATE DATE: SEPTEMBER 25, 2021
 */
-//TODO: Find a way to unify the "getCsvFileDimensions" and the "getCsvFileData" functions into a single one.
-double* getCsvFileDimensions(char* directory, char* fileName, double maxRowChars) {
-    // We innitialize the required variables for this function.
+void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
+    // We initialize the required variables for this function.
 	double csvRowsLength = 0; // counter of the total number of rows of the .csv file.
 	double csvColumnsLength = 0; // counter of the total number of columns of the .csv file.
-	char concatenateDirAndName[10000]; // will contain the full directory path to the .csv file to be opened.
-	int maxCharPerRow = maxRowChars * 40; // This variable is used so that the developer indicates the maximum number of characters that will be counted for any row read from the file that was opened.
-    char line[maxCharPerRow]; // This variable is used in the process of obtaining the characters contained in the current line of the file that was opened.
+	int maxRowCharacters = csv->maxRowChars * 40; // This variable is used so that the developer indicates the maximum number of characters that will be counted for any row read from the file that was opened.
+    char line[maxRowCharacters]; // This variable is used in the process of obtaining the characters contained in the current line of the file that was opened.
     char* token; // This variable will be used to store the data of the current row vs the current column being read from the file.
     int currentRow = 0; // This variable will be used to know what is the current row read from the file.
     int currentColumn = 0; // This variable will be used to know what is the current column read from the file.
     
 	// We open the desired file in read mode.
-	strcat(concatenateDirAndName, directory); 
-	strcat(concatenateDirAndName, fileName);
-	FILE* csvFile = fopen(concatenateDirAndName, "r");
+	FILE* csvFile = fopen(csv->fileDirectory, "r");
 	
 	// if the opned file was not available, then emit an error message. Otherwise, continue with the program.
 	if (csvFile == NULL) {
@@ -73,76 +66,54 @@ double* getCsvFileDimensions(char* directory, char* fileName, double maxRowChars
     csvRowsLength--;
     	
 	// We allocate the memory required for the return variable that will store the dimensions of the .csv file.
-	double* csvDimensions = (double*)malloc( (double) (2 * sizeof(double)) );
-	csvDimensions[0] = csvRowsLength;
-	csvDimensions[1] = csvColumnsLength;
+	csv->rowsAndColumnsDimensions[0] = csvRowsLength;
+	csv->rowsAndColumnsDimensions[1] = csvColumnsLength;
 	
 	// We close the .csv file.
 	fclose(csvFile);
-	
-	// We return the row and column dimensions of the .csv file.
-	return csvDimensions;
 }
 
 
 /**
-* The function "getCsvFileData()" is used to obtain the dimensions
-* of the rows and columns of a certain .csv file.
+* The function "getCsvFileData()" is used to obtain all the data contained
+* within the desired .csv file. All variable parameters required for the
+* management of such file are stored in the structure variable csvManager
+* whose pointer is "csv". It is in this same structre variable where the
+* extracted data will be stored (csv->allData).
 * 
-* @param char* directory - This argument has to contain the string of the
-*						   directory that leads to the root location of
-*						   the .csv file whose dimensions want to be known.
-*
-* @param char* fileName - This argument has to contain the string of the
-*						  name of the .csv file whose dimensions want to
-*						  be known.
-*
-* @param double maxRowChars - This argument declares what is the maximum
-*							  expected number of characters from any row
-*							  contained in the .csv file of interest.
-*
-* @param double n - This argument declares the total number of rows to
-*					be expected from the data of the .csv file of interest.
-*
-* @param double m - This argument declares the total number of columns to
-*					be expected from the data of the .csv file of interest.
+* @param struct csvManager* csv - This argument is defined as a pointer
+*								  of a structure variable that is used
+*								  to store the parameter required for
+*								  the management of a certain .csv file
+*								  (for more details see the header file).
 * 
-* @return double[n*m]
+* @return void
 * 
 * @author Cesar Miranda Meza
 * CREATION DATE: SEPTEMBER 23, 2021
-* UPDATE DATE: N/A
+* UPDATE DATE: SEPTEMBER 25, 2021
 */
 //TODO: Add an array type variable to the struct "csvManager" that saves the headers of the file.
-//TODO: Why when i increate the inner character value of "concatenateDirAndName", in the function "getCsvFileDimensions()", do i have to increase even further the one in this function?
-double* getCsvFileData(char* directory, char* fileName, double maxRowChars, double n, double m) {
-    // We innitialize the required variables for this function.
-	double csvRowsLength = n; // contains the total number of rows of the .csv file to open.
-	double csvColumnsLength = m; // contains the total number of columns of the .csv file to open.
-	char concatenateDirAndName[20000]; // will contain the full directory path to the .csv file to be opened.
-	int maxCharPerRow = maxRowChars * 40; // This variable is used so that the developer indicates the maximum number of characters that will be counted for any row read from the file that was opened.
+void getCsvFileData(struct csvManager* csv) {
+    // We initialize the required variables for this function.
+	double csvRowsLength = csv->rowsAndColumnsDimensions[0]; // contains the total number of rows of the .csv file to open.
+	double csvColumnsLength = csv->rowsAndColumnsDimensions[1]; // contains the total number of columns of the .csv file to open.
+	int maxCharPerRow = csv->maxRowChars * 40; // This variable is used so that the developer indicates the maximum number of characters that will be counted for any row read from the file that was opened.
     char line[maxCharPerRow]; // This variable is used in the process of obtaining the characters contained in the current line of the file that was opened.
     char* token; // This variable will be used to store the data of the current row vs the current column being read from the file.
     int currentRow = 0; // This variable will be used to know what is the current row read from the file.
     int currentColumn = 0; // This variable will be used to know what is the current column read from the file.
     
 	// We open the desired file in read mode.
-	strcat(concatenateDirAndName, directory); 
-	strcat(concatenateDirAndName, fileName);
-	FILE* csvFile = fopen(concatenateDirAndName, "r");
+	FILE* csvFile = fopen(csv->fileDirectory, "r");
 	
 	// if the opned file was not available, then emit an error message. Otherwise, continue with the program.
 	if (csvFile == NULL) {
 		printf("\nERROR: Unable to open the file. Either directory is too long or there is no such file or directory.\n"); // Emit a custom error message in the terminal. Afterwards, a detailed explanatory default message will be inserted next to your custom text.
 		exit(1); // Force the termination of the program.
 	}
-    
-    // We allocate the memory required for the return variable that will store the data of the .csv file.
-	double totalElementsPerMatrix = csvRowsLength * csvColumnsLength;
-	double nBytes = totalElementsPerMatrix * sizeof(double);
-	double* csvData = (double*)malloc(nBytes);
 	
-    // We save the file data in the now allocated variable "csvData".
+    // We save the file data in the variable indicated by the pointer "csv->allData".
     while (fgets(line, sizeof(line), csvFile)) {
     	// We discard reading the data of the row containing the header of the file.
         if (currentRow == 0) {
@@ -159,7 +130,7 @@ double* getCsvFileData(char* directory, char* fileName, double maxRowChars, doub
 			token = strtok(line, ",");
 	        currentColumn = 0;
 	        while(token != NULL){       	
-				csvData[currentColumn + (currentRow-1) * (int) csvColumnsLength] = atof(token);
+				csv->allData[currentColumn + (currentRow-1) * (int) csvColumnsLength] = atof(token);
 				token = strtok(NULL, ",");
 				currentColumn++;
 			}
@@ -169,9 +140,6 @@ double* getCsvFileData(char* directory, char* fileName, double maxRowChars, doub
     
     // We close the .csv file.
 	fclose(csvFile);
-    
-    // We return the matrix containing all the data of the .csv file of interest.
-    return csvData;
 }
 
 
@@ -188,10 +156,10 @@ double* getCsvFileData(char* directory, char* fileName, double maxRowChars, doub
 *					   the requested headers for the .csv file
 *					   to create, which are separated by a ",".
 *
-* @param double data - This argument will contain the data of the
-*					   matrix that wants to be written into the
-*					   .csv file regarding the contents of the
-*					   specified headers.
+* @param double data - This argument is a memory allocated
+*					   variable that will contain the data of
+*					   the matrix that wants to be written into
+*					   the .csv file.
 *
 * @param int n - This argument will represent the total number
 *				 of rows that the "data" variable argument will

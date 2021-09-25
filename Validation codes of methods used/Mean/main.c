@@ -59,28 +59,28 @@
 */
 int main(int argc, char** argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../Databases/regressionDBs/multiplePolynomialEquationSystem/";
-	char csv1FileName[] = "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv";
-	double csv1MaxRowChars = 150;
+	char csv1Directory[] = "../../Databases/regressionDBs/multiplePolynomialEquationSystem/multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv";
+	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file.
+	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
+	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present or any of the rows contained in the target .csv file.
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
-	double* csvDimensions = (double*)malloc( (double) (2 * sizeof(double)) );
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
-	csvDimensions = getCsvFileDimensions(csv1Directory, csv1FileName, csv1MaxRowChars);
-	double n = csvDimensions[0]; // total number of rows of the input matrix (X)
-	double m = csvDimensions[1]; // total number of columns of the input matrix (X)
+	csv1.rowsAndColumnsDimensions = (double*)malloc( (double) (2 * sizeof(double)) ); // We initialize the variable that will store the rows & columns dimensions.
+	getCsvRowsAndColumnsDimensions(&csv1); // We input the memory location of the "csv1" into the argument of this function to get the rows & columns dimensions.
+	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) that will retrieve the data of the .csv file.
+	double n = csv1.rowsAndColumnsDimensions[0]; // total number of rows of the input matrix (X)
+	double m = csv1.rowsAndColumnsDimensions[1]; // total number of columns of the input matrix (X)
+	double totalElements = n * m;
+	double nBytes = totalElements * sizeof(double);
+	csv1.allData = (double*)malloc(nBytes);
 	// Allocate the memory required for the struct variable "X", which will contain the input data of the system.
-	double totalElementsPerMatrix = n * m;
-	double nBytes = totalElementsPerMatrix * sizeof(double);
 	double* X = (double*)malloc(nBytes);
 	// Store the csv data (excluding headers) in "X"
-	X = getCsvFileData(csv1Directory, csv1FileName, csv1MaxRowChars, n, m);
+	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
+	X = csv1.allData;
 	
-	// ------------- MATRIX INITIALIZATION THORUGH CPU --------------- //
-
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
-	
-	// ------------------ PRINT MATRIXES INFORMATION ----------------- //
 	
 	// ------------------------ DATA SPLITTING ----------------------- //
 	
@@ -89,12 +89,12 @@ int main(int argc, char** argv) {
 	// ------------------------ DATA SPLITTING ----------------------- //
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	// Allocate the memory required for the struct variable "X", which will contain the input data of the system.
-	totalElementsPerMatrix = m;
-	nBytes = totalElementsPerMatrix * sizeof(double);
+	// Allocate the memory required for the variable "B_x_bar", which will contain the mean of the input data "X".
+	totalElements = m;
+	nBytes = totalElements * sizeof(double);
 	double* B_x_bar = (double*)malloc(nBytes);
 	// We calculate the mean for each of the columns available in the matrix "X".
-	B_x_bar = getMean(X, n, m);
+	getMean(X, n, m, B_x_bar);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
 	// Display in the terminal the results obtained
@@ -103,14 +103,16 @@ int main(int argc, char** argv) {
     for (currentColumn = 0; currentColumn < m; currentColumn++) {
 		printf("Row: %d, Column: %d --> %f\n", currentRow, currentColumn, B_x_bar[currentColumn]);
 	}
-	// Define your desired file name of the new .csv file to create and of its headers.
-	char nameOfTheCsvFile[30] = "CenyML_getMean_Results.csv"; // name the .csv file
-	char csvHeaders[100] = "id, system_id, dependent_variable, independent_variable_1, independent_variable_2"; // indicate the desired headers for the .csv file
+	// Define the desired file name and header names for the new .csv file to be create.
+	char nameOfTheCsvFile[] = "CenyML_getMean_Results.csv"; // name the .csv file
+	char csvHeaders[] = "id, system_id, dependent_variable, independent_variable_1, independent_variable_2"; // indicate the desired headers for the .csv file
 	// Create a new .csv file and save the results obtained in it.
 	createCsvFile(nameOfTheCsvFile, csvHeaders, B_x_bar, 1, m);
 	
 	
 	// Free the allocated memory used and end this program.
+	free(csv1.allData);
+	free(csv1.rowsAndColumnsDimensions);
 	free(X);
 	free(B_x_bar);
 	return (0);
