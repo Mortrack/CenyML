@@ -13,8 +13,8 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../CenyML Library/otherLibraries/csv/csvManager.h" // library to open and create .csv files
-#include "../../CenyML Library/CenyML_Library/cpuSerial/statistics/CenyMLstatistics.h" // library to use the statistics methods from CenyML
+#include "../../../../CenyML Library/otherLibraries/csv/csvManager.h" // library to open and create .csv files
+#include "../../../../CenyML Library/CenyML_Library/cpuSerial/statistics/CenyMLstatistics.h" // library to use the statistics methods from CenyML
 
 
 // ---------------------------------------------- //
@@ -59,7 +59,7 @@
 */
 int main(int argc, char** argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../Databases/regressionDBs/multiplePolynomialEquationSystem/multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv";
+	char csv1Directory[] = "../../../../Databases/regressionDBs/multiplePolynomialEquationSystem/multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv";
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file.
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present or any of the rows contained in the target .csv file.
