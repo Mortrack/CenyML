@@ -15,6 +15,7 @@
 # Precompiled Headers
 *.gch
 *.pch
+*.o
 
 # Libraries
 *.lib
@@ -35,6 +36,7 @@
 *.i*86
 *.x86_64
 *.hex
+*.x
 
 # Debug files
 *.dSYM/
