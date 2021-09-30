@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: Cesar Miranda Meza
 # COMPLETITION DATE: September 22, 2020.
-# LAST UPDATE: N/A
+# LAST UPDATE: N/A.
 #
 # This code is used for obtain the mean of each of the columns contained in the
 # database "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys",
