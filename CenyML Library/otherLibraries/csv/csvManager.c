@@ -17,11 +17,12 @@
 
 
 /**
-* The function "getCsvFileDimensions()" is used to obtain the dimensions
-* of the rows and columns of a certain .csv file, excluding its headers.
+* The function "getCsvRowsAndColumnsDimensions()" is used to obtain the
+* dimensions of the rows and columns of a certain .csv file, excluding
+* its headers.
 * The results will be stored in the structure variable whose pointer is
 * "csv" (csv->rowsAndColumnsDimensions[0] = rows dimension)
-* (csv->rowsAndColumnsDimensions[1] = columns dimension)
+* (csv->rowsAndColumnsDimensions[1] = columns dimension).
 * 
 * @param struct csvManager* csv - This argument is defined as a pointer
 *								  of a structure variable that is used
@@ -33,13 +34,13 @@
 * 
 * @author Cesar Miranda Meza
 * CREATION DATE: SEPTEMBER 23, 2021
-* UPDATE DATE: SEPTEMBER 25, 2021
+* LAST UPDATE: SEPTEMBER 29, 2021
 */
 void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
-    // We initialize the required variables for this function.
+    // We initialize the required local variables for this function.
 	double csvRowsLength = 0; // counter of the total number of rows of the .csv file.
 	double csvColumnsLength = 0; // counter of the total number of columns of the .csv file.
-	int maxRowCharacters = csv->maxRowChars * 40; // This variable is used so that the developer indicates the maximum number of characters that will be counted for any row read from the file that was opened.
+	int maxRowCharacters = csv->maxRowChars * 40; // This variable is used to indicate the maximum number of characters that will be counted for any row read from the file that was opened.
     char line[maxRowCharacters]; // This variable is used in the process of obtaining the characters contained in the current line of the file that was opened.
     char* token; // This variable will be used to store the data of the current row vs the current column being read from the file.
     int currentRow = 0; // This variable will be used to know what is the current row read from the file.
@@ -48,13 +49,13 @@ void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
 	// We open the desired file in read mode.
 	FILE* csvFile = fopen(csv->fileDirectory, "r");
 	
-	// if the opned file was not available, then emit an error message. Otherwise, continue with the program.
+	// If the opned file was not available, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if (csvFile == NULL) {
-		printf("\nERROR: Unable to open the file. Either directory is too long or there is no such file or directory.\n"); // Emit a custom error message in the terminal. Afterwards, a detailed explanatory default message will be inserted next to your custom text.
-		exit(1); // Force the termination of the program.
+		printf("\nERROR: Unable to open the file. Either directory is too long or there is no such file or directory.\n");
+		exit(1);
 	}
 	
-	// We read the entire file to count how many rows and columns it has, for further memory allocation purposes in the function "getCsvFileData()".
+	// We read the entire file to count how many rows and columns it has, for further memory allocation purposes in the sibling function "getCsvFileData()".
     while (fgets(line, sizeof(line), csvFile)) {		
         token = strtok(line, ",");
         while((token!=NULL) && (csvRowsLength==0)){
@@ -65,9 +66,9 @@ void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
     }
     csvRowsLength--;
     	
-	// We allocate the memory required for the return variable that will store the dimensions of the .csv file.
-	csv->rowsAndColumnsDimensions[0] = csvRowsLength;
-	csv->rowsAndColumnsDimensions[1] = csvColumnsLength;
+	// We save the obtained results.
+	csv->rowsAndColumnsDimensions[0] = csvRowsLength; // We save the rows length in the index 0 of "csv->rowsAndColumnsDimensions".
+	csv->rowsAndColumnsDimensions[1] = csvColumnsLength; // We save the columns length in the index 1 of "csv->rowsAndColumnsDimensions".
 	
 	// We close the .csv file.
 	fclose(csvFile);
@@ -91,7 +92,7 @@ void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
 * 
 * @author Cesar Miranda Meza
 * CREATION DATE: SEPTEMBER 23, 2021
-* UPDATE DATE: SEPTEMBER 25, 2021
+* LAST UPDATE: SEPTEMBER 29, 2021
 */
 //TODO: Add an array type variable to the struct "csvManager" that saves the headers of the file.
 void getCsvFileData(struct csvManager* csv) {
@@ -107,13 +108,13 @@ void getCsvFileData(struct csvManager* csv) {
 	// We open the desired file in read mode.
 	FILE* csvFile = fopen(csv->fileDirectory, "r");
 	
-	// if the opned file was not available, then emit an error message. Otherwise, continue with the program.
+	// If the opned file was not available, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if (csvFile == NULL) {
-		printf("\nERROR: Unable to open the file. Either directory is too long or there is no such file or directory.\n"); // Emit a custom error message in the terminal. Afterwards, a detailed explanatory default message will be inserted next to your custom text.
-		exit(1); // Force the termination of the program.
+		printf("\nERROR: Unable to open the file. Either directory is too long or there is no such file or directory.\n");
+		exit(1);
 	}
 	
-    // We save the file data in the variable indicated by the pointer "csv->allData".
+    // We save the file data in the memory location address indicated by the pointer "csv->allData".
     while (fgets(line, sizeof(line), csvFile)) {
     	// We discard reading the data of the row containing the header of the file.
         if (currentRow == 0) {
@@ -148,18 +149,20 @@ void getCsvFileData(struct csvManager* csv) {
 * delimmited .csv file and write specified headers and data
 * into it.
 * 
-* @param char filename - This argument will contain the string
-*						 of the name that was requested for the
-*						 .csv file to create.
+* @param char* filename - This argument is a pointer variable
+*						 that will contain the string of the
+*						 name that was requested for the .csv
+*						 file to create.
 *
-* @param char header - This argument will possess the string of
-*					   the requested headers for the .csv file
-*					   to create, which are separated by a ",".
+* @param char* header - This argument is a pointer variable that
+*					   will possess the string of the requested
+*					   headers for the .csv file to create,
+*					   which must be separated by a ",".
 *
-* @param double data - This argument is a memory allocated
-*					   variable that will contain the data of
-*					   the matrix that wants to be written into
-*					   the .csv file.
+* @param double* data - This argument is the pointer to a memory
+*					   allocated variable that has to contain the
+*					   data of the matrix that wants to be
+*					   written into the .csv file.
 *
 * @param int n - This argument will represent the total number
 *				 of rows that the "data" variable argument will
@@ -168,14 +171,22 @@ void getCsvFileData(struct csvManager* csv) {
 * @param int m - This argument will represent the total number
 *				 of columns that the "data" variable argument
 *				 will have.
+*
+* @param char isInsertId = This argument variable will work as a
+*						   flag to indicate with a "1" that it is
+*						   desired that this function automatically
+*						   adds an "id" value to each row or,
+*						   conversely, with a "0" to indicate that
+*						   it is not desired to automatically add
+*						   these "id" values.
 * 
 * @return void
 * 
 * @author Miranda Meza Cesar
 * CREATEION DATE: SEPTEMBER 23, 2021
-* UPDATE DATE: N/A
+* LAST UPDATE: SEPTEMBER 29, 2021
 */
-void createCsvFile(char* filename, char* header, double* data, double n, double m) {
+void createCsvFile(char* filename, char* header, double* data, double n, double m, char isInsertId) {
 	// Create the requested .csv file and write the specified headers in it.
 	printf("\n Creating %s file",filename);
 	FILE *fp;
@@ -183,10 +194,19 @@ void createCsvFile(char* filename, char* header, double* data, double n, double 
 	fprintf(fp, header);
 	
 	// Write the requested data into the .csv file.
-	for(double currentRow=0; currentRow<n; currentRow++){
-	    fprintf(fp,"\n%f",currentRow+1); // write the Id value of the current row
-	    for(double currentColumn=0; currentColumn<m; currentColumn++) {
-			fprintf(fp,",%f ", data[(int)(currentColumn + currentRow * m)]);
+	if (isInsertId == 1) { // If the flag "isInsertId"=1, then automatically add an "id" value to each row, along with the requested data, into the .csv file.
+		for(double currentRow=0; currentRow<n; currentRow++){
+		    fprintf(fp,"\n%f",currentRow+1); // write the Id value of the current row,
+		    for(double currentColumn=0; currentColumn<m; currentColumn++) {
+				fprintf(fp,",%f ", data[(int)(currentColumn + currentRow * m)]);
+			}
+		}
+	} else { // If the flag "isInsertId"!=1, then add the requested data into the .csv file with not "id" values.
+		for(double currentRow=0; currentRow<n; currentRow++){
+		    fprintf(fp,"\n%f", data[(int)(currentRow * m)]); // write the first column value of the current row.
+		    for(double currentColumn=1; currentColumn<m; currentColumn++) {
+				fprintf(fp,",%f ", data[(int)(currentColumn + currentRow * m)]);
+			}
 		}
 	}
 	
