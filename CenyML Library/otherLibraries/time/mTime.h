@@ -3,7 +3,7 @@
 
 #include <time.h>
 
-static double seconds(void);
+double seconds(void);
 
 #endif
 

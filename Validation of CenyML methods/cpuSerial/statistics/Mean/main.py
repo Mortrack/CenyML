@@ -2,8 +2,8 @@
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # AUTHOR: Cesar Miranda Meza
-# COMPLETITION DATE: September 22, 2020.
-# LAST UPDATE: N/A.
+# COMPLETITION DATE: September 22, 2021.
+# LAST UPDATE: October 05, 2021
 #
 # This code is used for obtain the mean of each of the columns contained in the
 # database "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys",
@@ -21,26 +21,26 @@
 # ----------------------------------- #
 import pandas as pd
 import numpy as np
+import time
 
 # ------------------------------ #
 # ----- Import the dataset ----- #
 # ------------------------------ #
-dataset_mPES100S100SPAPS = pd.read_csv('../../../../Databases/regressionDBs/multiplePolynomialEquationSystem/multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv')
-print("The following will give an insight of the contents of the database that has been loaded:")
-print(dataset_mPES100S100SPAPS.iloc[:,:])
+print("Innitializing data extraction from .csv file ...")
+startingTime = time.time()
+dataset_mPES100S100SPAPS = pd.read_csv('../../../../Databases/statisticsDBs/multiplePolynomialEquationSystem_1000000samples_1Output_2Inputs.csv')
+elapsedTime = time.time() - startingTime
+print("Data extraction from .csv file elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 # ------------------------------ #
 # ----- Calculate the mean ----- #
 # ------------------------------ #
+print("Innitializing NumPy mean method calculation ...")
+startingTime = time.time()
 means = np.mean( dataset_mPES100S100SPAPS)
-
-# ------------------------------------ #
-# ----- Display results obtained ----- #
-# ------------------------------------ #
-print("The results obtained in Python are the following:")
-for currentColumn in range(0, len(dataset_mPES100S100SPAPS.iloc[0]) ):
-    print("The mean of the column " + format(currentColumn) + " is: " + format(means[currentColumn]))    
+elapsedTime = time.time() - startingTime
+print("NumPy mean method elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 # ---------------------------------------------------------------- #

@@ -23,7 +23,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
-static double seconds(void)
+double seconds(void)
 {
     LARGE_INTEGER t;
     static double oofreq;
@@ -46,7 +46,7 @@ static double seconds(void)
 #elif defined(__linux__) || defined(__APPLE__)
 #include <stddef.h>
 #include <sys/time.h>
-static double seconds(void)
+double seconds(void)
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
