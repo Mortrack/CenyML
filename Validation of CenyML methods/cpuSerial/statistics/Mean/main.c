@@ -13,8 +13,9 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML Library/otherLibraries/csv/csvManager.h" // library to open and create .csv files
-#include "../../../../CenyML Library/CenyML_Library/cpuSerial/statistics/CenyMLstatistics.h" // library to use the statistics methods from CenyML
+#include "../../../../CenyML Library/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML Library/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
+#include "../../../../CenyML Library/CenyML_Library/cpuSerial/statistics/CenyMLstatistics.h" // library to use the statistics methods from CenyML.
 
 
 // ---------------------------------------------- //
@@ -65,8 +66,11 @@ int main(int argc, char** argv) {
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present or any of the rows contained in the target .csv file.
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
+	printf("Innitializing data extraction from .csv file ...\n\n");
+	double startingTime, elapsedTime; // Declaration of variables used to count time in seconds.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
 	csv1.rowsAndColumnsDimensions = (double*)malloc( (double) (2 * sizeof(double)) ); // We initialize the variable that will store the rows & columns dimensions.
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the .csv file.
 	getCsvRowsAndColumnsDimensions(&csv1); // We input the memory location of the "csv1" into the argument of this function to get the rows & columns dimensions.
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
 	double n = csv1.rowsAndColumnsDimensions[0]; // total number of rows of the input matrix (X)
@@ -78,6 +82,8 @@ int main(int argc, char** argv) {
 	double* X = (double*)malloc(nBytes);
 	// Store the csv data (excluding headers) in "X"
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the data from the .csv file.
+	printf("Data extraction from .csv file elapsed %f seconds.\n", elapsedTime);
 	X = csv1.allData;
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
@@ -93,7 +99,10 @@ int main(int argc, char** argv) {
 	totalElements = m;
 	double* B_x_bar = (double*)calloc(totalElements, sizeof(double));
 	// We calculate the mean for each of the columns available in the matrix "X" and the result is stored in the memory location of the pointer "B_x_bar".
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the mean of the data contain in the .csv file.
 	getMean(X, n, m, B_x_bar);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the mean of the data contain in the .csv file.
+	printf("CenyML mean method elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
 	// Display in the terminal the results obtained
