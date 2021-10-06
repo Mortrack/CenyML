@@ -13,8 +13,9 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML Library/otherLibraries/csv/csvManager.h" // library to open and create .csv files
-#include "../../../../CenyML Library/CenyML_Library/cpuSerial/statistics/CenyMLstatistics.h" // library to use the statistics methods from CenyML
+#include "../../../../CenyML Library/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML Library/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
+#include "../../../../CenyML Library/CenyML_Library/cpuSerial/statistics/CenyMLstatistics.h" // library to use the statistics methods from CenyML.
 
 
 // ---------------------------------------------- //
@@ -55,7 +56,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: SEPTEMBER 29, 2021
+* LAST UPDATE: OCTOBER 06, 2021
 */
 int main(int argc, char** argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -63,58 +64,89 @@ int main(int argc, char** argv) {
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present or any of the rows contained in the target .csv file.
+	// NOTE: "desired_m" can be any value as long as (desired_m*n) <= 2'147'483'647, because of the long int max value (the compiler seems to activate the long data type when needed when using integer variables only).
+	// desired_m <= 2145 to comply with the note considering that n=1'000'000.
+	int desired_m = 100; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
+	printf("Innitializing data extraction from .csv file containing the reference input data ...\n");
+	double startingTime, elapsedTime; // Declaration of variables used to count time in seconds.
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
-	csv1.rowsAndColumnsDimensions = (double*)malloc( (double) (2 * sizeof(double)) ); // We initialize the variable that will store the rows & columns dimensions.
+	csv1.rowsAndColumnsDimensions = (int*)malloc( (int) (2 * sizeof(int)) ); // We initialize the variable that will store the rows & columns dimensions.
 	getCsvRowsAndColumnsDimensions(&csv1); // We input the memory location of the "csv1" into the argument of this function to get the rows & columns dimensions.
+	// We save the rows and columns dimensions obtained in some variables that relate to the mathematical symbology according to the documentation of the method to be validated.
+	int n = csv1.rowsAndColumnsDimensions[0]; // total number of rows of the input matrix (X)
+	int m = csv1.rowsAndColumnsDimensions[1]; // total number of columns of the input matrix (X)
+	// Before proceeding, we verify that the desired number of columns is an exact multiple of the rows contained in the reference .csv file.
+	if ( (desired_m/m) != (desired_m/m) ) {
+		printf("\nERROR: Variable \"desired_m\" must be a whole number and an exact multiple of the rows containted in the .csv file.\n");
+		exit(1);
+	}
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
-	double n = csv1.rowsAndColumnsDimensions[0]; // total number of rows of the input matrix (X)
-	double m = csv1.rowsAndColumnsDimensions[1]; // total number of columns of the input matrix (X)
 	double totalElements = n * m;
 	double nBytes = totalElements * sizeof(double);
 	csv1.allData = (double*)malloc(nBytes);
 	// Allocate the memory required for the struct variable "X", which will contain the input data of the system whose mean will be obtained.
+	totalElements = n * desired_m;
+	nBytes = totalElements * sizeof(double);
 	double* X = (double*)malloc(nBytes);
-	// Store the csv data (excluding headers) in "X"
+	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
-	X = csv1.allData;
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the data from the reference .csv file.
+	printf("Data extraction from .csv file containing %d samples for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, m, (n*m), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
-	
-	// ------------------------ DATA SPLITTING ----------------------- //
-	
-	// ----------------------- FEATURE SCALING ----------------------- //
-	
-	// ------------------------ DATA SPLITTING ----------------------- //
+	// Create the input data (X) with the same rows as in the reference .csv file and the desired number of columns by duplicating several times the data from such .csv file as needed.
+	printf("Innitializing input data with %d samples for each of the %d columns (total samples = %d)...\n", n, desired_m, (n*desired_m));
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
+	int currentRow;
+    int currentColumn;
+    int currentColumnCsv;
+	for (currentRow=0; currentRow<n; currentRow++) {
+		for (currentColumn=0; currentColumn<(desired_m/m); currentColumn++) {
+			for (currentColumnCsv=0; currentColumnCsv<m; currentColumnCsv++) {
+				X[(currentColumnCsv + currentColumn*m) + (currentRow*desired_m)] = csv1.allData[currentColumnCsv + currentRow*m];
+			}
+		}
+	}
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to innitialize the input data to be used.
+	printf("Input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------------------- DATA MODELING ----------------------- //
+	printf("Innitializing CenyML mean method calculation ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the mean of the input data (X).
 	// Allocate the memory required for the variable "B_x_bar" (which will contain the mean of the input data "X") and innitialize it with zeros.
-	totalElements = m;
 	double* B_x_bar = (double*)calloc(totalElements, sizeof(double));
 	// We calculate the mean for each of the columns available in the matrix "X" and the result is stored in the memory location of the pointer "B_x_bar".
-	getMean(X, n, m, B_x_bar);
+	getMean(X, n, desired_m, B_x_bar);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the mean of the input data (X).
+	printf("CenyML mean method elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
-	// Display in the terminal the results obtained
-    int currentRow;
-    int currentColumn;
-    for (currentColumn = 0; currentColumn < m; currentColumn++) {
-		printf("Row: %d, Column: %d --> %f\n", currentRow, currentColumn, B_x_bar[currentColumn]);
-	}
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results of the mean calculated.
 	// Define the desired file name and header names for the new .csv file to be create.
-	char nameOfTheCsvFile[] = "CenyML_getMean_Results.csv"; // name the .csv file
-	char csvHeaders[] = "id,system_id,dependent_variable,independent_variable_1,independent_variable_2"; // indicate the desired headers for the .csv file seperated only by a ",".
+	char nameOfTheCsvFile[] = "CenyML_getMean_Results.csv"; // name the .csv file.
+    char csvHeaders[strlen("id,system_id,dependent_variable,") + strlen("independent_variable_XXXXXXX")*(desired_m-3)]; // Variable where the following code will store the .csv headers.
+    csvHeaders[0] = '\0'; // Innitialize this char variable with a null value.
+	strcat(csvHeaders, "id,system_id,dependent_variable,"); // We add the first three column headers into "csvHeaders".
+	char currentColumnInString[8]; // Variable used to store the string form of the currenColumn integer value, within the following for-loop.
+    for (currentColumn = 3; currentColumn < (desired_m-1); currentColumn++) { // We add the rest of the column headers into "csvHeaders"
+    	strcat(csvHeaders, "independent_variable_");
+    	sprintf(currentColumnInString, "%d", (currentColumn-2));
+    	strcat(csvHeaders, currentColumnInString);
+    	strcat(csvHeaders, ",");
+	} // We add the last header column.
+	strcat(csvHeaders, "independent_variable_");
+	sprintf(currentColumnInString, "%d", (desired_m-3));
+	strcat(csvHeaders, currentColumnInString);
 	// Create a new .csv file and save the results obtained in it.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	createCsvFile(nameOfTheCsvFile, csvHeaders, B_x_bar, 1, m, isInsertId); // We create the desired .csv file.
+	createCsvFile(nameOfTheCsvFile, csvHeaders, B_x_bar, 1, desired_m, isInsertId); // We create the desired .csv file.
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results of the mean calculated.
+	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
 	
-	
-	// Free the allocated memory used and end this program.
-	free(csv1.allData);
-	free(csv1.rowsAndColumnsDimensions);
-	free(X);
-	free(B_x_bar);
+	printf("The program has been successfully completed!");
 	return (0); // end of program.
 }
 

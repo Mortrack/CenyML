@@ -2,8 +2,8 @@
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # AUTHOR: Cesar Miranda Meza
-# COMPLETITION DATE: September 22, 2020.
-# LAST UPDATE: N/A.
+# COMPLETITION DATE: September 22, 2021.
+# LAST UPDATE: October 05, 2021
 #
 # This code is used for obtain the mean of each of the columns contained in the
 # database "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys",
@@ -21,33 +21,56 @@
 # ----------------------------------- #
 import pandas as pd
 import numpy as np
+import time
 
 # ------------------------------ #
 # ----- Import the dataset ----- #
 # ------------------------------ #
+# Read the .csv file containing the results of the CenyML library.
+print("Innitializing data extraction from .csv file containing the CenyML results ...")
+startingTime = time.time()
+dataset_CenyML_meanResults = pd.read_csv('CenyML_getMean_Results.csv')
+elapsedTime = time.time() - startingTime
+print("Data extraction from .csv file with the CenyML results elapsed " + format(elapsedTime) + " seconds.")
+print("")
+# Read the .csv file containing the reference data.
+print("Innitializing data extraction from .csv file containing the reference input data ...")
+startingTime = time.time()
 dataset_mPES100S100SPAPS = pd.read_csv('../../../../Databases/regressionDBs/multiplePolynomialEquationSystem/multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv')
-print("The following will give an insight of the contents of the database that has been loaded:")
-print(dataset_mPES100S100SPAPS.iloc[:,:])
+elapsedTime = time.time() - startingTime
+n = len(dataset_mPES100S100SPAPS)
+m = len(dataset_mPES100S100SPAPS.iloc[0])
+desired_m = len(dataset_CenyML_meanResults.iloc[0])
+print("Data extraction from .csv file containing " + format(n) + " samples for each of the " + format(m) + " columns (total samples = " + format(n*m) + ") elapsed " + format(elapsedTime) + " seconds.")
+print("")
+
+# ------------------------------------- #
+# ----- Preprocessing of the data ----- #
+# ------------------------------------- #
+print("Innitializing input data with " + format(n) + " samples for each of the " + format(desired_m) + " columns (total samples = " + format(n*desired_m) + ") ...")
+startingTime = time.time()
+X = np.zeros((n, 0))
+for currentColumn in range(0, int(desired_m/m)):
+    for currentColumnCsv in range(0, m):
+        temporalRow = dataset_mPES100S100SPAPS.iloc[:,currentColumnCsv].values.reshape(n, 1)
+        X = np.append(X, temporalRow, axis=1)
+elapsedTime = time.time() - startingTime
+print("Input data innitialization elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 # ------------------------------ #
 # ----- Calculate the mean ----- #
 # ------------------------------ #
-means = np.mean( dataset_mPES100S100SPAPS)
-
-# ------------------------------------ #
-# ----- Display results obtained ----- #
-# ------------------------------------ #
-print("The results obtained in Python are the following:")
-for currentColumn in range(0, len(dataset_mPES100S100SPAPS.iloc[0]) ):
-    print("The mean of the column " + format(currentColumn) + " is: " + format(means[currentColumn]))    
+print("Innitializing NumPy mean method calculation ...")
+startingTime = time.time()
+means = np.mean(X, axis=0)
+elapsedTime = time.time() - startingTime
+print("NumPy mean method elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 # ---------------------------------------------------------------- #
 # ----- Determine if the CenyML Library's method was correct ----- #
 # ---------------------------------------------------------------- #
-# Read the .csv file containing the results of the CenyML library.
-dataset_CenyML_meanResults = pd.read_csv('CenyML_getMean_Results.csv')
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The results will begin their comparation process...")
 epsilon = 1e-7

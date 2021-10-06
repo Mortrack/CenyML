@@ -1,5 +1,4 @@
 #include "mTimeTer.h"
-#include <windows.h>
 
 /**
 * The "seconds()" function is used to know the current time
@@ -19,7 +18,7 @@
 * CREATION DATE: SEPTEMBER 22, 2021
 * LAST UPDATE: N/A
 */
-static double seconds(void)
+double seconds(void)
 {
     LARGE_INTEGER t;
     static double oofreq;

@@ -19,7 +19,7 @@
 #include <string.h>
 #include <stdio.h>
 
-void getMean(double*, double, double, double*);
+void getMean(double*, int, int, double*);
 
 #endif
 

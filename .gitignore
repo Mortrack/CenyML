@@ -43,6 +43,7 @@
 *.su
 *.idb
 *.pdb
+*.stackdump
 
 # Kernel Module Compile Results
 *.mod*
@@ -56,4 +57,4 @@ dkms.conf
 # Other files
 README.md.backup
 Personal Access Tokens.txt
-"CenyML Library"/main.x
+

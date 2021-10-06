@@ -2,8 +2,9 @@
 #define MTIMETER_H
 
 #include <time.h>
+#include <windows.h>
 
-static double seconds(void);
+double seconds(void);
 
 #endif
 

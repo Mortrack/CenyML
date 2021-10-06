@@ -34,12 +34,12 @@
 * 
 * @author Cesar Miranda Meza
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: SEPTEMBER 29, 2021
+* LAST UPDATE: OCTOBER 05, 2021
 */
 void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
     // We initialize the required local variables for this function.
-	double csvRowsLength = 0; // counter of the total number of rows of the .csv file.
-	double csvColumnsLength = 0; // counter of the total number of columns of the .csv file.
+	int csvRowsLength = 0; // counter of the total number of rows of the .csv file.
+	int csvColumnsLength = 0; // counter of the total number of columns of the .csv file.
 	int maxRowCharacters = csv->maxRowChars * 40; // This variable is used to indicate the maximum number of characters that will be counted for any row read from the file that was opened.
     char line[maxRowCharacters]; // This variable is used in the process of obtaining the characters contained in the current line of the file that was opened.
     char* token; // This variable will be used to store the data of the current row vs the current column being read from the file.
@@ -92,13 +92,13 @@ void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
 * 
 * @author Cesar Miranda Meza
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: SEPTEMBER 29, 2021
+* LAST UPDATE: OCTOBER 05, 2021
 */
 //TODO: Add an array type variable to the struct "csvManager" that saves the headers of the file.
 void getCsvFileData(struct csvManager* csv) {
     // We initialize the required variables for this function.
-	double csvRowsLength = csv->rowsAndColumnsDimensions[0]; // contains the total number of rows of the .csv file to open.
-	double csvColumnsLength = csv->rowsAndColumnsDimensions[1]; // contains the total number of columns of the .csv file to open.
+	int csvRowsLength = csv->rowsAndColumnsDimensions[0]; // contains the total number of rows of the .csv file to open.
+	int csvColumnsLength = csv->rowsAndColumnsDimensions[1]; // contains the total number of columns of the .csv file to open.
 	int maxCharPerRow = csv->maxRowChars * 40; // This variable is used so that the developer indicates the maximum number of characters that will be counted for any row read from the file that was opened.
     char line[maxCharPerRow]; // This variable is used in the process of obtaining the characters contained in the current line of the file that was opened.
     char* token; // This variable will be used to store the data of the current row vs the current column being read from the file.
@@ -131,7 +131,7 @@ void getCsvFileData(struct csvManager* csv) {
 			token = strtok(line, ",");
 	        currentColumn = 0;
 	        while(token != NULL){       	
-				csv->allData[currentColumn + (currentRow-1) * (int) csvColumnsLength] = atof(token);
+				csv->allData[currentColumn + (currentRow-1) * csvColumnsLength] = atof(token);
 				token = strtok(NULL, ",");
 				currentColumn++;
 			}
@@ -184,34 +184,34 @@ void getCsvFileData(struct csvManager* csv) {
 * 
 * @author Miranda Meza Cesar
 * CREATEION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: SEPTEMBER 29, 2021
+* LAST UPDATE: OCTOBER 05, 2021
 */
-void createCsvFile(char* filename, char* header, double* data, double n, double m, char isInsertId) {
+void createCsvFile(char* filename, char* header, double* data, int n, int m, char isInsertId) {
 	// Create the requested .csv file and write the specified headers in it.
-	printf("\n Creating %s file",filename);
+	printf("Creating %s file ...",filename);
 	FILE *fp;
 	fp=fopen(filename,"w+");
 	fprintf(fp, header);
 	
 	// Write the requested data into the .csv file.
 	if (isInsertId == 1) { // If the flag "isInsertId"=1, then automatically add an "id" value to each row, along with the requested data, into the .csv file.
-		for(double currentRow=0; currentRow<n; currentRow++){
+		for(int currentRow=0; currentRow<n; currentRow++){
 		    fprintf(fp,"\n%f",currentRow+1); // write the Id value of the current row,
-		    for(double currentColumn=0; currentColumn<m; currentColumn++) {
-				fprintf(fp,",%f ", data[(int)(currentColumn + currentRow * m)]);
+		    for(int currentColumn=0; currentColumn<m; currentColumn++) {
+				fprintf(fp,",%f ", data[currentColumn + currentRow * m]);
 			}
 		}
 	} else { // If the flag "isInsertId"!=1, then add the requested data into the .csv file with not "id" values.
-		for(double currentRow=0; currentRow<n; currentRow++){
-		    fprintf(fp,"\n%f", data[(int)(currentRow * m)]); // write the first column value of the current row.
-		    for(double currentColumn=1; currentColumn<m; currentColumn++) {
-				fprintf(fp,",%f ", data[(int)(currentColumn + currentRow * m)]);
+		for(int currentRow=0; currentRow<n; currentRow++){
+		    fprintf(fp,"\n%f", data[currentRow * m]); // write the first column value of the current row.
+		    for(int currentColumn=1; currentColumn<m; currentColumn++) {
+				fprintf(fp,",%f ", data[currentColumn + currentRow * m]);
 			}
 		}
 	}
 	
 	// Close the .csv file.
 	fclose(fp);
-	printf("\n %sfile has been created",filename);
+	printf("\n%sfile has been created\n",filename);
 }
 
