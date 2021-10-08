@@ -18,8 +18,11 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void getMean(double*, int, int, double*);
+void getSort(char[], int, int, double*);
+static void applyQuickSort(int, int, int*, double*);
 
 #endif
 
