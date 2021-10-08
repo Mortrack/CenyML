@@ -81,7 +81,7 @@ for currentRow in range(0, len(dataset_mPES100S100SPAPS.iloc[:])):
         differentiation = abs(dataset_CenyML_quickSortResults.iloc[currentRow][currentColumn] - sortedValues[currentRow][currentColumn])
         if (differentiation > epsilon):
             isMatch = 0
-            print("The absolute differentiation of the Column: " + dataset_mPES100S100SPAPS.columns.tolist()[0] + " and the Row: " + format(currentRow) + " exceeded the value defined for epsilon.")
+            print("The absolute differentiation of the Column: " + dataset_mPES100S100SPAPS.columns.tolist()[currentColumn] + " and the Row: " + format(currentRow) + " exceeded the value defined for epsilon.")
             break
 if (isMatch == 1):
     print("The results obtained in Python and in the CenyML Library matched !!!.")
