@@ -57,6 +57,5 @@ dkms.conf
 # Other files
 README.md.backup
 Personal Access Tokens.txt
-'Validation of CenyML methods'/*.csv
 
 
