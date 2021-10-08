@@ -43,8 +43,6 @@ void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
 	int maxRowCharacters = csv->maxRowChars * 40; // This variable is used to indicate the maximum number of characters that will be counted for any row read from the file that was opened.
     char line[maxRowCharacters]; // This variable is used in the process of obtaining the characters contained in the current line of the file that was opened.
     char* token; // This variable will be used to store the data of the current row vs the current column being read from the file.
-    int currentRow = 0; // This variable will be used to know what is the current row read from the file.
-    int currentColumn = 0; // This variable will be used to know what is the current column read from the file.
     
 	// We open the desired file in read mode.
 	FILE* csvFile = fopen(csv->fileDirectory, "r");
@@ -173,35 +171,48 @@ void getCsvFileData(struct csvManager* csv) {
 *				 will have.
 *
 * @param char isInsertId = This argument variable will work as a
-*						   flag to indicate with a "1" that it is
-*						   desired that this function automatically
-*						   adds an "id" value to each row or,
-*						   conversely, with a "0" to indicate that
-*						   it is not desired to automatically add
-*						   these "id" values.
+*						   flag to indicate if it is desired or not
+*						   to automatically add "id" values for
+*						   each of the rows to be inserted into the
+*						   .csv file to be created, such that they
+*						   range from 1 to n. Moreover, the possible
+*						   values for this argument variable are:
+*						   1) (int) 1 = Add id values.
+*						   2) (int) 0 = Do not add id values.
 * 
 * @return void
 * 
 * @author Miranda Meza Cesar
-* CREATEION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: OCTOBER 05, 2021
+* CREATION DATE: SEPTEMBER 23, 2021
+* LAST UPDATE: OCTOBER 07, 2021
 */
 void createCsvFile(char* filename, char* header, double* data, int n, int m, char isInsertId) {
 	// Create the requested .csv file and write the specified headers in it.
 	printf("Creating %s file ...",filename);
 	FILE *fp;
 	fp=fopen(filename,"w+");
-	fprintf(fp, header);
 	
 	// Write the requested data into the .csv file.
 	if (isInsertId == 1) { // If the flag "isInsertId"=1, then automatically add an "id" value to each row, along with the requested data, into the .csv file.
+		// Write the specified headers into the .csv file created.
+		char modifiedFilename[strlen(header) + 3]; // Variable used to store the new headers to be inserted
+		modifiedFilename[0] = '\0'; // Innitialize this char variable with a null value.
+		strcat(modifiedFilename, "id,"); // We define the requested id header at the beginning.
+		strcat(modifiedFilename, header); // We subsequently add all the other headers that were requested by the implementer.
+		fprintf(fp, modifiedFilename); // Insert the headers into the .csv file created.
+		
+		// Write the requested data into the .csv file created.
 		for(int currentRow=0; currentRow<n; currentRow++){
-		    fprintf(fp,"\n%f",currentRow+1); // write the Id value of the current row,
+		    fprintf(fp,"\n%d", (currentRow+1)); // write the Id value of the current row,
 		    for(int currentColumn=0; currentColumn<m; currentColumn++) {
 				fprintf(fp,",%f ", data[currentColumn + currentRow * m]);
 			}
 		}
 	} else { // If the flag "isInsertId"!=1, then add the requested data into the .csv file with not "id" values.
+		// Write the specified headers into the .csv file created.
+		fprintf(fp, header);
+		
+		// Write the requested data into the .csv file created.
 		for(int currentRow=0; currentRow<n; currentRow++){
 		    fprintf(fp,"\n%f", data[currentRow * m]); // write the first column value of the current row.
 		    for(int currentColumn=1; currentColumn<m; currentColumn++) {

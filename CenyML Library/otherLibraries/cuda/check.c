@@ -17,7 +17,7 @@
 * @return NULL
 *
 * @author John Cheng, Max Grossman & Ty McKercher
-* CREATION DATE: SEPTEMBER 22, 2021
+* CREATION DATE: year 2014
 * LAST UPDATE: N/A
 */
 #define CHECK(call)                                                         \
