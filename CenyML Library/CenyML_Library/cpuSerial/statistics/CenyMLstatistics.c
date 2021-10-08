@@ -49,20 +49,15 @@
 * LAST UPDATE: OCTOBER 06, 2021
 */
 void getMean(double* matrix, int n, int m, double* mean) {
-	// We declare the local variables to be used.
-	int currentRow;
-    int currentColumn;
-    
 	// We obtain the mean for each of the columns of the matrix "X".
-    for (currentRow = 0; currentRow < n; currentRow++) {
-    	for (currentColumn = 0; currentColumn < m; currentColumn++) {
+    for (int currentRow = 0; currentRow < n; currentRow++) {
+    	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
     		mean[currentColumn] += matrix[(currentColumn + currentRow*m)];
 		}
 	}
-	for (currentColumn = 0; currentColumn < m; currentColumn++) {
+	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
 		mean[currentColumn] = mean[currentColumn]/n;
 	}
-	
 }
 
 

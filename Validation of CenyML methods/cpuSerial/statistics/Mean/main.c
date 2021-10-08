@@ -94,7 +94,6 @@ int main(int argc, char** argv) {
 	double* X = (double*)malloc(nBytes);
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
-	free(csv1.rowsAndColumnsDimensions); // Free the Heap memory used for the allocated variable "csv1.rowsAndColumnsDimensions" since it will no loger be used.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the data from the reference .csv file.
 	printf("Data extraction from .csv file containing %d samples for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, m, (n*m), elapsedTime);
 	
@@ -112,7 +111,6 @@ int main(int argc, char** argv) {
 			}
 		}
 	}
-	free(csv1.allData); // Free the Heap memory used for the allocated variable "csv1.allData" since it will no loger be used.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to innitialize the input data to be used.
 	printf("Input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -123,7 +121,6 @@ int main(int argc, char** argv) {
 	double* B_x_bar = (double*)calloc(totalElements, sizeof(double));
 	// We calculate the mean for each of the columns available in the matrix "X" and the result is stored in the memory location of the pointer "B_x_bar".
 	getMean(X, n, desired_m, B_x_bar);
-	free(X); // Free the Heap memory used for the allocated variable "X" since it will no loger be used.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the mean of the input data (X).
 	printf("CenyML mean method elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -146,12 +143,16 @@ int main(int argc, char** argv) {
 	// Create a new .csv file and save the results obtained in it.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
 	createCsvFile(nameOfTheCsvFile, csvHeaders, B_x_bar, 1, desired_m, isInsertId); // We create the desired .csv file.
-	free(B_x_bar); // Free the Heap memory used for the allocated variable "B_x_bar" since it will no loger be used.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
-	
-	
 	printf("The program has been successfully completed!");
+	
+	
+	// Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.
+	free(csv1.rowsAndColumnsDimensions);
+	free(csv1.allData);
+	free(X);
+	free(B_x_bar);
 	return (0); // end of program.
 }
 
