@@ -49,20 +49,15 @@
 * LAST UPDATE: OCTOBER 06, 2021
 */
 void getMean(double* matrix, int n, int m, double* mean) {
-	// We declare the local variables to be used.
-	int currentRow;
-    int currentColumn;
-    
 	// We obtain the mean for each of the columns of the matrix "X".
-    for (currentRow = 0; currentRow < n; currentRow++) {
-    	for (currentColumn = 0; currentColumn < m; currentColumn++) {
+    for (int currentRow = 0; currentRow < n; currentRow++) {
+    	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
     		mean[currentColumn] += matrix[(currentColumn + currentRow*m)];
 		}
 	}
-	for (currentColumn = 0; currentColumn < m; currentColumn++) {
+	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
 		mean[currentColumn] = mean[currentColumn]/n;
 	}
-	
 }
 
 
@@ -117,7 +112,7 @@ void getSort(char desiredSortMethod[], int n, int m, double* inputMatrix) {
 			}
 			
 			// We start the "quick sort" function for the current column of data.
-			applyQuickSort(0, n-1, &n, rowsOfCurrentColumn);
+			applyQuickSort(0, n-1, rowsOfCurrentColumn);
 			
 			// We store the sorted column values back into the corresponding memory location of the pointer "inputMatrix".
 			for (int currentRow = 0; currentRow < n; currentRow++) {
@@ -148,11 +143,6 @@ void getSort(char desiredSortMethod[], int n, int m, double* inputMatrix) {
 *							 will start being addressed for the
 *							 current "quick sort" requested.
 *
-* @param int* n - This argument will contain the pointer to a memory
-*				  allocated variable that will represent the total
-*				  number of rows that the "inputVector" variable
-*				  argument will have.
-*
 * @param double* inputVector - This argument will contain the
 *							   pointer to a memory allocated input
 *							   vector, from which the "quick sort"
@@ -170,56 +160,41 @@ void getSort(char desiredSortMethod[], int n, int m, double* inputMatrix) {
 * CREATION DATE: OCTOBER 07, 2021
 * LAST UPDATE: N/A
 */
-static void applyQuickSort(int minIndexLimit, int maxIndexLimit, int* n, double* inputVector) {
-	// We will allocate the needed memory that will be required for this function.
-	int* indexOfLeftElement = (int*)malloc(sizeof(int));
-	int* indexOfRightElement = (int*)malloc(sizeof(int));
-	double* pivotValue = (double*)malloc(sizeof(double));
-	double* exchangeValue = (double*)malloc(sizeof(double));
+static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double* inputVector) {
+	// We will define the local variables to be used in this function.
+	int indexOfLeftElement = minIndexLimit;
+	int indexOfRightElement = maxIndexLimit;
+	double pivotValue = inputVector[(indexOfLeftElement + indexOfRightElement)/2];
+	double exchangeValue;
 	
-	// Initialize the indexes of the left and right elements such that they start from the corners of the values to be evaluated.
-	*indexOfLeftElement = minIndexLimit;
-	*indexOfRightElement = maxIndexLimit;
-	
-	// For simplicity, we define the pivot value as the middle index with respect to the rows of the current vector, instead of choosing a random index.
-	*pivotValue = inputVector[(*indexOfLeftElement + *indexOfRightElement)/2];
-	
-	// We apply once the "quick sort" method through this do-while loop.
-	do {
+	// We apply once the "quick sort" method through this while loop.
+	while (indexOfLeftElement <= indexOfRightElement) {
 		// We identify the index of the left elements where its value is greater than the pivot value if available.
-		while ((inputVector[*indexOfLeftElement]<*pivotValue) && (*indexOfLeftElement<maxIndexLimit)) {
-			*indexOfLeftElement = *indexOfLeftElement + 1;
+		while ((inputVector[indexOfLeftElement]<pivotValue) && (indexOfLeftElement<maxIndexLimit)) {
+			indexOfLeftElement++;
 		}
 		
 		// We identify the index of the right elements where its value is smaller than the pivot value if available.
-		while ((*pivotValue<inputVector[*indexOfRightElement]) && (*indexOfRightElement>minIndexLimit)) {
-			*indexOfRightElement = *indexOfRightElement - 1;
+		while ((pivotValue<inputVector[indexOfRightElement]) && (indexOfRightElement>minIndexLimit)) {
+			indexOfRightElement--;
 		}
 		
 		// If the current 'left index' is smaller or equatl to the 'right index', then exchange their values.
-		if (*indexOfLeftElement <= *indexOfRightElement) {
-			*exchangeValue = inputVector[*indexOfLeftElement];
-			inputVector[*indexOfLeftElement] = inputVector[*indexOfRightElement];
-			inputVector[*indexOfRightElement] = *exchangeValue;
-			*indexOfLeftElement = *indexOfLeftElement + 1;
-			*indexOfRightElement = *indexOfRightElement - 1;
+		if (indexOfLeftElement <= indexOfRightElement) {
+			exchangeValue = inputVector[indexOfLeftElement];
+			inputVector[indexOfLeftElement] = inputVector[indexOfRightElement];
+			inputVector[indexOfRightElement] = exchangeValue;
+			indexOfLeftElement++;
+			indexOfRightElement--;
 		}
-	} while (*indexOfLeftElement <= *indexOfRightElement);
-	
-	// Free the Heap memory used for the allocated variables that will no longer be used.
-	free(pivotValue);
-	free(exchangeValue);
+	}
 	
 	// If there are still more solutions to be made, then apply this function recursively again.
-	if (minIndexLimit < *indexOfRightElement) {
-		applyQuickSort(minIndexLimit, *indexOfRightElement, n, inputVector);
+	if (minIndexLimit < indexOfRightElement) {
+		applyQuickSort(minIndexLimit, indexOfRightElement, inputVector);
 	}
-	if (maxIndexLimit > *indexOfLeftElement) {
-		applyQuickSort(*indexOfLeftElement, maxIndexLimit, n, inputVector);
+	if (maxIndexLimit > indexOfLeftElement) {
+		applyQuickSort(indexOfLeftElement, maxIndexLimit,inputVector);
 	}
-	
-	// Free all the Heap memory used for the remaining allocated variables.
-	free(indexOfLeftElement);
-	free(indexOfRightElement);
 }
 
