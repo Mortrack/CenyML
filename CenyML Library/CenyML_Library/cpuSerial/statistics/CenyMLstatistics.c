@@ -18,26 +18,29 @@
 
 /**
 * The "getMean()" function is used to calculate the mean of all the
-* columns of the input matrix "X" and is returned as a vector (mean).
+* columns of the input matrix and its result is stored as a vector
+* in its pointer argument variable "mean".
 * 
-* @param double* X - This argument will contain the pointer to a
-*					 memory allocated input matrix, from which
-*					 the mean will be calculated.
+* @param double* inputMatrix - This argument will contain the
+*							   pointer to a memory allocated
+*							   input matrix, from which the mean
+*							   will be calculated.
 *
 * @param int n - This argument will represent the total number
-*				 of rows that the "data" variable argument will
-*				 have.
+*				 of rows that the "inputMatrix" variable argument
+*				 will have.
 *
 * @param int m - This argument will represent the total number
-*				 of columns that the "data" variable argument
+*				 of columns that the "inputMatrix" variable argument
 *				 will have.
 *
 * @param double* mean - This argument will contain the pointer to
 *						a memory allocated variable in which we
 *						will store the mean for each column
-*						contained in the argument variable "X". IT
-*						IS INDISPENSABLE THAT THIS VARIABLE IS
-*						INNITIALIZED BEFORE CALLING THIS FUNCTION.
+*						contained in the argument variable
+*					    "inputMatrix". IT IS INDISPENSABLE THAT THIS
+*						VARIABLE IS ALLOCATED BEFORE CALLING THIS
+*						FUNCTION.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "mean".
@@ -48,11 +51,11 @@
 * CREATION DATE: SEPTEMBER 23, 2021
 * LAST UPDATE: OCTOBER 06, 2021
 */
-void getMean(double* matrix, int n, int m, double* mean) {
-	// We obtain the mean for each of the columns of the matrix "X".
+void getMean(double* inputMatrix, int n, int m, double* mean) {
+	// We obtain the mean for each of the columns of the input matrix.
     for (int currentRow = 0; currentRow < n; currentRow++) {
     	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
-    		mean[currentColumn] += matrix[(currentColumn + currentRow*m)];
+    		mean[currentColumn] += inputMatrix[(currentColumn + currentRow*m)];
 		}
 	}
 	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
@@ -98,6 +101,7 @@ void getMean(double* matrix, int n, int m, double* mean) {
 * CREATION DATE: OCTOBER 07, 2021
 * LAST UPDATE: N/A
 */
+//TODO: Test the performance of the "quick sort" method when argumenting the entire matrix in "applyQuickSort()" instead of several vectors, to compare it with the current method.
 void getSort(char desiredSortMethod[], int n, int m, double* inputMatrix) {
 	// If the implementer requested the "quick sort" method, then apply it through the following code.
 	if (strcmp(desiredSortMethod, "quicksort") == 0) {
@@ -195,6 +199,92 @@ static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double* inputVe
 	}
 	if (maxIndexLimit > indexOfLeftElement) {
 		applyQuickSort(indexOfLeftElement, maxIndexLimit,inputVector);
+	}
+}
+
+
+/**
+* The "getMedian()" function is used to calculate the median of all
+* the columns of the input matrix and its result is stored as a vector
+* in its pointer argument variable "Q2".
+* 
+* @param char desiredSortMethod[] - This argument will contain the
+*							   		string or array of characters
+*									that will specify the sort
+*									method requested by the
+*									implementer. Its possible values
+*									are the following:
+*									1) "quicksort" = applies the
+*													 quicksort method.
+*
+* @param double* inputMatrix - This argument will contain the
+*							   pointer to a memory allocated
+*							   input matrix, from which the
+*							   median will be calculated.
+*
+* @param int n - This argument will represent the total number
+*				 of rows that the "inputMatrix" variable argument
+*				 will have.
+*
+* @param int m - This argument will represent the total number
+*				 of columns that the "inputMatrix" variable argument
+*				 will have.
+*
+* @param double* Q2 - This argument will contain the pointer to
+*					  a memory allocated variable in which we
+*					  will store the median for each column
+*					  contained in the argument variable
+*					  "inputMatrix". IT IS INDISPENSABLE THAT THIS
+* 					  VARIABLE IS ALLOCATED BEFORE CALLING THIS
+*					  FUNCTION.
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE "Q2".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: OCTOBER 11, 2021
+* LAST UPDATE: N/A
+*/
+void getMedian(char desiredSortMethod[], double* inputMatrix, int n, int m, double* Q2) {
+	// If the implementer requested the "quick sort" method for the sorting process, then apply it through the following code.
+	if (strcmp(desiredSortMethod, "quicksort") == 0) {
+		// We allocate the needed memory for the vector containing the rows of a certain column from the "inputMatrix".
+		double* rowsOfCurrentColumn = (double*)malloc(n*sizeof(double));
+		
+		// Sort the column values of the input matrix and then, find/identify the median of each column depending on whether n is even or odd.
+		if ((n) == ((n/2)*2)) { // Because n is even, apply the following solution:
+			// We apply the recursive function that will implement the "quick sort" method but for each column seperately.
+			for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+				// We pass the values of the current column to be evaluated to the pointer variable "rowsOfCurrentColumn".
+				for (int currentRow = 0; currentRow < n; currentRow++) {
+					rowsOfCurrentColumn[currentRow] = inputMatrix[currentColumn + currentRow*m];
+				}
+				
+				// We start the "quick sort" function for the current column of data.
+				applyQuickSort(0, n-1, rowsOfCurrentColumn);
+				
+				// We find/identify the median or Q2 for the sorted current column of the input matrix and store its value.
+				Q2[currentColumn] = (rowsOfCurrentColumn[((n-1)/2)] + rowsOfCurrentColumn[((n-1)/2+1)])/2;
+			}
+		} else { // Because n is odd, apply the following solution:
+			// We apply the recursive function that will implement the "quick sort" method but for each column seperately.
+			for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+				// We pass the values of the current column to be evaluated to the pointer variable "rowsOfCurrentColumn".
+				for (int currentRow = 0; currentRow < n; currentRow++) {
+					rowsOfCurrentColumn[currentRow] = inputMatrix[currentColumn + currentRow*m];
+				}
+				
+				// We start the "quick sort" function for the current column of data.
+				applyQuickSort(0, n-1, rowsOfCurrentColumn);
+				
+				// We find/identify the median or Q2 for the sorted current column of the input matrix and store its value.
+				Q2[currentColumn] = rowsOfCurrentColumn[n/2];
+			}
+		}
+		
+		// Free the Heap memory used for the currently allocated variables.
+		free(rowsOfCurrentColumn);
 	}
 }
 
