@@ -48,7 +48,7 @@
 *		    NOTE1: This argument will be at least "1" in value because
 *		    its first argument is the title of this program.
 *
-* @param int *argv[] - This argument contains within the following:
+* @param char **argv[] - This double pointer argument contains within the following:
 *		       ARGUMENT1 = The directory of this program, including its name.
 *		       ARGUMENT2 = All the characters you input on the terminal.
 *
@@ -56,9 +56,9 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: OCTOBER 07, 2021
+* LAST UPDATE: OCTOBER 17, 2021
 */
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "../../../../Databases/regressionDBs/multiplePolynomialEquationSystem/multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile[] = "CenyML_getMean_Results.csv"; // Name the .csv file that will store the results.
@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
 	double startingTime, elapsedTime; // Declaration of variables used to count time in seconds.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
-	csv1.rowsAndColumnsDimensions = (int*)malloc( (int) (2 * sizeof(int)) ); // We initialize the variable that will store the rows & columns dimensions.
+	csv1.rowsAndColumnsDimensions = (int *) malloc(2*sizeof(int)); // We initialize the variable that will store the rows & columns dimensions.
 	getCsvRowsAndColumnsDimensions(&csv1); // We input the memory location of the "csv1" into the argument of this function to get the rows & columns dimensions.
 	// We save the rows and columns dimensions obtained in some variables that relate to the mathematical symbology according to the documentation of the method to be validated.
 	int n = csv1.rowsAndColumnsDimensions[0]; // total number of rows of the input matrix (X)
@@ -85,13 +85,9 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
-	double totalElements = n * m;
-	double nBytes = totalElements * sizeof(double);
-	csv1.allData = (double*)malloc(nBytes);
+	csv1.allData = (double *) malloc(n*m*sizeof(double));
 	// Allocate the memory required for the struct variable "X", which will contain the input data of the system whose mean will be obtained.
-	totalElements = n * desired_m;
-	nBytes = totalElements * sizeof(double);
-	double* X = (double*)malloc(nBytes);
+	double *X = (double *) malloc(n*desired_m*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the data from the reference .csv file.
@@ -101,12 +97,9 @@ int main(int argc, char** argv) {
 	// Create the input data (X) with the same rows as in the reference .csv file and the desired number of columns by duplicating several times the data from such .csv file as needed.
 	printf("Innitializing input data with %d samples for each of the %d columns (total samples = %d)...\n", n, desired_m, (n*desired_m));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
-	int currentRow;
-    int currentColumn;
-    int currentColumnCsv;
-	for (currentRow=0; currentRow<n; currentRow++) {
-		for (currentColumn=0; currentColumn<(desired_m/m); currentColumn++) {
-			for (currentColumnCsv=0; currentColumnCsv<m; currentColumnCsv++) {
+	for (int currentRow=0; currentRow<n; currentRow++) {
+		for (int currentColumn=0; currentColumn<(desired_m/m); currentColumn++) {
+			for (int currentColumnCsv=0; currentColumnCsv<m; currentColumnCsv++) {
 				X[(currentColumnCsv + currentColumn*m) + (currentRow*desired_m)] = csv1.allData[currentColumnCsv + currentRow*m];
 			}
 		}
@@ -118,20 +111,20 @@ int main(int argc, char** argv) {
 	printf("Innitializing CenyML mean method calculation ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the mean of the input data (X).
 	// Allocate the memory required for the variable "B_x_bar" (which will contain the mean of the input data "X") and innitialize it with zeros.
-	double* B_x_bar = (double*)calloc(desired_m, sizeof(double));
+	double *B_x_bar = (double *) calloc(desired_m, sizeof(double));
 	// We calculate the mean for each of the columns available in the matrix "X" and the result is stored in the memory location of the pointer "B_x_bar".
 	getMean(X, n, desired_m, B_x_bar);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the mean of the input data (X).
 	printf("CenyML mean method elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results of the mean calculated.
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results that were obtained.
 	// Define the desired header names for the new .csv file to be create.
     char csvHeaders[strlen("id,system_id,dependent_variable,") + strlen("independent_variable_XXXXXXX")*(desired_m-3)]; // Variable where the following code will store the .csv headers.
     csvHeaders[0] = '\0'; // Innitialize this char variable with a null value.
 	strcat(csvHeaders, "id,system_id,dependent_variable,"); // We add the first three column headers into "csvHeaders".
 	char currentColumnInString[8]; // Variable used to store the string form of the currenColumn integer value, within the following for-loop.
-    for (currentColumn = 3; currentColumn < (desired_m-1); currentColumn++) { // We add the rest of the column headers into "csvHeaders"
+    for (int currentColumn = 3; currentColumn < (desired_m-1); currentColumn++) { // We add the rest of the column headers into "csvHeaders"
     	strcat(csvHeaders, "independent_variable_");
     	sprintf(currentColumnInString, "%d", (currentColumn-2));
     	strcat(csvHeaders, currentColumnInString);

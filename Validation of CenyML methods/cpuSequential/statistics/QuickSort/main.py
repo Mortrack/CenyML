@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: Cesar Miranda Meza
 # COMPLETITION DATE: October 07, 2021.
-# LAST UPDATE: N/A
+# LAST UPDATE: October 17, 2021
 #
 # This code is used for obtain the sort of each of the columns contained in the
 # database "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys",
@@ -82,6 +82,8 @@ for currentRow in range(0, len(dataset_mPES100S100SPAPS.iloc[:])):
         if (differentiation > epsilon):
             isMatch = 0
             print("The absolute differentiation of the Column: " + dataset_mPES100S100SPAPS.columns.tolist()[currentColumn] + " and the Row: " + format(currentRow) + " exceeded the value defined for epsilon.")
+            print("")
+            print("The absolute differentiation obtained was: " + format(differentiation))
             break
 if (isMatch == 1):
     print("The results obtained in Python and in the CenyML Library matched !!!.")

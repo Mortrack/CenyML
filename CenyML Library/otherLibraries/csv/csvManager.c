@@ -24,7 +24,7 @@
 * "csv" (csv->rowsAndColumnsDimensions[0] = rows dimension)
 * (csv->rowsAndColumnsDimensions[1] = columns dimension).
 * 
-* @param struct csvManager* csv - This argument is defined as a pointer
+* @param struct csvManager *csv - This argument is defined as a pointer
 *								  of a structure variable that is used
 *								  to store the parameter required for
 *								  the management of a certain .csv file
@@ -34,18 +34,18 @@
 * 
 * @author Cesar Miranda Meza
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: OCTOBER 05, 2021
+* LAST UPDATE: OCTOBER 17, 2021
 */
-void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
+void getCsvRowsAndColumnsDimensions(struct csvManager *csv) {
     // We initialize the required local variables for this function.
 	int csvRowsLength = 0; // counter of the total number of rows of the .csv file.
 	int csvColumnsLength = 0; // counter of the total number of columns of the .csv file.
 	int maxRowCharacters = csv->maxRowChars * 40; // This variable is used to indicate the maximum number of characters that will be counted for any row read from the file that was opened.
     char line[maxRowCharacters]; // This variable is used in the process of obtaining the characters contained in the current line of the file that was opened.
-    char* token; // This variable will be used to store the data of the current row vs the current column being read from the file.
+    char *token; // This variable will be used to store the data of the current row vs the current column being read from the file.
     
 	// We open the desired file in read mode.
-	FILE* csvFile = fopen(csv->fileDirectory, "r");
+	FILE *csvFile = fopen(csv->fileDirectory, "r");
 	
 	// If the opned file was not available, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if (csvFile == NULL) {
@@ -80,7 +80,7 @@ void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
 * whose pointer is "csv". It is in this same structre variable where the
 * extracted data will be stored (csv->allData).
 * 
-* @param struct csvManager* csv - This argument is defined as a pointer
+* @param struct csvManager *csv - This argument is defined as a pointer
 *								  of a structure variable that is used
 *								  to store the parameter required for
 *								  the management of a certain .csv file
@@ -90,21 +90,21 @@ void getCsvRowsAndColumnsDimensions(struct csvManager* csv) {
 * 
 * @author Cesar Miranda Meza
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: OCTOBER 05, 2021
+* LAST UPDATE: OCTOBER 17, 2021
 */
 //TODO: Add an array type variable to the struct "csvManager" that saves the headers of the file.
-void getCsvFileData(struct csvManager* csv) {
+void getCsvFileData(struct csvManager *csv) {
     // We initialize the required variables for this function.
 	int csvRowsLength = csv->rowsAndColumnsDimensions[0]; // contains the total number of rows of the .csv file to open.
 	int csvColumnsLength = csv->rowsAndColumnsDimensions[1]; // contains the total number of columns of the .csv file to open.
 	int maxCharPerRow = csv->maxRowChars * 40; // This variable is used so that the developer indicates the maximum number of characters that will be counted for any row read from the file that was opened.
     char line[maxCharPerRow]; // This variable is used in the process of obtaining the characters contained in the current line of the file that was opened.
-    char* token; // This variable will be used to store the data of the current row vs the current column being read from the file.
+    char *token; // This variable will be used to store the data of the current row vs the current column being read from the file.
     int currentRow = 0; // This variable will be used to know what is the current row read from the file.
     int currentColumn = 0; // This variable will be used to know what is the current column read from the file.
     
 	// We open the desired file in read mode.
-	FILE* csvFile = fopen(csv->fileDirectory, "r");
+	FILE *csvFile = fopen(csv->fileDirectory, "r");
 	
 	// If the opned file was not available, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if (csvFile == NULL) {
@@ -147,17 +147,17 @@ void getCsvFileData(struct csvManager* csv) {
 * delimmited .csv file and write specified headers and data
 * into it.
 * 
-* @param char* filename - This argument is a pointer variable
+* @param char *filename - This argument is a pointer variable
 *						 that will contain the string of the
 *						 name that was requested for the .csv
 *						 file to create.
 *
-* @param char* header - This argument is a pointer variable that
+* @param char *header - This argument is a pointer variable that
 *					   will possess the string of the requested
 *					   headers for the .csv file to create,
 *					   which must be separated by a ",".
 *
-* @param double* data - This argument is the pointer to a memory
+* @param double *data - This argument is the pointer to a memory
 *					   allocated variable that has to contain the
 *					   data of the matrix that wants to be
 *					   written into the .csv file.
@@ -184,9 +184,9 @@ void getCsvFileData(struct csvManager* csv) {
 * 
 * @author Miranda Meza Cesar
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: OCTOBER 07, 2021
+* LAST UPDATE: OCTOBER 17, 2021
 */
-void createCsvFile(char* filename, char* header, double* data, int n, int m, char isInsertId) {
+void createCsvFile(char *filename, char *header, double *data, int n, int m, char isInsertId) {
 	// Create the requested .csv file and write the specified headers in it.
 	printf("Creating %s file ...",filename);
 	FILE *fp;

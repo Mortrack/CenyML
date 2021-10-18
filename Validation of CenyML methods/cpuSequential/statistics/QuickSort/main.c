@@ -134,7 +134,7 @@ void getPermutations(int l, int r, int m, int *currentRow, int *inputMatrix) {
 *		    NOTE1: This argument will be at least "1" in value because
 *		    its first argument is the title of this program.
 *
-* @param int *argv[] - This argument contains within the following:
+* @param char **argv[] - This double pointer argument contains within the following:
 *		       ARGUMENT1 = The directory of this program, including its name.
 *		       ARGUMENT2 = All the characters you input on the terminal.
 *
@@ -144,7 +144,7 @@ void getPermutations(int l, int r, int m, int *currentRow, int *inputMatrix) {
 * CREATION DATE: OCTOBER 07, 2021
 * LAST UPDATE: OCTOBER 17, 2021
 */
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "../../../../Databases/regressionDBs/gaussianEquationSystem/gaussianEquationSystem_1systems_10samplesPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile[] = "CenyML_getQuickSort_Results.csv"; // Name the .csv file that will store the results.
@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
 	double startingTime, elapsedTime; // Declaration of variables used to count time in seconds.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
-	csv1.rowsAndColumnsDimensions = (int*)malloc( (int) (2 * sizeof(int)) ); // We initialize the variable that will store the rows & columns dimensions.
+	csv1.rowsAndColumnsDimensions = (int *) malloc(2*sizeof(int)); // We initialize the variable that will store the rows & columns dimensions.
 	getCsvRowsAndColumnsDimensions(&csv1); // We input the memory location of the "csv1" into the argument of this function to get the rows & columns dimensions.
 	// We save the rows and columns dimensions obtained in some variables that relate to the mathematical symbology according to the documentation of the method to be validated.
 	int n = csv1.rowsAndColumnsDimensions[0]; // total number of rows of the input matrix (X)
@@ -172,13 +172,9 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
-	double totalElements = n * m;
-	double nBytes = totalElements * sizeof(double);
-	csv1.allData = (double*)malloc(nBytes);
+	csv1.allData = (double *) malloc(n*m*sizeof(double));
 	// Allocate the memory required for the struct variable "X", which will contain the input data of the system to be evaluated.
-	totalElements = n * desired_m;
-	nBytes = totalElements * sizeof(double);
-	double* X = (double*)malloc(nBytes);
+	double *X = (double *) malloc(n*desired_m*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the data from the reference .csv file.
@@ -188,10 +184,9 @@ int main(int argc, char** argv) {
 	// Create the input data (X) with the same rows as in the reference .csv file and the desired number of columns by duplicating several times the data from such .csv file as needed.
 	printf("Innitializing input data with %d samples for each of the %d columns (total samples = %d)...\n", n, desired_m, (n*desired_m));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
-    int currentColumnCsv;
 	for (int currentRow=0; currentRow<n; currentRow++) {
 		for (int currentColumn=0; currentColumn<(desired_m/m); currentColumn++) {
-			for (currentColumnCsv=0; currentColumnCsv<m; currentColumnCsv++) {
+			for (int currentColumnCsv=0; currentColumnCsv<m; currentColumnCsv++) {
 				X[(currentColumnCsv + currentColumn*m) + (currentRow*desired_m)] = csv1.allData[currentColumnCsv + currentRow*m];
 			}
 		}
@@ -207,16 +202,16 @@ int main(int argc, char** argv) {
 		factorialValue = factorialValue*i;
 	}
 	// Innitialize data of pointer variable to be permutated.
-	int* indexIndicator = (int*)malloc(factorialValue*n*sizeof(int));
+	int *indexIndicator = (int *) malloc(factorialValue*n*sizeof(int));
 	for (int currentColumn=0; currentColumn<n; currentColumn++) {
 		indexIndicator[currentColumn] = currentColumn;
 	}
 	// Get all possible index permutations.
-	int *currentPermutation = (int*)calloc(1, sizeof(int));
+	int *currentPermutation = (int *) calloc(1, sizeof(int));
 	getPermutations(0, (n-1), n, currentPermutation, indexIndicator);
 	// Excecute the "quick sort" method over each permutation identified.
 	elapsedTime = 0;
-	double* newX = (double*)malloc(nBytes); // This variable will be used to store the data in which the "quick sort" method will be applied.
+	double *newX = (double *) malloc(nBytes); // This variable will be used to store the data in which the "quick sort" method will be applied.
 	for (int currentPermutation=0; currentPermutation<factorialValue; currentPermutation++) {
 		// Fill "newX" with the data of X but arranged with the current permutation indicated in "indexIndicator".
 		for (int currentRow=0; currentRow<n; currentRow++) {

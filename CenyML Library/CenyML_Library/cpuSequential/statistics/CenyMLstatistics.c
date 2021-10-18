@@ -21,7 +21,7 @@
 * columns of the input matrix and its result is stored as a vector
 * in its pointer argument variable "mean".
 * 
-* @param double* inputMatrix - This argument will contain the
+* @param double *inputMatrix - This argument will contain the
 *							   pointer to a memory allocated
 *							   input matrix, from which the mean
 *							   will be calculated.
@@ -34,7 +34,7 @@
 *				 of columns that the "inputMatrix" variable argument
 *				 will have.
 *
-* @param double* mean - This argument will contain the pointer to
+* @param double *mean - This argument will contain the pointer to
 *						a memory allocated variable in which we
 *						will store the mean for each column
 *						contained in the argument variable
@@ -49,13 +49,15 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: OCTOBER 06, 2021
+* LAST UPDATE: OCTOBER 17, 2021
 */
-void getMean(double* inputMatrix, int n, int m, double* mean) {
+void getMean(double *inputMatrix, int n, int m, double *mean) {
 	// We obtain the mean for each of the columns of the input matrix.
-    for (int currentRow = 0; currentRow < n; currentRow++) {
+    int matrixCurrentRow; // Variable used to store the index value corresponding to the current row of the input matrix.
+	for (int currentRow = 0; currentRow < n; currentRow++) {
+		matrixCurrentRow = currentRow*m;
     	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
-    		mean[currentColumn] += inputMatrix[(currentColumn + currentRow*m)];
+    		mean[currentColumn] += inputMatrix[(currentColumn + matrixCurrentRow)];
 		}
 	}
 	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
@@ -87,7 +89,7 @@ void getMean(double* inputMatrix, int n, int m, double* mean) {
 *				 of columns that the "inputMatrix" variable
 *				 argument will have.
 *
-* @param double* inputMatrix - This argument will contain the
+* @param double *inputMatrix - This argument will contain the
 *							   pointer to a memory allocated input
 *							   matrix, from which a certain sort
 *							   method will be applied.
@@ -99,14 +101,14 @@ void getMean(double* inputMatrix, int n, int m, double* mean) {
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 07, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: OCTOBER 17, 2021
 */
 //TODO: Test the performance of the "quick sort" method when argumenting the entire matrix in "applyQuickSort()" instead of several vectors, to compare it with the current method.
-void getSort(char desiredSortMethod[], int n, int m, double* inputMatrix) {
+void getSort(char desiredSortMethod[], int n, int m, double *inputMatrix) {
 	// If the implementer requested the "quick sort" method, then apply it through the following code.
 	if (strcmp(desiredSortMethod, "quicksort") == 0) {
 		// We allocate the needed memory for the vector containing the rows of a certain column from the "inputMatrix".
-		double* rowsOfCurrentColumn = (double*)malloc(n*sizeof(double));
+		double *rowsOfCurrentColumn = (double *) malloc(n*sizeof(double));
 		
 		// We apply the recursive function that will implement the "quick sort" method but for each column seperately.
 		for (int currentColumn = 0; currentColumn < m; currentColumn++) {
@@ -147,7 +149,7 @@ void getSort(char desiredSortMethod[], int n, int m, double* inputMatrix) {
 *							 will start being addressed for the
 *							 current "quick sort" requested.
 *
-* @param double* inputVector - This argument will contain the
+* @param double *inputVector - This argument will contain the
 *							   pointer to a memory allocated input
 *							   vector, from which the "quick sort"
 *							   method will be applied.
@@ -162,9 +164,9 @@ void getSort(char desiredSortMethod[], int n, int m, double* inputMatrix) {
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 07, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: OCTOBER 17, 2021
 */
-static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double* inputVector) {
+static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double *inputVector) {
 	// We will define the local variables to be used in this function.
 	int indexOfLeftElement = minIndexLimit;
 	int indexOfRightElement = maxIndexLimit;
@@ -217,7 +219,7 @@ static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double* inputVe
 *									1) "quicksort" = applies the
 *													 quicksort method.
 *
-* @param double* inputMatrix - This argument will contain the
+* @param double *inputMatrix - This argument will contain the
 *							   pointer to a memory allocated
 *							   input matrix, from which the
 *							   median will be calculated.
@@ -230,7 +232,7 @@ static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double* inputVe
 *				 of columns that the "inputMatrix" variable argument
 *				 will have.
 *
-* @param double* Q2 - This argument will contain the pointer to
+* @param double *Q2 - This argument will contain the pointer to
 *					  a memory allocated variable in which we
 *					  will store the median for each column
 *					  contained in the argument variable
@@ -244,13 +246,13 @@ static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double* inputVe
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 11, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: OCTOBER 17, 2021
 */
-void getMedian(char desiredSortMethod[], double* inputMatrix, int n, int m, double* Q2) {
+void getMedian(char desiredSortMethod[], double *inputMatrix, int n, int m, double *Q2) {
 	// If the implementer requested the "quick sort" method for the sorting process, then apply it through the following code.
 	if (strcmp(desiredSortMethod, "quicksort") == 0) {
 		// We allocate the needed memory for the vector containing the rows of a certain column from the "inputMatrix".
-		double* rowsOfCurrentColumn = (double*)malloc(n*sizeof(double));
+		double *rowsOfCurrentColumn = (double *) malloc(n*sizeof(double));
 		
 		// Sort the column values of the input matrix and then, find/identify the median of each column depending on whether n is even or odd.
 		if ((n) == ((n/2)*2)) { // Because n is even, apply the following solution:
@@ -285,6 +287,81 @@ void getMedian(char desiredSortMethod[], double* inputMatrix, int n, int m, doub
 		
 		// Free the Heap memory used for the currently allocated variables.
 		free(rowsOfCurrentColumn);
+	}
+}
+
+
+/**
+* The "getVariance()" function is used to calculate the variance of all the
+* columns of the input matrix and its result is stored as a vector
+* in its pointer argument variable "variance".
+* 
+* @param double *inputMatrix - This argument will contain the
+*							   pointer to a memory allocated
+*							   input matrix, from which the variance
+*							   will be calculated.
+*
+* @param int n - This argument will represent the total number
+*				 of rows that the "inputMatrix" variable argument
+*				 will have.
+*
+* @param int m - This argument will represent the total number
+*				 of columns that the "inputMatrix" variable argument
+*				 will have.
+*
+* @param int degreesOfFreedom - This argument will represent the desired
+*								value for the degrees of freedom to be
+*								applied when calculating the variance.
+*
+* @param double *variance - This argument will contain the pointer to
+*						a memory allocated variable in which we
+*						will store the variance for each column
+*						contained in the argument variable
+*					    "inputMatrix". IT IS INDISPENSABLE THAT THIS
+*						VARIABLE IS ALLOCATED BEFORE CALLING THIS
+*						FUNCTION.
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*       "variance".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: OCTOBER 17, 2021
+* LAST UPDATE: N/A
+*/
+void getVariance(double *inputMatrix, int n, int m, int degreesOfFreedom, double *variance) {
+	// We declared and innitialize the variable "mean" with "0"s. The mean for each column will be stored in this variable.
+	double mean[m]; // The mean of each column will be stored in this variable.
+	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+		mean[currentColumn] = 0;
+	}
+	
+	// We obtain the mean for each of the columns of the input matrix.
+	int matrixCurrentRow; // Variable used to store the index value corresponding to the current row of the input matrix.
+	for (int currentRow = 0; currentRow < n; currentRow++) {
+    	matrixCurrentRow = currentRow*m;
+		for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+    		mean[currentColumn] += inputMatrix[(currentColumn + matrixCurrentRow)];
+		}
+	}
+	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+		mean[currentColumn] = mean[currentColumn]/n;
+	}
+	
+	// We obtain the variance for each of the columns of the input matrix.
+	double squareThisValue; // Variable used to store the value that wants to be squared.
+    for (int currentRow = 0; currentRow < n; currentRow++) {
+    	matrixCurrentRow = currentRow*m;
+    	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+    		squareThisValue = inputMatrix[(currentColumn + matrixCurrentRow)] - mean[currentColumn];
+    		//variance[currentColumn] += squareThisValue*squareThisValue/degreesOfFreedom;
+    		variance[currentColumn] += squareThisValue*squareThisValue;
+		}
+	}
+	degreesOfFreedom = n - degreesOfFreedom; // We apply the requested degrees of freedom.
+	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+		variance[currentColumn] = variance[currentColumn]/degreesOfFreedom;
 	}
 }
 

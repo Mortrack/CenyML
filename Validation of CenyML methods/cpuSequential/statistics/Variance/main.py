@@ -2,16 +2,16 @@
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # AUTHOR: Cesar Miranda Meza
-# COMPLETITION DATE: September 22, 2021.
-# LAST UPDATE: October 17, 2021
+# COMPLETITION DATE: October 17, 2021.
+# LAST UPDATE: N/A
 #
-# This code is used for obtain the mean of each of the columns contained in the
+# This code is used for obtain the variance of each of the columns contained in the
 # database "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys",
 # which has 1'000'000 samples for for each of them (making a total of 5'000'000).
 # For this purpose, the well known NumPy library will be used to calculate the
-# mean (https://github.com/numpy/numpy) and then it will be compared with the
+# variance (https://github.com/numpy/numpy) and then it will be compared with the
 # results that were obtained with the CenyML Library as a means of validating
-# that the code created in this library for the mean method is correct.
+# that the code created in this library for the variance method is correct.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 
@@ -29,7 +29,7 @@ import time
 # Read the .csv file containing the results of the CenyML library.
 print("Innitializing data extraction from .csv file containing the CenyML results ...")
 startingTime = time.time()
-dataset_CenyML_meanResults = pd.read_csv('CenyML_getMean_Results.csv')
+dataset_CenyML_varianceResults = pd.read_csv('CenyML_getVariance_Results.csv')
 elapsedTime = time.time() - startingTime
 print("Data extraction from .csv file with the CenyML results elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -40,7 +40,7 @@ dataset_mPES100S100SPAPS = pd.read_csv('../../../../Databases/regressionDBs/mult
 elapsedTime = time.time() - startingTime
 n = len(dataset_mPES100S100SPAPS)
 m = len(dataset_mPES100S100SPAPS.iloc[0])
-desired_m = len(dataset_CenyML_meanResults.iloc[0])
+desired_m = len(dataset_CenyML_varianceResults.iloc[0])
 print("Data extraction from .csv file containing " + format(n) + " samples for each of the " + format(m) + " columns (total samples = " + format(n*m) + ") elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
@@ -58,14 +58,14 @@ elapsedTime = time.time() - startingTime
 print("Input data innitialization elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
-# ------------------------------ #
-# ----- Calculate the mean ----- #
-# ------------------------------ #
-print("Innitializing NumPy mean method calculation ...")
+# ---------------------------------- #
+# ----- Calculate the variance ----- #
+# ---------------------------------- #
+print("Innitializing NumPy variance method calculation ...")
 startingTime = time.time()
-means = np.mean(X, axis=0)
+variances = np.var(X, axis=0, ddof=1)
 elapsedTime = time.time() - startingTime
-print("NumPy mean method elapsed " + format(elapsedTime) + " seconds.")
+print("NumPy variance method elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 # ---------------------------------------------------------------- #
@@ -73,10 +73,10 @@ print("")
 # ---------------------------------------------------------------- #
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The results will begin their comparation process...")
-epsilon = 1e-7
+epsilon = 1e-6
 isMatch = 1
 for currentColumn in range(0, len(dataset_mPES100S100SPAPS.iloc[0]) ):
-    differentiation = abs(dataset_CenyML_meanResults.iloc[0][currentColumn] - means[currentColumn])
+    differentiation = abs(dataset_CenyML_varianceResults.iloc[0][currentColumn] - variances[currentColumn])
     if (differentiation > epsilon):
         isMatch = 0
         print("The absolute differentiation of the Columns: " + dataset_mPES100S100SPAPS.columns.tolist()[currentColumn] + " exceeded the value defined for epsilon.")

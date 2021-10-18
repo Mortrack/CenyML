@@ -2,10 +2,10 @@
  * This program will read the .csv file
 * "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"
 * to then exctact all its data and save it into the matrix "X". Subsequently,
-* the sorted vales of column will be calculated and stored in "X". Finally,
-* a new .csv file "CenyML_getQuickSort_Results.csv" will be created and in it, the
-* sorted values for each column will be saved for further comparations and
-* validations of the "quick sort" method.
+* the variance of each row will be calculated and stored in "squaredSigma".
+* Finally, a new .csv file "CenyML_getVariance_Results.csv" will be created
+* and in it, the variance for each column will be saved for further
+* comparations and validations of the variance method.
  */
 
  // ------------------------------------------------- //
@@ -40,9 +40,8 @@
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then calculate the sort of each column by applying the "quick sort" method.
-* Finally, the results will be saved in a new .csv file for further
-* comparation and validation purposes.
+* then calculate the variance of each column. Finally, the results will be saved
+* in a new .csv file for further comparation and validation purposes.
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -56,19 +55,20 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: OCTOBER 07, 2021
-* LAST UPDATE: OCTOBER 17, 2021
+* CREATION DATE: OCTOBER 17, 2021
+* LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "../../../../Databases/regressionDBs/multiplePolynomialEquationSystem/multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile[] = "CenyML_getMedian_Results.csv"; // Name the .csv file that will store the results.
+	char nameOfTheCsvFile[] = "CenyML_getVariance_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
 	// NOTE: "desired_m" can be any value as long as (desired_m*n) <= 2'147'483'647, because of the long int max value (the compiler seems to activate the long data type when needed when using integer variables only).
 	// desired_m <= 2145 to comply with the note considering that n=1'000'000.
-	int desired_m = 5; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
+	int desired_m = 100; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
+	int degreesOfFreedom = 1; // Desired degrees of freedom to be applied in the variance to be calculated. A "0" would represent a degrees of freedom of "n", a "1" would represent a "n-1", ..., a "degrees" would represent a "n-degrees".
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
 	printf("Innitializing data extraction from .csv file containing the reference input data ...\n");
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
 	}
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
 	csv1.allData = (double *) malloc(n*m*sizeof(double));
-	// Allocate the memory required for the struct variable "X", which will contain the input data of the system whose mean will be obtained.
+	// Allocate the memory required for the struct variable "X", which will contain the input data of the system whose variance will be obtained.
 	double *X = (double *) malloc(n*desired_m*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
@@ -109,17 +109,17 @@ int main(int argc, char **argv) {
 	printf("Input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Innitializing CenyML Median method (employing the quick sort method) ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the sort of the input data (X).
-	// Allocate the memory required for the variable "median" (which will contain the median of the input data "X").
-	double *median = (double *) malloc(desired_m*sizeof(double));
-	// We get the median the values contained in each of the columns available in the matrix "X" and the result is stored in the memory location of the pointer "median".
-	getMedian("quicksort", X, n, desired_m, median);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the sort of the input data (X).
-	printf("CenyML Median method elapsed %f seconds.\n\n", elapsedTime);
+	printf("Innitializing CenyML variance method calculation ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the variance of the input data (X).
+	// Allocate the memory required for the variable "squaredSigma" (which will contain the variance of the input data "X") and innitialize it with zeros.
+	double *squaredSigma = (double *) calloc(desired_m, sizeof(double));
+	// We calculate the variance for each of the columns available in the matrix "X" and the result is stored in the memory location of the pointer "squaredSigma".
+	getVariance(X, n, desired_m, degreesOfFreedom, squaredSigma);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the variance of the input data (X).
+	printf("CenyML variance method elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results of the sort calculated.
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results that were obtained.
 	// Define the desired header names for the new .csv file to be create.
     char csvHeaders[strlen("id,system_id,dependent_variable,") + strlen("independent_variable_XXXXXXX")*(desired_m-3)]; // Variable where the following code will store the .csv headers.
     csvHeaders[0] = '\0'; // Innitialize this char variable with a null value.
@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
 	strcat(csvHeaders, currentColumnInString);
 	// Create a new .csv file and save the results obtained in it.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	createCsvFile(nameOfTheCsvFile, csvHeaders, median, 1, desired_m, isInsertId); // We create the desired .csv file.
+	createCsvFile(nameOfTheCsvFile, csvHeaders, squaredSigma, 1, desired_m, isInsertId); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
 	free(csv1.rowsAndColumnsDimensions);
 	free(csv1.allData);
 	free(X);
-	free(median);
+	free(squaredSigma);
 	return (0); // end of program.
 }
 
