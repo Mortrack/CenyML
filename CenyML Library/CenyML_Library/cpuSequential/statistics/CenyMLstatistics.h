@@ -19,12 +19,14 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 void getMean(double *, int, int, double *);
 void getSort(char[], int, int, double *);
 static void applyQuickSort(int, int, double *);
 void getMedian(char[], double *, int, int, double *);
 void getVariance(double *, int, int, int, double *);
+void getStandardDeviation(double *, int, int, int, double *);
 
 #endif
 
