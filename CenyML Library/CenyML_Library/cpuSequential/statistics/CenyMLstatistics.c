@@ -14,6 +14,8 @@
    limitations under the License.
 */
 #include "CenyMLstatistics.h"
+// IMPORTANT NOTE: This library uses the math.h library and therefore,
+//				   remember to use the "-lm" flag when compiling it.
 
 
 /**
@@ -40,7 +42,7 @@
 *						contained in the argument variable
 *					    "inputMatrix". IT IS INDISPENSABLE THAT THIS
 *						VARIABLE IS ALLOCATED BEFORE CALLING THIS
-*						FUNCTION.
+*						FUNCTION AND INNITIALIZED WITH 0.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "mean".
@@ -319,7 +321,7 @@ void getMedian(char desiredSortMethod[], double *inputMatrix, int n, int m, doub
 *						contained in the argument variable
 *					    "inputMatrix". IT IS INDISPENSABLE THAT THIS
 *						VARIABLE IS ALLOCATED BEFORE CALLING THIS
-*						FUNCTION.
+*						FUNCTION AND INNITIALIZED WITH 0.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "variance".
@@ -331,7 +333,7 @@ void getMedian(char desiredSortMethod[], double *inputMatrix, int n, int m, doub
 * LAST UPDATE: N/A
 */
 void getVariance(double *inputMatrix, int n, int m, int degreesOfFreedom, double *variance) {
-	// We declared and innitialize the variable "mean" with "0"s. The mean for each column will be stored in this variable.
+	// We declare and innitialize the variable "mean" with "0"s. The mean for each column will be stored in this variable.
 	double mean[m]; // The mean of each column will be stored in this variable.
 	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
 		mean[currentColumn] = 0;
@@ -355,13 +357,90 @@ void getVariance(double *inputMatrix, int n, int m, int degreesOfFreedom, double
     	matrixCurrentRow = currentRow*m;
     	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
     		squareThisValue = inputMatrix[(currentColumn + matrixCurrentRow)] - mean[currentColumn];
-    		//variance[currentColumn] += squareThisValue*squareThisValue/degreesOfFreedom;
     		variance[currentColumn] += squareThisValue*squareThisValue;
 		}
 	}
 	degreesOfFreedom = n - degreesOfFreedom; // We apply the requested degrees of freedom.
 	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
 		variance[currentColumn] = variance[currentColumn]/degreesOfFreedom;
+	}
+}
+
+
+/**
+* The "getStandardDeviation()" function is used to calculate the
+* standard deviation of all the columns of the input matrix and its
+* result is stored as a vector in its pointer argument variable
+* "standardDeviation".
+* 
+* @param double *inputMatrix - This argument will contain the
+*							   pointer to a memory allocated
+*							   input matrix, from which the standard
+*							   deviation will be calculated.
+*
+* @param int n - This argument will represent the total number
+*				 of rows that the "inputMatrix" variable argument
+*				 will have.
+*
+* @param int m - This argument will represent the total number
+*				 of columns that the "inputMatrix" variable argument
+*				 will have.
+*
+* @param int degreesOfFreedom - This argument will represent the desired
+*								value for the degrees of freedom to be
+*								applied when calculating the standard
+*								deviation.
+*
+* @param double *standardDeviation - This argument will contain the
+*									 pointer to a memory allocated
+*									 variable in which we will store
+*									 the standard deviation for each
+*									 column contained in the argument
+*									 variable "inputMatrix". IT IS
+*									 INDISPENSABLE THAT THIS VARIABLE
+*									 IS ALLOCATED BEFORE CALLING THIS
+*									 FUNCTION AND INNITIALIZED WITH 0.
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*       "standardDeviation".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: OCTOBER 18, 2021
+* LAST UPDATE: N/A
+*/
+void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedom, double *standardDeviation) {
+	// We declare and innitialize the variable "mean" with "0"s. The mean for each column will be stored in this variable.
+	double mean[m]; // The mean of each column will be stored in this variable.
+	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+		mean[currentColumn] = 0;
+	}
+	
+	// We obtain the mean for each of the columns of the input matrix.
+	int matrixCurrentRow; // Variable used to store the index value corresponding to the current row of the input matrix.
+	for (int currentRow = 0; currentRow < n; currentRow++) {
+    	matrixCurrentRow = currentRow*m;
+		for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+    		mean[currentColumn] += inputMatrix[(currentColumn + matrixCurrentRow)];
+		}
+	}
+	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+		mean[currentColumn] = mean[currentColumn]/n;
+	}
+	
+	// We calculate the variance and then obtain its squared root to get the standard deviation for each of the columns of the input matrix.
+    double squareThisValue; // Variable used to store the value that wants to be squared.
+    for (int currentRow = 0; currentRow < n; currentRow++) {
+    	matrixCurrentRow = currentRow*m;
+    	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+    		squareThisValue = inputMatrix[(currentColumn + matrixCurrentRow)] - mean[currentColumn];
+    		standardDeviation[currentColumn] += squareThisValue*squareThisValue;
+		}
+	}
+	degreesOfFreedom = n-degreesOfFreedom; // We apply the requested degrees of freedom.
+	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
+		standardDeviation[currentColumn] = sqrt(standardDeviation[currentColumn]/degreesOfFreedom);
 	}
 }
 
