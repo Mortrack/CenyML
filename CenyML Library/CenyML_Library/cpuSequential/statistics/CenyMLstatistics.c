@@ -429,7 +429,7 @@ void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedo
 		mean[currentColumn] = mean[currentColumn]/n;
 	}
 	
-	// We calculate the variance and then obtain its squared root to get the standard deviation for each of the columns of the input matrix.
+	// We calculate the variance and then obtain its square root to get the standard deviation for each of the columns of the input matrix.
     double squareThisValue; // Variable used to store the value that wants to be squared.
     for (int currentRow = 0; currentRow < n; currentRow++) {
     	matrixCurrentRow = currentRow*m;
