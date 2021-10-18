@@ -2,9 +2,11 @@
  * This program will read the .csv file
 * "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"
 * to then exctact all its data and save it into the matrix "X". Subsequently,
-* the sorted vales of column will be calculated and stored in "X". Finally,
-* a new .csv file "CenyML_getQuickSort_Results.csv" will be created and in it, the
-* sorted values for each column will be saved for further comparations and
+* the sorted vales of eacy column and each possible permutation will be
+* calculated and only one of its results will be stored in "X" (because all
+* of the results will be identifcal). Finally, * a new .csv file
+* "CenyML_getQuickSort_Results.csv" will be created and in it, the sorted
+* values for each column will be saved for further comparations and
 * validations of the "quick sort" method.
  */
 
@@ -123,8 +125,9 @@ void getPermutations(int l, int r, int m, int *currentRow, int *inputMatrix) {
 /**
 * This is the main function of the program. Here we will read a .csv file and
 * then calculate the sort of each column by applying the "quick sort" method.
-* Finally, the results will be saved in a new .csv file for further
-* comparation and validation purposes.
+* This method will be applied for each possible permutation for each column of
+* the input data matrix. Finally, the results will be saved in a new .csv file
+* for further comparation and validation purposes.
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -151,7 +154,7 @@ int main(int argc, char** argv) {
 	// NOTE: "desired_m" can be any value as long as (desired_m*n) <= 2'147'483'647, because of the long int max value (the compiler seems to activate the long data type when needed when using integer variables only).
 	// desired_m <= 53'687'091 to comply with the note considering that n=10 and m=4.
 	int desired_m = 1000; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
-	//
+	int permutationIndexToEvaluate = 0; // We define the index of the permutation that we specifically want to evaluate.
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
 	printf("Innitializing data extraction from .csv file containing the reference input data ...\n");
@@ -222,9 +225,12 @@ int main(int argc, char** argv) {
 		    }
 		}
 		// We sort the values contained in each of the columns available in the matrix "newX" and the result is stored in the memory location of the pointer "newX".
-		startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the current sort of the input data (X).
-		getSort("quicksort", n, desired_m, newX);
-		elapsedTime = elapsedTime + (seconds() - startingTime); // We obtain the elapsed time to calculate all the current sorts of the input data (X).
+		if (currentPermutation == permutationIndexToEvaluate) {
+			startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the current sort of the input data (X).
+			getSort("quicksort", n, desired_m, newX);
+			elapsedTime = elapsedTime + (seconds() - startingTime); // We obtain the elapsed time to calculate all the current sorts of the input data (X).
+			break;
+		}
 	}
 	printf("CenyML Quick Sort method elapsed %f seconds.\n\n", elapsedTime);
 	
