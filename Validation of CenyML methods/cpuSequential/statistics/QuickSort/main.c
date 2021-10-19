@@ -3,8 +3,8 @@
 * "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"
 * to then exctact all its data and save it into the matrix "X". Subsequently,
 * the sorted vales of eacy column and each possible permutation will be
-* calculated and only one of its results will be stored in "X" (because all
-* of the results will be identifcal). Finally, * a new .csv file
+* calculated and only one of its results will be stored in "newX" (because all
+* of the results will be identical). Finally, a new .csv file
 * "CenyML_getQuickSort_Results.csv" will be created and in it, the sorted
 * values for each column will be saved for further comparations and
 * validations of the "quick sort" method.
@@ -142,7 +142,7 @@ void getPermutations(int l, int r, int m, int *currentRow, int *inputMatrix) {
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 07, 2021
-* LAST UPDATE: OCTOBER 17, 2021
+* LAST UPDATE: OCTOBER 18, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -246,8 +246,9 @@ int main(int argc, char **argv) {
 	sprintf(currentColumnInString, "%d", (desired_m-3));
 	strcat(csvHeaders, currentColumnInString);
 	// Create a new .csv file and save the results obtained in it.
+	char is_nArray = 0; // Indicate through this flag variable that the variable that indicates the samples (n) is not an array because it has the same amount of samples per columns.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	createCsvFile(nameOfTheCsvFile, csvHeaders, newX, n, desired_m, isInsertId); // We create the desired .csv file.
+	createCsvFile(nameOfTheCsvFile, csvHeaders, newX, &n, is_nArray, desired_m, isInsertId); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");

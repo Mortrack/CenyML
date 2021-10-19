@@ -444,3 +444,116 @@ void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedo
 	}
 }
 
+
+/**
+* The "getQuickMode()" function is used to apply a mode method
+* to each column of the input argument matrix whose pointer is
+* "inputMatrix".
+* 
+* @param char desiredSortMethod[] - This argument will contain the
+*							   		string or array of characters
+*									that will specify the sort
+*									method requested by the
+*									implementer. Its possible values
+*									are the following:
+*									1) "quicksort" = applies the
+*													 quicksort method.
+*
+* @param int n - This argument will represent the total number
+*				 of rows that the "inputMatrix" variable argument
+*				 will have.
+*
+* @param int m - This argument will represent the total number
+*				 of columns that the "inputMatrix" variable
+*				 argument will have.
+*
+* @param double *inputMatrix - This argument will contain the
+*							   pointer to a memory allocated input
+*							   matrix that will be copied into a
+*							   local variable to then process it
+*							   and obtain its mode.
+*
+* @param int *Mo_n - This argument will contain the pointer to a
+*					 memory allocated variable in which each "k-th"
+*					 column will store the rows length value of the
+*					 "k-th" column of the argument variable "Mo".
+*
+* @param double *Mo - This argument will contain the pointer to a
+*					  memory allocated variable in which the sort
+*					  result obtained will be stored. The mode
+*					  obtained will be with respect to each column,
+*					  where either the single or multiple mode values
+*					  identified for a certain column of the argument
+*					  variable "inputMatrix" will be all stored in the
+*					  same index column in "Mo".
+*
+* NOTE: THE MODE RESULT IS STORED IN THE MEMORY ALLOCATED POINTER
+*		VARIABLE "Mo" AND THE LENGTH OF THE ROWS FOR EACH OF ITS
+*		COLUMNS ARE STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*		"Mo_n".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: OCTOBER 19, 2021
+* LAST UPDATE: N/A
+*/
+//TODO: Test the performance of the "quick sort" method when argumenting the entire matrix in "applyQuickSort()" instead of several vectors, to compare it with the current method.
+void getQuickMode(char desiredSortMethod[], int n, int m, double *inputMatrix, int *Mo_n, double *Mo) {
+	// If the implementer requested the "quick sort" method, then apply it through the following code.
+	if (strcmp(desiredSortMethod, "quicksort") == 0) {
+		// We declared and allocate the required memory.
+		int indexBeingCounted; // This variable is used to determine the index of the input sorted vector that is currently being counter in the mode process.
+		int maxRepeatitions; // This variable is used to store the maximum number of times that a data in the input sorted vector was repeated.
+		int currentMo_n; // This variable is used to determine the current row of "Mo".
+		double *rowsOfCurrentColumn = (double *) malloc(n*sizeof(double)); // This pointer variable will be used as the vector containing the rows of a certain column from the "inputMatrix".
+		double *counterOfInputVector = (double *) calloc(n, sizeof(double)); // This pointer variable will be used as a repetition counter for the mode to be calculated.
+		
+		// We apply the recursive function that will implement the "quick sort" method but for each column seperately.
+		for (int currentColumn=0; currentColumn < m; currentColumn++) {
+			// We pass the values of the current column to be evaluated to the pointer variable "rowsOfCurrentColumn".
+			for (int currentRow = 0; currentRow < n; currentRow++) {
+				rowsOfCurrentColumn[currentRow] = inputMatrix[currentColumn + currentRow*m];
+			}
+			
+			// We start the "quick sort" function for the current column of data.
+			applyQuickSort(0, n-1, rowsOfCurrentColumn);
+			
+			// Reset these variables for the next vector from which the mode will be obtained.
+			indexBeingCounted = 0;
+			maxRepeatitions = 0;
+			currentMo_n = 0;
+			for (int currentRow=0; currentRow < n; currentRow++) {
+				counterOfInputVector[currentRow] = 0;
+			}
+			
+			// We count the number of times each data of the input vector gets repeated.
+			for (int currentRow=1; currentRow < n; currentRow++) {
+				if (rowsOfCurrentColumn[indexBeingCounted] == rowsOfCurrentColumn[currentRow]) { // if the current index being counted matches the current row being inspected, then increase the counter of such index by 1.
+					counterOfInputVector[indexBeingCounted] = counterOfInputVector[indexBeingCounted] + 1;
+					
+					// We obtain the maximum number of times that any of the data of the input vector gets repeated.
+					if (counterOfInputVector[indexBeingCounted] > maxRepeatitions) {
+						maxRepeatitions = counterOfInputVector[indexBeingCounted];
+					}
+				} else { // If the current index being counted did not matched the current row being inspected, then change the current index being counted to the one being indicated in the current row.
+					indexBeingCounted = currentRow;
+				}
+			}
+			
+			// We obtain the mode.
+			for (int currentRow=0; currentRow < n; currentRow++) {
+				if (counterOfInputVector[currentRow] == maxRepeatitions) { // If current value of the input vector has the maximum number of repetitions, then add it into the mode result.				
+					Mo[currentColumn + currentMo_n*m] = rowsOfCurrentColumn[currentRow]; // We store the mode in the pointer variable "Mo"
+					currentMo_n++; // We increase this index to save a new value detected to be mode if available.
+					Mo_n[currentColumn] = Mo_n[currentColumn] + 1; // We also store the number of rows that the current column will have in the pointer variable "Mo_n".
+				}
+			}
+		}
+		
+		// Free the Heap memory used for the currently allocated variables.
+		free(rowsOfCurrentColumn);
+		free(counterOfInputVector);
+	}
+}
+

@@ -162,9 +162,21 @@ void getCsvFileData(struct csvManager *csv) {
 *					   data of the matrix that wants to be
 *					   written into the .csv file.
 *
-* @param int n - This argument will represent the total number
-*				 of rows that the "data" variable argument will
-*				 have.
+* @param int *n - This argument pointer variable will represent
+*				 the total number of rows that the "data"
+*				 variable argument will have for each column.
+*
+* @param char is_nArray = This argument variable will work as a
+*						  flag to indicate if the argument
+*						  variable "n" is an array or not.
+*						  Moreover, the possible values for this
+*						  argument variable are:
+*						  1) (int) 1 = The argument variable "n"
+*									   is an array with a size
+*									   equal to the argument
+*									   variable "m".
+*						  2) (int) 0 = The argument variable "n"
+*									   is not an array.
 *
 * @param int m - This argument will represent the total number
 *				 of columns that the "data" variable argument
@@ -184,39 +196,92 @@ void getCsvFileData(struct csvManager *csv) {
 * 
 * @author Miranda Meza Cesar
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: OCTOBER 17, 2021
+* LAST UPDATE: OCTOBER 18, 2021
 */
-void createCsvFile(char *filename, char *header, double *data, int n, int m, char isInsertId) {
+void createCsvFile(char *filename, char *header, double *data, int *n, char is_nArray, int m, char isInsertId) {
 	// Create the requested .csv file and write the specified headers in it.
 	printf("Creating %s file ...",filename);
 	FILE *fp;
 	fp=fopen(filename,"w+");
 	
-	// Write the requested data into the .csv file.
-	if (isInsertId == 1) { // If the flag "isInsertId"=1, then automatically add an "id" value to each row, along with the requested data, into the .csv file.
-		// Write the specified headers into the .csv file created.
-		char modifiedFilename[strlen(header) + 3]; // Variable used to store the new headers to be inserted
-		modifiedFilename[0] = '\0'; // Innitialize this char variable with a null value.
-		strcat(modifiedFilename, "id,"); // We define the requested id header at the beginning.
-		strcat(modifiedFilename, header); // We subsequently add all the other headers that were requested by the implementer.
-		fprintf(fp, modifiedFilename); // Insert the headers into the .csv file created.
-		
-		// Write the requested data into the .csv file created.
-		for(int currentRow=0; currentRow<n; currentRow++){
-		    fprintf(fp,"\n%d", (currentRow+1)); // write the Id value of the current row,
-		    for(int currentColumn=0; currentColumn<m; currentColumn++) {
-				fprintf(fp,",%f ", data[currentColumn + currentRow * m]);
+	// if the flag argument variable "is_nArray" is set, then write the requested data considering that the argument variable "n" is an array
+	if (is_nArray == 1) {
+		// Determine the maximum number of rows contained from among all the available columns of data.
+		int max_n = n[0];
+		for(int currentColumn=1; currentColumn<m; currentColumn++) {
+			if (n[currentColumn] > max_n) {
+				max_n = n[currentColumn];
 			}
 		}
-	} else { // If the flag "isInsertId"!=1, then add the requested data into the .csv file with not "id" values.
-		// Write the specified headers into the .csv file created.
-		fprintf(fp, header);
 		
-		// Write the requested data into the .csv file created.
-		for(int currentRow=0; currentRow<n; currentRow++){
-		    fprintf(fp,"\n%f", data[currentRow * m]); // write the first column value of the current row.
-		    for(int currentColumn=1; currentColumn<m; currentColumn++) {
-				fprintf(fp,",%f ", data[currentColumn + currentRow * m]);
+		// Write the requested data into the .csv file.
+		if (isInsertId == 1) { // If the flag "isInsertId"=1, then automatically add an "id" value to each row, along with the requested data, into the .csv file.
+			// Write the specified headers into the .csv file created.
+			char modifiedFilename[strlen(header) + 3]; // Variable used to store the new headers to be inserted
+			modifiedFilename[0] = '\0'; // Innitialize this char variable with a null value.
+			strcat(modifiedFilename, "id,"); // We define the requested id header at the beginning.
+			strcat(modifiedFilename, header); // We subsequently add all the other headers that were requested by the implementer.
+			fprintf(fp, modifiedFilename); // Insert the headers into the .csv file created.
+			
+			// Write the requested data into the .csv file created.
+			for(int currentRow=0; currentRow<max_n; currentRow++){
+			    fprintf(fp, "\n%d", (currentRow+1)); // write the Id value of the current row,
+			    for(int currentColumn=0; currentColumn<m; currentColumn++) {
+			    	if (currentRow < n[currentColumn]) {
+			    		fprintf(fp, ",%f", data[currentColumn + currentRow * m]);
+					} else {
+						fprintf(fp, "%s", ",");
+					}
+				}
+			}
+		} else { // If the flag "isInsertId"!=1, then add the requested data into the .csv file with not "id" values.
+			// Write the specified headers into the .csv file created.
+			fprintf(fp, header);
+			
+			// Write the requested data into the .csv file created.
+			for(int currentRow=0; currentRow<max_n; currentRow++){
+			    // Indicate the begining of writing in a new row in the .csv file.
+			    if (currentRow < n[0]) {
+		    		fprintf(fp, "\n%f", data[currentRow * m]);
+				} else {
+					fprintf(fp, "%s", "\n");
+				}
+			    for(int currentColumn=1; currentColumn<m; currentColumn++) {
+					if (currentRow < n[currentColumn]) {
+			    		fprintf(fp, ",%f", data[currentColumn + currentRow * m]);
+					} else {
+						fprintf(fp, "%s", ",");
+					}
+				}
+			}
+		}
+	} else { // if the flag argument variable "is_nArray" is not set, then write the requested data considering that the argument variable "n" is not an array
+		// Write the requested data into the .csv file.
+		if (isInsertId == 1) { // If the flag "isInsertId"=1, then automatically add an "id" value to each row, along with the requested data, into the .csv file.
+			// Write the specified headers into the .csv file created.
+			char modifiedFilename[strlen(header) + 3]; // Variable used to store the new headers to be inserted
+			modifiedFilename[0] = '\0'; // Innitialize this char variable with a null value.
+			strcat(modifiedFilename, "id,"); // We define the requested id header at the beginning.
+			strcat(modifiedFilename, header); // We subsequently add all the other headers that were requested by the implementer.
+			fprintf(fp, modifiedFilename); // Insert the headers into the .csv file created.
+			
+			// Write the requested data into the .csv file created.
+			for(int currentRow=0; currentRow<(*n); currentRow++){
+			    fprintf(fp, "\n%d", (currentRow+1)); // write the Id value of the current row,
+			    for(int currentColumn=0; currentColumn<m; currentColumn++) {
+					fprintf(fp, ",%f", data[currentColumn + currentRow * m]);
+				}
+			}
+		} else { // If the flag "isInsertId"!=1, then add the requested data into the .csv file with not "id" values.
+			// Write the specified headers into the .csv file created.
+			fprintf(fp, header);
+			
+			// Write the requested data into the .csv file created.
+			for(int currentRow=0; currentRow<(*n); currentRow++){
+			    fprintf(fp, "\n%f", data[currentRow * m]); // write the first column value of the current row.
+			    for(int currentColumn=1; currentColumn<m; currentColumn++) {
+					fprintf(fp, ",%f", data[currentColumn + currentRow * m]);
+				}
 			}
 		}
 	}

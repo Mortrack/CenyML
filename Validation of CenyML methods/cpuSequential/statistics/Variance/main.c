@@ -55,7 +55,7 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: OCTOBER 17, 2021
+* CREATION DATE: OCTOBER 18, 2021
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
@@ -135,8 +135,10 @@ int main(int argc, char **argv) {
 	sprintf(currentColumnInString, "%d", (desired_m-3));
 	strcat(csvHeaders, currentColumnInString);
 	// Create a new .csv file and save the results obtained in it.
+	char is_nArray = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	createCsvFile(nameOfTheCsvFile, csvHeaders, squaredSigma, 1, desired_m, isInsertId); // We create the desired .csv file.
+	int csvFile_n = 1; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
+	createCsvFile(nameOfTheCsvFile, csvHeaders, squaredSigma, &csvFile_n, is_nArray, desired_m, isInsertId); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");

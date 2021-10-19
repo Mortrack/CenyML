@@ -10,7 +10,7 @@ worst one is O(n^2). Due to this fact, a fair performance evaluation between the
 NumPy method would be to evaluate for every possible permutation case of the input matrix. Now, the thing
 is that this can be relatively quickly done in C under the CenyMl method, but on Python we would have to
 wait for a crazy amount of time (several hours or days) just to get one sample result due to the difference
-it processing time between C and Python when obtaining the permutations for each case of the input matrix.
+of processing time between C and Python when obtaining the permutations for each case of the input matrix.
 If there is a way to obtain comparable or faster processing times for the permutation process in Python, at
 least i was not able to obtain them neither writing RAW Python code or the NumPy library.
 

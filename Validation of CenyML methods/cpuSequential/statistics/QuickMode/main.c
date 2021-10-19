@@ -1,11 +1,10 @@
 /*
  * This program will read the .csv file
-* "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"
+* "polynomialClassificationSystem_10systems_100samplesPerAxisPerSys.csv"
 * to then exctact all its data and save it into the matrix "X". Subsequently,
-* the standard deviation of each row will be calculated and stored in "sigma".
-* Finally, a new .csv file "CenyML_getStandardDeviation_Results.csv" will be
-* created and in it, the standard deviation for each column will be saved for
-* further comparations and validations of the standard deviation method.
+* a new .csv file "CenyML_getQuickMode_Results.csv" will be created and in
+* it, the quick mode values for each column will be saved for further
+* comparations and validations of the "quick mode" method.
  */
 
  // ------------------------------------------------- //
@@ -28,11 +27,9 @@
 // --------------------------------------------------- //
 
 
-
 // ----------------------------------------------- //
 // ----- DEFINE THE GENERAL FUNCTIONS TO USE ----- //
 // ----------------------------------------------- //
-
 
 
 // ----------------------------------------- //
@@ -40,9 +37,9 @@
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then calculate the standard deviation of each column. Finally, the results
-* will be saved in a new .csv file for further comparation and validation
-* purposes.
+* then calculate the quick mode of all the data of that .csv file with respect
+* to its columns. Finally, the results will be saved in a new .csv file for
+* further comparation and validation purposes.
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -56,20 +53,19 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: OCTOBER 18, 2021
+* CREATION DATE: OCTOBER 19, 2021
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../Databases/regressionDBs/multiplePolynomialEquationSystem/multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile[] = "CenyML_getStandardDeviation_Results.csv"; // Name the .csv file that will store the results.
+	char csv1Directory[] = "../../../../Databases/classificationDBs/polynomialClassificationSystem/polynomialClassificationSystem_10systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
+	char nameOfTheCsvFile[] = "CenyML_getQuickMode_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
 	// NOTE: "desired_m" can be any value as long as (desired_m*n) <= 2'147'483'647, because of the long int max value (the compiler seems to activate the long data type when needed when using integer variables only).
-	// desired_m <= 2145 to comply with the note considering that n=1'000'000.
-	int desired_m = 100; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
-	int degreesOfFreedom = 1; // Desired degrees of freedom to be applied in the standard deviation to be calculated. A "0" would represent a degrees of freedom of "n", a "1" would represent a "n-1", ..., a "degrees" would represent a "n-degrees".
+	// desired_m <= 4'294 to comply with the note considering that n=100'000 and m=5.
+	int desired_m = 5; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
 	printf("Innitializing data extraction from .csv file containing the reference input data ...\n");
@@ -88,7 +84,7 @@ int main(int argc, char **argv) {
 	}
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
 	csv1.allData = (double *) malloc(n*m*sizeof(double));
-	// Allocate the memory required for the struct variable "X", which will contain the input data of the system whose standard deviation will be obtained.
+	// Allocate the memory required for the struct variable "X", which will contain the input data of the system to be evaluated.
 	double *X = (double *) malloc(n*desired_m*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
@@ -110,17 +106,18 @@ int main(int argc, char **argv) {
 	printf("Input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Innitializing CenyML standard deviation method calculation ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the standard deviation of the input data (X).
-	// Allocate the memory required for the variable "sigma" (which will contain the standard deviation of the input data "X") and innitialize it with zeros.
-	double *sigma = (double *) calloc(desired_m, sizeof(double));
-	// We calculate the standard deviation for each of the columns available in the matrix "X" and the result is stored in the memory location of the pointer "sigma".
-	getStandardDeviation(X, n, desired_m, degreesOfFreedom, sigma);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the standard deviation of the input data (X).
-	printf("CenyML standard deviation method elapsed %f seconds.\n\n", elapsedTime);
+	printf("Innitializing CenyML Quick Mode method ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the current quick mode of the input data (X).
+	// We allocate the memory of the following variables that will be required for the "quick mode" method.
+	double *Mo = (double *) malloc(n*desired_m*sizeof(double)); // This variable will be used to store the data in which the "quick mode" method will be applied.
+	int *Mo_n = (int *) calloc(desired_m, sizeof(int)); // This variable will be used to store the data in which the rows of each column of "Mo" will be specified.
+	// We get the "quick mode" of the values contained in each of the columns available in the matrix "X".
+	getQuickMode("quicksort", n, desired_m, X, Mo_n, Mo); // The result is stored in the memory location of the pointer "Mo".
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate all the current quick mode of the input data (X).
+	printf("CenyML Quick Mode method elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results that were obtained.
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results of the quick mode calculated.
 	// Define the desired header names for the new .csv file to be create.
     char csvHeaders[strlen("id,system_id,dependent_variable,") + strlen("independent_variable_XXXXXXX")*(desired_m-3)]; // Variable where the following code will store the .csv headers.
     csvHeaders[0] = '\0'; // Innitialize this char variable with a null value.
@@ -136,10 +133,9 @@ int main(int argc, char **argv) {
 	sprintf(currentColumnInString, "%d", (desired_m-3));
 	strcat(csvHeaders, currentColumnInString);
 	// Create a new .csv file and save the results obtained in it.
-	char is_nArray = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
+	char is_nArray = 1; // Indicate through this flag variable that the variable that indicates the samples (Mo_n) is an array because it has different samples per columns.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	int csvFile_n = 1; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
-	createCsvFile(nameOfTheCsvFile, csvHeaders, sigma, &csvFile_n, is_nArray, desired_m, isInsertId); // We create the desired .csv file.
+	createCsvFile(nameOfTheCsvFile, csvHeaders, Mo, Mo_n, is_nArray, desired_m, isInsertId); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
@@ -149,7 +145,8 @@ int main(int argc, char **argv) {
 	free(csv1.rowsAndColumnsDimensions);
 	free(csv1.allData);
 	free(X);
-	free(sigma);
+	free(Mo);
+	free(Mo_n);
 	return (0); // end of program.
 }
 
