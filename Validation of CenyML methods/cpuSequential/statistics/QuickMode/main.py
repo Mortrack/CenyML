@@ -38,7 +38,7 @@ print("")
 # Read the .csv file containing the reference data.
 print("Innitializing data extraction from .csv file containing the reference input data ...")
 startingTime = time.time()
-dataset_pCS10S100SPAPS = pd.read_csv('../../../../Databases/classificationDBs/polynomialClassificationSystem/polynomialClassificationSystem_10systems_100samplesPerAxisPerSys.csv')
+dataset_pCS10S100SPAPS = pd.read_csv('../../../../Databases/classificationDBs/randPolynomialClassificationSystem/polynomialClassificationSystem_10systems_100samplesPerAxisPerSys.csv')
 elapsedTime = time.time() - startingTime
 n = len(dataset_pCS10S100SPAPS)
 m = len(dataset_pCS10S100SPAPS.iloc[0])

@@ -30,7 +30,7 @@ for currentSystem in range(1, totalSystemsEvaluated+1):
     for currentSample1 in range(1, samplesGenPerAxisPerSystem+1):
         x1 = (sampleTime * currentSample1)
         for currentSample2 in range(1, samplesGenPerAxisPerSystem+1):
-            currentRandomValue1 = (random.random()*2-1)*10 # We generate random values from -10 up to +10
+            currentRandomValue1 = 0 # We will not generate a random bias value.
             x2 = (sampleTime * currentSample2)
             currentIndVarData1 = (82-(1.6)*x1+(0.016)*(x1**2)-(1.28)*x2+(0.0128)*(x2**2)) + currentRandomValue1 # This is the equation that will govern the generated systems.
             f.write(format(currentId) + ";" + format(currentSystem) + ";" + format(currentIndVarData1) + ";" + format(x1) + ";" + format(x2) + "\n") # Write the new line of data into the file.

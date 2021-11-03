@@ -26,7 +26,7 @@ x1 = 0 # This variable will be used to save in memory the current value of the i
 for currentSystem in range(1, totalSystemsEvaluated+1):
     # For-loop for each sample to generate for each of the systems to generate
     for currentSampleOfCurrentSystem in range(1, samplesGeneratedPerSystem+1):
-        currentRandomValue1 = (random.random()*2-1)*10 # We generate random values from -10 up to +10
+        currentRandomValue1 = 0 # We will not generate a random bias value.
         x1 = (sampleTime * currentSampleOfCurrentSystem)
         currentIndVarData1 = (89 - 5.41*x1 + 0.19*x1**2 - 0.0028*x1**3 + +(1.4e-5)*x1**4) + currentRandomValue1 # This is the equation that will govern the generated systems.
         f.write(format(currentId) + ";" + format(currentSystem) + ";" + format(currentIndVarData1) + ";" + format(sampleTime * currentSampleOfCurrentSystem) + "\n") # Write the new line of data into the file.

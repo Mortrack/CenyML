@@ -27,7 +27,7 @@ x1 = 0 # This variable will be used to save in memory the current value of the i
 for currentSystem in range(1, totalSystemsEvaluated+1):
     # For-loop for each sample to generate for each of the systems to generate
     for currentSampleOfCurrentSystem in range(1, samplesGeneratedPerSystem+1):
-        currentRandomValue1 = (random.random()*2-1)*0.1 # We generate random values from -0.1 up to +0.1
+        currentRandomValue1 = 0 # We will not generate a random bias value.
         x1 = (sampleTime * currentSampleOfCurrentSystem)
         currentIndVarData1 = (math.exp(-((x1-50)**2)/450)) + currentRandomValue1 # This is the equation that will govern the generated systems.
         if (currentIndVarData1 > 1):

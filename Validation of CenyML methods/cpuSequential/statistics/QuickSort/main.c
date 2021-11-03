@@ -40,11 +40,10 @@
 * to print all permutations of a given string | GeeksforGeeks"
 * (URL = https://www.youtube.com/watch?v=AfxHGNRtFac). Nonetheless,
 * as coded in this file, this function is used to obtain all the
-* possible permutations with respect to the data arragned in each of
-* the rows of the argument pointer variable "inputVector", which is
-* used as an input matrix. Also, the result obtained will be stored
-* in that variable.
-* 
+* possible permutations of the "m" elements contained in the first
+* row of the pointer argument variable "inputMatrix". Finally, the
+* results obtained will be stored in "inputMatrix" from its second
+* row up to the !m-th ("!m" = factorial of m) row.
 *
 * @param int l - This argument will be used to determine one of
 *				 the two values that will have to be swaped for
@@ -64,9 +63,13 @@
 *
 * @param int *currentRow - This argument will contain the pointer to
 *						a memory allocated variable that will be used
-*						to know in which row, of the argumento pointer
+*						to know in which row, of the argument pointer
 *						variable "inputMatrix", to store the result of
-*						the currently identified permutation. IT IS
+*						the currently identified permutation. This is
+*						necessary because this function will be solved
+*						recursively and each time this function is
+*						is called, a different permutation possition
+*						will be obtained. NOTE THAT IT IS
 *						INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
 *						BEFORE CALLING THIS FUNCTION AND INNITIALIZED
 *						WITH A VALUE OF 0.
@@ -74,19 +77,34 @@
 * @param double *inputMatrix - This argument will contain the
 *							   pointer to a memory allocated
 *							   input matrix in which all the
-*							   identified permutations will be
-*							   stored. Note that the permutations,
-*							   are made and stored with respect
-*							   to the rows.
+*							   identified permutations with
+*							   respect to the "m" elements of its first
+*							   row, will be stored. These resulting
+*							   permutation positions will be stored
+*							   from the 2nd row up to the !m-th row
+*							   ("!m" = factorial of m). NOTE THAT THIS
+*							   VARIABLE MUST BE PREVIOUSLY ALLOCATED.
+*							   FURTHERMORE, THE DATA TO BE PERMUTATED
+*							   IS THE ONE THAT WAS STORED IN EACH
+*							   COLUMN OF THE FIRST ROW OF THIS
+*							   VARIABLE BEFORE CALLING THIS FUNCTION.
+*							   FINNALLY, REMEMBER THAT THE TOTAL NUMBER
+*							   OF PERMUTATIONS TO BE STORED WILL BE
+*							   EQUAL TO "!m" AND THEREFORE, THIS
+*							   VARIABLE WILL REQUIRE TO HAVE "m"
+*							   COLUMNS AND "!m" ROWS ALLOCATED IN IT.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
-*       "inputMatrix".
+*       "inputMatrix". THERE, YOU WILL FIND ALL THE POSSIBLE
+*		COMBINATION PERMUTATIONS WITH RESPECT TO THE DATA STORED IN THE
+*		FIRST ROW OF "inputMatrix", EACH ONE IN A SEPERATED ROW.
+*
 * 
 * @return void
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 17, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 02, 2021
 */
 void getPermutations(int l, int r, int m, int *currentRow, int *inputMatrix) {
     int i;
@@ -97,7 +115,7 @@ void getPermutations(int l, int r, int m, int *currentRow, int *inputMatrix) {
         	inputMatrix[currentColumn + (*currentRow)*m] = inputMatrix[currentColumn];
 		}
 		
-		// Indicate that to store the next permutation in the next row of the pointer variable "inputMatrix".
+		// Indicate to the next recursive function to store the next permutation in the next row of the pointer variable "inputMatrix".
 		*currentRow = *currentRow + 1;
     }
     else {
@@ -142,11 +160,11 @@ void getPermutations(int l, int r, int m, int *currentRow, int *inputMatrix) {
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 07, 2021
-* LAST UPDATE: OCTOBER 18, 2021
+* LAST UPDATE: NOVEMBER 02, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../Databases/regressionDBs/gaussianEquationSystem/gaussianEquationSystem_1systems_10samplesPerSys.csv"; // Directory of the reference .csv file
+	char csv1Directory[] = "../../../../Databases/regressionDBs/randGaussianEquationSystem/gaussianEquationSystem_1systems_10samplesPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile[] = "CenyML_getQuickSort_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
@@ -196,22 +214,22 @@ int main(int argc, char **argv) {
 	
 	// ------------------------- DATA MODELING ----------------------- //
 	printf("Innitializing CenyML Quick Sort method ...\n");
-	// Obtain the number of possible permutations.
+	// Obtain the number of possible permutations (which will be the factorial of "n").
 	int factorialValue = n;
 	for (int i=1; i<n; i++) {
 		factorialValue = factorialValue*i;
 	}
-	// Innitialize data of pointer variable to be permutated.
+	// Innitialize the data of the first row of the pointer variable to be permutated with the values of all the possible indexes that the matrix "X" can have (which is "0" up to "n").
 	int *indexIndicator = (int *) malloc(factorialValue*n*sizeof(int));
 	for (int currentColumn=0; currentColumn<n; currentColumn++) {
 		indexIndicator[currentColumn] = currentColumn;
 	}
-	// Get all possible index permutations.
+	// Get all possible index permutations that were stored in "indexIndicator".
 	int *currentPermutation = (int *) calloc(1, sizeof(int));
 	getPermutations(0, (n-1), n, currentPermutation, indexIndicator);
 	// Excecute the "quick sort" method over each permutation identified.
 	elapsedTime = 0;
-	double *newX = (double *) malloc(nBytes); // This variable will be used to store the data in which the "quick sort" method will be applied.
+	double *newX = (double *) malloc(n*desired_m*sizeof(double)); // This variable will be used to store the data in which the "quick sort" method will be applied.
 	for (int currentPermutation=0; currentPermutation<factorialValue; currentPermutation++) {
 		// Fill "newX" with the data of X but arranged with the current permutation indicated in "indexIndicator".
 		for (int currentRow=0; currentRow<n; currentRow++) {
