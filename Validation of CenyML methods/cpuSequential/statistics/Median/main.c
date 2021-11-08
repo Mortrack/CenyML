@@ -13,9 +13,9 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML Library/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
-#include "../../../../CenyML Library/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
-#include "../../../../CenyML Library/CenyML_Library/cpuSequential/statistics/CenyMLstatistics.h" // library to use the statistics methods from CenyML.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
+#include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/statistics/CenyMLstatistics.h" // library to use the statistics methods of CenyML.
 
 
 // ---------------------------------------------- //
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
 	}
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
 	csv1.allData = (double *) malloc(n*m*sizeof(double));
-	// Allocate the memory required for the struct variable "X", which will contain the input data of the system whose mean will be obtained.
+	// Allocate the memory required for the variable "X", which will contain the input data of the system whose mean will be obtained.
 	double *X = (double *) malloc(n*desired_m*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
