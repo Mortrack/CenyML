@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: Cesar Miranda Meza
 # COMPLETITION DATE: October 18, 2021.
-# LAST UPDATE: N/A
+# LAST UPDATE: November 08, 2021
 #
 # This code is used for obtain the mode of each of the columns contained in the
 # database "polynomialClassificationSystem_10systems_100samplesPerAxisPerSys",
@@ -38,7 +38,7 @@ print("")
 # Read the .csv file containing the reference data.
 print("Innitializing data extraction from .csv file containing the reference input data ...")
 startingTime = time.time()
-dataset_pCS10S100SPAPS = pd.read_csv('../../../../Databases/classificationDBs/randPolynomialClassificationSystem/polynomialClassificationSystem_10systems_100samplesPerAxisPerSys.csv')
+dataset_pCS10S100SPAPS = pd.read_csv('../../../../Databases/classificationDBs/randPolynomialClassificationSystem/10systems_100samplesPerAxisPerSys.csv')
 elapsedTime = time.time() - startingTime
 n = len(dataset_pCS10S100SPAPS)
 m = len(dataset_pCS10S100SPAPS.iloc[0])

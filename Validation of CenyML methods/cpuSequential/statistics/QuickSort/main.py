@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: Cesar Miranda Meza
 # COMPLETITION DATE: October 07, 2021.
-# LAST UPDATE: October 17, 2021
+# LAST UPDATE: November 08, 2021
 #
 # This code is used for obtain the sort of each of the columns contained in the
 # database "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys",
@@ -36,7 +36,7 @@ print("")
 # Read the .csv file containing the reference data.
 print("Innitializing data extraction from .csv file containing the reference input data ...")
 startingTime = time.time()
-dataset_mPES100S100SPAPS = pd.read_csv('../../../../Databases/regressionDBs/randGaussianEquationSystem/gaussianEquationSystem_1systems_10samplesPerSys.csv')
+dataset_mPES100S100SPAPS = pd.read_csv('../../../../Databases/regressionDBs/randGaussianEquationSystem/1systems_10samplesPerSys.csv')
 elapsedTime = time.time() - startingTime
 n = len(dataset_mPES100S100SPAPS)
 m = len(dataset_mPES100S100SPAPS.iloc[0])

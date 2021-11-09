@@ -62,11 +62,11 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 07, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 08, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../Databases/regressionDBs/randMultiplePolynomialEquationSystem/multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
+	char csv1Directory[] = "../../../../Databases/regressionDBs/randMultiplePolynomialEquationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile[] = "CenyML_getMinMaxNormalization_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
@@ -193,6 +193,7 @@ int main(int argc, char **argv) {
 	free(csv1.allData);
 	free(X);
 	free(x_dot);
+	free(minMax);
 	free(reverse_x_dot);
 	return (0); // end of program.
 }
