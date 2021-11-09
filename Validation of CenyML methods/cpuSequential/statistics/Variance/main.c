@@ -1,6 +1,5 @@
 /*
- * This program will read the .csv file
-* "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"
+ * This program will read the .csv file "100systems_100samplesPerAxisPerSys.csv"
 * to then exctact all its data and save it into the matrix "X". Subsequently,
 * the variance of each row will be calculated and stored in "squaredSigma".
 * Finally, a new .csv file "CenyML_getVariance_Results.csv" will be created

@@ -19,9 +19,14 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 void getMinMaxNormalization(double *, int, int, double *, double *);
 void getReverseMinMaxNormalization(double *, int, int, double *, double *);
+void getL2Normalization(double *, int, int, double *, double *);
+void getReverseL2Normalization(double *, int, int, double *, double *);
+void getZscoreNormalization(double *, int, int, int, double *, double *);
+void getReverseZscoreNormalization(double *, int, int, double *, double *);
 
 #endif
 

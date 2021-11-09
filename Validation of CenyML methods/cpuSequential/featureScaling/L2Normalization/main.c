@@ -1,11 +1,14 @@
 /*
  * This program will read the .csv file "100systems_100samplesPerAxisPerSys.csv"
 * to then exctact all its data and save it into the matrix "X". Subsequently,
-* the standard deviation of each row will be calculated and stored in "sigma".
-* Finally, a new .csv file "CenyML_getStandardDeviation_Results.csv" will be
-* created and in it, the standard deviation for each column will be saved for
-* further comparations and validations of the standard deviation method.
- */
+* the feature scaling method known as the L2 normalization, will be applied to
+* the matrix "X". Then, a reverse method of the previously applied L2
+* normalization method will be made and validated with respect to the values
+* contained in the matrix "X". Finally,  a new .csv file
+* "CenyML_getMinMaxNormalization_Results.csv" will be created and in it, the
+* resulting values of applying the L2 normalization method will be saved for
+* further comparations and validations purposes.
+*/
 
  // ------------------------------------------------- //
  // ----- DEFINE THE LIBRARIES THAT WE WILL USE ----- //
@@ -14,7 +17,7 @@
 #include <stdlib.h>
 #include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
-#include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/statistics/CenyMLstatistics.h" // library to use the statistics methods of CenyML.
+#include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/featureScaling/CenyMLfeatureScaling.h" // library to use the feature scaling methods of CenyML.
 
 
 // ---------------------------------------------- //
@@ -39,9 +42,11 @@
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then calculate the standard deviation of each column. Finally, the results
-* will be saved in a new .csv file for further comparation and validation
-* purposes.
+* then calculate the L2 normalization of each value. Then, a reverse of the L2
+* normalization method will be applied and validated here with respect to
+* the original input data. Finally, the results of the applied L2 normalization
+* method will be saved in a new .csv file for further comparation and validation
+* purposes. 
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -55,20 +60,19 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: OCTOBER 18, 2021
-* LAST UPDATE: NOVEMBER 08, 2021
+* CREATION DATE: NOVEMBER 08, 2021
+* LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "../../../../Databases/regressionDBs/randMultiplePolynomialEquationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile[] = "CenyML_getStandardDeviation_Results.csv"; // Name the .csv file that will store the results.
+	char nameOfTheCsvFile[] = "CenyML_getL2Normalization_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
 	// NOTE: "desired_m" can be any value as long as (desired_m*n) <= 2'147'483'647, because of the long int max value (the compiler seems to activate the long data type when needed when using integer variables only).
 	// desired_m <= 2145 to comply with the note considering that n=1'000'000.
-	int desired_m = 100; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
-	int degreesOfFreedom = 1; // Desired degrees of freedom to be applied in the standard deviation to be calculated. A "0" would represent a degrees of freedom of "n", a "1" would represent a "n-1", ..., a "degrees" would represent a "n-degrees".
+	int desired_m = 5; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
 	printf("Innitializing data extraction from .csv file containing the reference input data ...\n");
@@ -87,7 +91,7 @@ int main(int argc, char **argv) {
 	}
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
 	csv1.allData = (double *) malloc(n*m*sizeof(double));
-	// Allocate the memory required for the variable "X", which will contain the input data of the system whose standard deviation will be obtained.
+	// Allocate the memory required for the variable "X", which will contain the input data of the system on which the feature scaling method will be applied.
 	double *X = (double *) malloc(n*desired_m*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
@@ -109,16 +113,56 @@ int main(int argc, char **argv) {
 	printf("Input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Innitializing CenyML standard deviation method calculation ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the standard deviation of the input data (X).
-	// Allocate the memory required for the variable "sigma" (which will contain the standard deviation of the input data "X") and innitialize it with zeros.
-	double *sigma = (double *) calloc(desired_m, sizeof(double));
-	// We calculate the standard deviation for each of the columns available in the matrix "X" and the result is stored in the memory location of the pointer "sigma".
-	getStandardDeviation(X, n, desired_m, degreesOfFreedom, sigma);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the standard deviation of the input data (X).
-	printf("CenyML standard deviation method elapsed %f seconds.\n\n", elapsedTime);
+	// We apply the L2 normalization method.
+	printf("Innitializing CenyML L2 normalization method ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the L2 normalization method applied to the input data (X).
+	// Allocate the memory required for the variable "x_dot" (which will contain the values of the input data "X" but with the L2 normalization method applied to it).
+	double *x_dot = (double *) malloc(n*desired_m*sizeof(double));
+	// We apply the L2 normalization method for each of the values contained in the matrix "X" and the result is stored in the memory location of the pointer "x_dot".
+	// At the same time, the variable "minMax" will store the parameters identified for the L2 normalization method. There, the first "m" values will stand for the minimum values and the last "m" values for the maximum values of each column of the matrix "X".
+	double *magnitude = (double *) malloc(desired_m*sizeof(double));
+	getL2Normalization(X, n, desired_m, magnitude, x_dot);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the L2 normalization applied to the input data (X).
+	printf("CenyML L2 normalization method elapsed %f seconds.\n\n", elapsedTime);
+	
+	// We apply the reverse of the L2 normalization method.
+	printf("Innitializing CenyML reverse L2 normalization method ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the reverse of the L2 normalization method that was previously applied.
+	// Allocate the memory required for the variable "reverse_x_dot" (which will contain the values of the reverse L2 normalization method applied to "x_dot").
+	double *reverse_x_dot = (double *) malloc(n*desired_m*sizeof(double));
+	// We apply the reverse L2 normalization method for each of the values contained in "x_dot" and the result is stored in the memory location of the pointer "reverse_x_dot".
+	getReverseL2Normalization(x_dot, n, desired_m, magnitude, reverse_x_dot);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the reverse of the L2 normalization method.
+	printf("CenyML reverse L2 normalization method elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
+	printf("Innitializing validation of the CenyML reverse L2 normalization method ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the reverse of the L2 normalization method.
+	// We validate the reverse of the L2 normalization method.
+	double differentiation; // Variable used to store the error obtained for a certain value.
+	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
+	char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
+	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
+	for (int currentRow=0; currentRow<n; currentRow++) {
+		for (int currentColumn=0; currentColumn<desired_m; currentColumn++) {
+			differentiation = abs(reverse_x_dot[currentColumn + currentRow*desired_m] - X[currentColumn + currentRow*desired_m]);
+			if (differentiation > epsilon) { // if the error surpassed the value permitted, then terminate validation process and emit message to indicate a non match.
+				isMatch = 0;
+				printf("Validation process DID NOT MATCH!\n");
+				break;
+			}
+		}
+		if (isMatch == 0) {
+			break;
+		}
+	}
+	if (isMatch == 1) { // If the flag "isMatch" indicates a true/high value, then emit message to indicate that the validation process matched.
+		printf("Validation process MATCHED!\n");
+	}
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to validate the reverse of the L2 normalization method.
+	printf("The validation of the CenyML reverse L2 normalization method elapsed %f seconds.\n\n", elapsedTime);
+	
+	// We save the results of the applied L2 normalization method.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results that were obtained.
 	// Define the desired header names for the new .csv file to be create.
     char csvHeaders[strlen("id,system_id,dependent_variable,") + strlen("independent_variable_XXXXXXX")*(desired_m-3)]; // Variable where the following code will store the .csv headers.
@@ -135,10 +179,9 @@ int main(int argc, char **argv) {
 	sprintf(currentColumnInString, "%d", (desired_m-3));
 	strcat(csvHeaders, currentColumnInString);
 	// Create a new .csv file and save the results obtained in it.
-	char is_nArray = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
+	char is_nArray = 0; // Indicate through this flag variable that the variable that indicates the samples (n) is not an array because it has the same amount of samples per columns.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	int csvFile_n = 1; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
-	createCsvFile(nameOfTheCsvFile, csvHeaders, sigma, &csvFile_n, is_nArray, desired_m, isInsertId); // We create the desired .csv file.
+	createCsvFile(nameOfTheCsvFile, csvHeaders, x_dot, &n, is_nArray, desired_m, isInsertId); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
@@ -148,7 +191,9 @@ int main(int argc, char **argv) {
 	free(csv1.rowsAndColumnsDimensions);
 	free(csv1.allData);
 	free(X);
-	free(sigma);
+	free(x_dot);
+	free(magnitude);
+	free(reverse_x_dot);
 	return (0); // end of program.
 }
 

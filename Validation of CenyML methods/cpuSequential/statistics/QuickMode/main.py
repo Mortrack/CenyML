@@ -20,9 +20,9 @@
 # ----------------------------------- #
 # ----- Importing the Libraries ----- #
 # ----------------------------------- #
-import pandas as pd
-import numpy as np
-import statistics
+import pandas as pd  # version 1.3.3
+import numpy as np # version 1.21.2
+import statistics # version 1.0.3.5
 import time
 
 # ------------------------------ #

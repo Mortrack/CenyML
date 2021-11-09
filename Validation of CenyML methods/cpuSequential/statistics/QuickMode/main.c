@@ -1,6 +1,5 @@
 /*
- * This program will read the .csv file
-* "polynomialClassificationSystem_10systems_100samplesPerAxisPerSys.csv"
+ * This program will read the .csv file "10systems_100samplesPerAxisPerSys.csv"
 * to then exctact all its data and save it into the matrix "X". Subsequently,
 * a new .csv file "CenyML_getQuickMode_Results.csv" will be created and in
 * it, the quick mode values for each column will be saved for further

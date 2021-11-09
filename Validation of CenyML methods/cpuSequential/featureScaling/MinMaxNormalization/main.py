@@ -7,13 +7,12 @@
 #
 # This code is used to obtain the transformation produced by applying the min
 # max normalization method in the database
-# "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys",
-# which has 1'000'000 samples for for each of them (making a total of
-# 5'000'000). For this purpose, the well known scikit-learn library will be
-# used to calculate the min max normalization (https://bit.ly/3bSZoYA) and
-# then it will be compared with the results that were obtained with the CenyML
-# Library as a means of validating that the code created in that library for
-# the min max normalization method is correct.
+# "100systems_100samplesPerAxisPerSys", which has 1'000'000 samples for for
+# each of them (making a total of 5'000'000). For this purpose, the well known
+# scikit-learn library will be used to calculate the min max normalization
+# (https://bit.ly/3bSZoYA) and then it will be compared with the results that
+# were obtained with the CenyML Library as a means of validating that the code
+# created in that library for the min max normalization method is correct.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # Python version 3.9.7

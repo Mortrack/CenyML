@@ -1,6 +1,5 @@
 /*
- * This program will read the .csv file
-* "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"
+ * This program will read the .csv file "100systems_100samplesPerAxisPerSys.csv"
 * to then exctact all its data and save it into the matrix "X". Subsequently,
 * the sorted vales of eacy column and each possible permutation will be
 * calculated and only one of its results will be stored in "newX" (because all

@@ -1,6 +1,5 @@
 /*
- * This program will read the .csv file
-* "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"
+ * This program will read the .csv file "100systems_100samplesPerAxisPerSys.csv"
 * to then exctact all its data and save it into the matrix "X". Subsequently,
 * the feature scaling method known as the min max normalization, will be
 * applied to the matrix "X". Then, a reverse method of the previously applied
