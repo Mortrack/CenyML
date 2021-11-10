@@ -33,12 +33,12 @@
 *							   MEMORY SPACES.
 *
 * @param int n - This argument will represent the total number
-*				 of rows that the "inputMatrix" variable argument
-*				 will have.
+*				 of samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
 *
 * @param int m - This argument will represent the total number
-*				 of columns that the "inputMatrix" variable argument
-*				 will have.
+*				 of features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
 *
 * @param double *mean - This argument will contain the pointer to
 *						a memory allocated variable in which we
@@ -56,7 +56,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: NOVEMBER 08, 2021
+* LAST UPDATE: NOVEMBER 09, 2021
 */
 void getMean(double *inputMatrix, int n, int m, double *mean) {
 	// We obtain the mean for each of the columns of the input matrix.
@@ -89,12 +89,12 @@ void getMean(double *inputMatrix, int n, int m, double *mean) {
 *													 quicksort method.
 *
 * @param int n - This argument will represent the total number
-*				 of rows that the "inputMatrix" variable argument
-*				 will have.
+*				 of samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
 *
 * @param int m - This argument will represent the total number
-*				 of columns that the "inputMatrix" variable
-*				 argument will have.
+*				 of features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
 *
 * @param double *inputMatrix - This argument will contain the
 *							   pointer to a memory allocated input
@@ -112,7 +112,7 @@ void getMean(double *inputMatrix, int n, int m, double *mean) {
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 07, 2021
-* LAST UPDATE: NOVEMBER 08, 2021
+* LAST UPDATE: NOVEMBER 09, 2021
 */
 //TODO: Test the performance of the "quick sort" method when argumenting the entire matrix in "applyQuickSort()" instead of several vectors, to compare it with the current method.
 void getSort(char desiredSortMethod[], int n, int m, double *inputMatrix) {
@@ -243,12 +243,12 @@ static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double *inputVe
 *							   'DOUBLE' MEMORY SPACES.
 *
 * @param int n - This argument will represent the total number
-*				 of rows that the "inputMatrix" variable argument
-*				 will have.
+*				 of samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
 *
 * @param int m - This argument will represent the total number
-*				 of columns that the "inputMatrix" variable argument
-*				 will have.
+*				 of features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
 *
 * @param double *Q2 - This argument will contain the pointer to
 *					  a memory allocated variable in which we
@@ -265,7 +265,7 @@ static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double *inputVe
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 11, 2021
-* LAST UPDATE: NOVEMBER 08, 2021
+* LAST UPDATE: NOVEMBER 09, 2021
 */
 void getMedian(char desiredSortMethod[], double *inputMatrix, int n, int m, double *Q2) {
 	// If the implementer requested the "quick sort" method for the sorting process, then apply it through the following code.
@@ -328,12 +328,12 @@ void getMedian(char desiredSortMethod[], double *inputMatrix, int n, int m, doub
 *							   MEMORY SPACES.
 *
 * @param int n - This argument will represent the total number
-*				 of rows that the "inputMatrix" variable argument
-*				 will have.
+*				 of samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
 *
 * @param int m - This argument will represent the total number
-*				 of columns that the "inputMatrix" variable argument
-*				 will have.
+*				 of features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
 *
 * @param int degreesOfFreedom - This argument will represent the desired
 *								value for the degrees of freedom to be
@@ -355,7 +355,7 @@ void getMedian(char desiredSortMethod[], double *inputMatrix, int n, int m, doub
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 17, 2021
-* LAST UPDATE: NOVEMBER 08, 2021
+* LAST UPDATE: NOVEMBER 09, 2021
 */
 void getVariance(double *inputMatrix, int n, int m, int degreesOfFreedom, double *variance) {
 	// We declare and innitialize the variable "mean" with "0"s. The mean for each column will be stored in this variable.
@@ -408,12 +408,12 @@ void getVariance(double *inputMatrix, int n, int m, int degreesOfFreedom, double
 *							   'DOUBLE' MEMORY SPACES.
 *
 * @param int n - This argument will represent the total number
-*				 of rows that the "inputMatrix" variable argument
-*				 will have.
+*				 of samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
 *
 * @param int m - This argument will represent the total number
-*				 of columns that the "inputMatrix" variable argument
-*				 will have.
+*				 of features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
 *
 * @param int degreesOfFreedom - This argument will represent the desired
 *								value for the degrees of freedom to be
@@ -439,7 +439,7 @@ void getVariance(double *inputMatrix, int n, int m, int degreesOfFreedom, double
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 18, 2021
-* LAST UPDATE: NOVEMBER 08, 2021
+* LAST UPDATE: NOVEMBER 09, 2021
 */
 void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedom, double *standardDeviation) {
 	// We declare and innitialize the variable "mean" with "0"s. The mean for each column will be stored in this variable.
@@ -491,12 +491,12 @@ void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedo
 *													 quicksort method.
 *
 * @param int n - This argument will represent the total number
-*				 of rows that the "inputMatrix" variable argument
-*				 will have.
+*				 of samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
 *
 * @param int m - This argument will represent the total number
-*				 of columns that the "inputMatrix" variable
-*				 argument will have.
+*				 of features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
 *
 * @param double *inputMatrix - This argument will contain the
 *							   pointer to a memory allocated input
@@ -536,7 +536,7 @@ void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedo
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 19, 2021
-* LAST UPDATE: NOVEMBER 08, 2021
+* LAST UPDATE: NOVEMBER 09, 2021
 */
 //TODO: Test the performance of the "quick sort" method when argumenting the entire matrix in "applyQuickSort()" instead of several vectors, to compare it with the current method.
 void getQuickMode(char desiredSortMethod[], int n, int m, double *inputMatrix, int *Mo_n, double *Mo) {
