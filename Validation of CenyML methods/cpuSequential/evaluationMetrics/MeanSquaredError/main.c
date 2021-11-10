@@ -1,13 +1,13 @@
 /*
- * This program will read the .csv file "100systems_100samplesPerAxisPerSys.csv"
-* to then exctact all its data and save it into the matrix "X". Subsequently,
-* the feature scaling method known as the min max normalization, will be
-* applied to the matrix "X". Then, a reverse method of the previously applied
-* min max normalization method will be made and validated with respect to the
-* values contained in the matrix "X". Finally,  a new .csv file
-* "CenyML_getMinMaxNormalization_Results.csv" will be created and in it, the
-* resulting values of applying the min max normalization method will be saved
-* for further comparations and validations purposes.
+* This program will read two different .csv files, which are the ones for
+* the linear equation system for both with and without the random bias
+* value. Then all their output data will be extracted and saved into the
+* matrix "Y" (for the real data) and "Y_hat" (for the predicted data).
+* Subsequently, the evaluation metric known as the mean squared error, will
+* be applied with respect to both of these output matrixes. Finally, a new
+* .csv file "CenyML_getMeanSquaredError_Results.csv" will be created and in
+* it, the resulting values of applying the mean squared error metric will
+* be saved for further comparations and validations purposes.
 */
 
  // ------------------------------------------------- //
@@ -41,12 +41,10 @@
 // ----- THE MAIN FUNCTION STARTS HERE ----- //
 // ----------------------------------------- //
 /**
-* This is the main function of the program. Here we will read a .csv file and
-* then calculate the min max normalization of each value. Then, a reverse of
-* the min max normalization method will be applied and validated here with respect to
-* the original input data. Finally, the results of the applied min max normalization
-* method will be saved in a new .csv file for further comparation and validation
-* purposes. 
+* This is the main function of the program. Here we will read two .csv files and
+* then calculate the mean squared error metric between their output values.
+* Finally, the results of the applied metric will be saved in a new .csv file for
+* further comparation and validation purposes. 
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
