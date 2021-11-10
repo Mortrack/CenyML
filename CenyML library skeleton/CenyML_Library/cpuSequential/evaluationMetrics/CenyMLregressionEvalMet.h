@@ -21,6 +21,7 @@
 #include <stdlib.h>
 
 void getMeanSquaredError(double *, double *, int, int, int, int, double *);
+void getCoefficientOfDetermination(double *, double *, int, int, int, double *);
 
 #endif
 
