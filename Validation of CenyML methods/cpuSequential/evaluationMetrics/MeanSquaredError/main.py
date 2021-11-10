@@ -2,17 +2,17 @@
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
-# COMPLETITION DATE: November 08, 2021.
-# LAST UPDATE: N/A
+# COMPLETITION DATE: November 09, 2021.
+# LAST UPDATE: November 10, 2021.
 #
-# This code is used to obtain the transformation produced by applying the min
-# max normalization method in the database
-# "100systems_100samplesPerAxisPerSys", which has 1'000'000 samples for for
-# each of them (making a total of 5'000'000). For this purpose, the well known
-# scikit-learn library will be used to calculate the min max normalization
-# (https://bit.ly/3bSZoYA) and then it will be compared with the results that
-# were obtained with the CenyML Library as a means of validating that the code
-# created in that library for the min max normalization method is correct.
+# This code is used to apply the regression evaluation metric known as the
+# mean squared error. This is done with the two databases for linear
+# equation systems, that differ only because one has a random bias value and
+# the other does not. In addition, both of these databases have 1'000'000
+# samples each. Moreover, the well known scikit-learn library will be used to
+# calculate the mean squared error metric (https://bit.ly/3D20P2A) and then
+# its result will be compared with the one obtained with the CenyML library as
+# a means of validating the code of CenyML.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # Python version 3.9.7
@@ -53,8 +53,8 @@ startingTime = time.time()
 dataset_lES1000S1000SPS = pd.read_csv("../../../../Databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_lES1000S1000SPS)
-m = len(dataset_lES1000S1000SPS.iloc[0])
-print("Data extraction from .csv file containing " + format(n) + " samples for each of the " + format(p) + " columns (total samples = " + format(n*p) + ") elapsed " + format(elapsedTime) + " seconds.")
+csvColumns = len(dataset_lES1000S1000SPS.iloc[0])
+print("Data extraction from .csv file containing " + format(n) + " samples for each of the " + format(csvColumns) + " columns (total samples = " + format(n*csvColumns) + ") elapsed " + format(elapsedTime) + " seconds.")
 print("")
 # Read the .csv file containing the predicted output data.
 print("Innitializing data extraction from .csv file containing the predicted output data ...")
@@ -62,8 +62,8 @@ startingTime = time.time()
 dataset_rLES1000S1000SPS = pd.read_csv("../../../../Databases/regressionDBs/randLinearEquationSystem/1000systems_1000samplesPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_rLES1000S1000SPS)
-m = len(dataset_rLES1000S1000SPS.iloc[0])
-print("Data extraction from .csv file containing " + format(n) + " samples for each of the " + format(p) + " columns (total samples = " + format(n*p) + ") elapsed " + format(elapsedTime) + " seconds.")
+csvColumns = len(dataset_rLES1000S1000SPS.iloc[0])
+print("Data extraction from .csv file containing " + format(n) + " samples for each of the " + format(csvColumns) + " columns (total samples = " + format(n*csvColumns) + ") elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 # ------------------------------------- #

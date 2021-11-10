@@ -95,7 +95,7 @@ print("")
 # --------------------------------------------------------- #
 print("Innitializing scikit-learn coefficient of determination metric calculation ...")
 startingTime = time.time()
-Rsquared = r2_score(Y, Y_hat) # We apply the desired evaluation metric.
+adjustedRsquared = 1 - (1-model.score(Y, Y_hat))*(len(Y_hat)-1)/(len(Y_hat)-Y.shape[1]-1)
 elapsedTime = time.time() - startingTime
 print("scikit-learn coefficient of determination metric elapsed " + format(elapsedTime) + " seconds.")
 print("")

@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
 	csv1.rowsAndColumnsDimensions = (int *) malloc(2*sizeof(int)); // We initialize the variable that will store the rows & columns dimensions.
 	getCsvRowsAndColumnsDimensions(&csv1); // We input the memory location of the "csv1" into the argument of this function to get the rows & columns dimensions.
 	// We save the rows and columns dimensions obtained in some variables that relate to the mathematical symbology according to the documentation of the method to be validated.
-	int n = csv1.rowsAndColumnsDimensions[0]; // total number of rows of the input matrix (X)
+	int n = csv1.rowsAndColumnsDimensions[0]; // total number of rows of the output matrixes (Y and/or Y_hat).
 	int databaseColumns1 = csv1.rowsAndColumnsDimensions[1]; // total number of columns of the database that was opened.
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
 	csv1.allData = (double *) malloc(n*databaseColumns1*sizeof(double));
