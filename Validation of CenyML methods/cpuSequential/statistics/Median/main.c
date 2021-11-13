@@ -1,6 +1,5 @@
 /*
- * This program will read the .csv file
-* "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"
+ * This program will read the .csv file "100systems_100samplesPerAxisPerSys.csv"
 * to then exctact all its data and save it into the matrix "X". Subsequently,
 * the sorted vales of column will be calculated and stored in "X". Finally,
 * a new .csv file "CenyML_getQuickSort_Results.csv" will be created and in it, the
@@ -13,9 +12,9 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML Library/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
-#include "../../../../CenyML Library/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
-#include "../../../../CenyML Library/CenyML_Library/cpuSequential/statistics/CenyMLstatistics.h" // library to use the statistics methods from CenyML.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
+#include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/statistics/CenyMLstatistics.h" // library to use the statistics methods of CenyML.
 
 
 // ---------------------------------------------- //
@@ -57,11 +56,11 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 07, 2021
-* LAST UPDATE: OCTOBER 17, 2021
+* LAST UPDATE: NOVEMBER 08, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../Databases/regressionDBs/multiplePolynomialEquationSystem/multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
+	char csv1Directory[] = "../../../../Databases/regressionDBs/randMultiplePolynomialEquationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile[] = "CenyML_getMedian_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
@@ -87,17 +86,17 @@ int main(int argc, char **argv) {
 	}
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
 	csv1.allData = (double *) malloc(n*m*sizeof(double));
-	// Allocate the memory required for the struct variable "X", which will contain the input data of the system whose mean will be obtained.
-	double *X = (double *) malloc(n*desired_m*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the data from the reference .csv file.
 	printf("Data extraction from .csv file containing %d samples for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, m, (n*m), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
-	// Create the input data (X) with the same rows as in the reference .csv file and the desired number of columns by duplicating several times the data from such .csv file as needed.
 	printf("Innitializing input data with %d samples for each of the %d columns (total samples = %d)...\n", n, desired_m, (n*desired_m));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
+	// Allocate the memory required for the variable "X", which will contain the input data of the system whose mean will be obtained.
+	double *X = (double *) malloc(n*desired_m*sizeof(double));
+	// Create the input data (X) with the same rows as in the reference .csv file and the desired number of columns by duplicating several times the data from such .csv file as needed.
 	for (int currentRow=0; currentRow<n; currentRow++) {
 		for (int currentColumn=0; currentColumn<(desired_m/m); currentColumn++) {
 			for (int currentColumnCsv=0; currentColumnCsv<m; currentColumnCsv++) {
@@ -135,8 +134,10 @@ int main(int argc, char **argv) {
 	sprintf(currentColumnInString, "%d", (desired_m-3));
 	strcat(csvHeaders, currentColumnInString);
 	// Create a new .csv file and save the results obtained in it.
+	char is_nArray = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	createCsvFile(nameOfTheCsvFile, csvHeaders, median, 1, desired_m, isInsertId); // We create the desired .csv file.
+	int csvFile_n = 1; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
+	createCsvFile(nameOfTheCsvFile, csvHeaders, median, &csvFile_n, is_nArray, desired_m, isInsertId); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
