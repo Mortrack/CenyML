@@ -54,22 +54,24 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: NOVEMBER 08, 2021
+* CREATION DATE: NOVEMBER 13, 2021
+* LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../Databases/regressionDBs/randMultiplePolynomialEquationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile[] = "CenyML_getMean_Results.csv"; // Name the .csv file that will store the results.
+	char csv1Directory[] = "../../../../Databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
+	char nameOfTheCsvFile[] = "CenyML_getSimpleLinearRegression_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
-	// NOTE: "desired_m" can be any value as long as (desired_m*n) <= 2'147'483'647, because of the long int max value (the compiler seems to activate the long data type when needed when using integer variables only).
-	// desired_m <= 2145 to comply with the note considering that n=1'000'000.
-	int desired_m = 100; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
+	int m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
+	int p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
+	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
+	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
+	int degreesOfFreedom = 1; // Desired degrees of freedom, specified with the variable "q" in the documentation, to be applied in the adjusted R-squared to be calculated.
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
-	printf("Innitializing data extraction from .csv file containing the reference input data ...\n");
+	printf("Innitializing data extraction from .csv file containing the data to be used ...\n");
 	double startingTime, elapsedTime; // Declaration of variables used to count time in seconds.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
@@ -77,12 +79,7 @@ int main(int argc, char **argv) {
 	getCsvRowsAndColumnsDimensions(&csv1); // We input the memory location of the "csv1" into the argument of this function to get the rows & columns dimensions.
 	// We save the rows and columns dimensions obtained in some variables that relate to the mathematical symbology according to the documentation of the method to be validated.
 	int n = csv1.rowsAndColumnsDimensions[0]; // total number of rows of the input matrix (X)
-	int m = csv1.rowsAndColumnsDimensions[1]; // total number of columns of the input matrix (X)
-	// Before proceeding, we verify that the desired number of columns is an exact multiple of the rows contained in the reference .csv file.
-	if ( (desired_m/m) != (desired_m/m) ) {
-		printf("\nERROR: Variable \"desired_m\" must be a whole number and an exact multiple of the rows containted in the .csv file.\n");
-		exit(1);
-	}
+	int databaseColumns1 = csv1.rowsAndColumnsDimensions[1]; // total number of columns of the database that was opened.
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
 	csv1.allData = (double *) malloc(n*m*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
@@ -91,30 +88,35 @@ int main(int argc, char **argv) {
 	printf("Data extraction from .csv file containing %d samples for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, m, (n*m), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
-	printf("Innitializing input data with %d samples for each of the %d columns (total samples = %d)...\n", n, desired_m, (n*desired_m));
+	printf("Innitializing the output and input data with %d samples for each of the %d columns (total samples = %d) each...\n", n, m, (n*m));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
-	// Allocate the memory required for the variable "X", which will contain the input data of the system whose mean will be obtained.
-	double *X = (double *) malloc(n*desired_m*sizeof(double));
-	// Create the input data (X) with the same rows as in the reference .csv file and the desired number of columns by duplicating several times the data from such .csv file as needed.
-	for (int currentRow=0; currentRow<n; currentRow++) {
-		for (int currentColumn=0; currentColumn<(desired_m/m); currentColumn++) {
-			for (int currentColumnCsv=0; currentColumnCsv<m; currentColumnCsv++) {
-				X[(currentColumnCsv + currentColumn*m) + (currentRow*desired_m)] = csv1.allData[currentColumnCsv + currentRow*m];
-			}
-		}
+	// Allocate the memory required for the variable "Y", which will contain the output data of the system under study.
+	double *Y = (double *) malloc(n*p*sizeof(double));
+	// Allocate the memory required for the variable "X", which will contain the input data of the system under study.
+	double *X = (double *) malloc(n*m*sizeof(double));
+	// Create the output (Y) and input (X) data with the same rows as in the reference .csv file and their corresponding number of columns.
+	for (int currentRow=0; currentRow<n; currentRow++) { // Since m=p=1 for this particular ML algorithm, both "Y" and "X" will be innitialized here.
+		Y[currentRow] = csv1.allData[columnIndexOfOutputDataInCsvFile + currentRow*databaseColumns1];
+		X[currentRow] = csv1.allData[columnIndexOfInputDataInCsvFile + currentRow*databaseColumns1];
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to innitialize the input data to be used.
-	printf("Input data innitialization elapsed %f seconds.\n\n", elapsedTime);
+	printf("Output and input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Innitializing CenyML mean method calculation ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the mean of the input data (X).
-	// Allocate the memory required for the variable "B_x_bar" (which will contain the mean of the input data "X") and innitialize it with zeros.
-	double *B_x_bar = (double *) calloc(desired_m, sizeof(double));
-	// We calculate the mean for each of the columns available in the matrix "X" and the result is stored in the memory location of the pointer "B_x_bar".
-	getMean(X, n, desired_m, B_x_bar);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the mean of the input data (X).
-	printf("CenyML mean method elapsed %f seconds.\n\n", elapsedTime);
+	printf("Innitializing CenyML simple linear regression algorithm ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the simple linear regression with the input data (X).
+	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the simple linear regression algorithm.
+	double *b = (double *) malloc((m+1)*sizeof(double));
+	// We apply the simple linear regression algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
+	getSimpleLinearRegression(X, Y, n, m, p, b);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the simple linear regression with the input data (X).
+	printf("CenyML simple linear regression algorithm elapsed %f seconds.\n\n", elapsedTime);
+	
+	
+	// TODO: Run the evaluation metrics.
+	
+	
+	
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results that were obtained.

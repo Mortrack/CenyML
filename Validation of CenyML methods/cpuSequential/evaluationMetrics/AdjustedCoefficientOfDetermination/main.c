@@ -1,15 +1,15 @@
 /*
-* This program will read two different .csv files, which are the ones for
-* the linear equation system for both with and without the random bias
-* value. Then all their output data will be extracted and saved into the
-* matrix "Y" (for the real data) and "Y_hat" (for the predicted data).
-* Subsequently, the evaluation metric known as the coefficient of
-* determination, will be applied with respect to both of these output
-* matrixes. Finally, a new .csv file
-* "CenyML_getCoefficientOfDetermination_Results.csv" will be created and
-* in it, the resulting values of applying the coefficient of
-* determination metric will be saved for further comparations and
-* validations purposes.
+* This program will read three different .csv files: 1) One that will
+* contain the real output values; 2) Another one containing the results
+* obtained in Python with the comparative/reference library and; 3) A
+* last one containing the predicted output data. Then, all their data
+* will be extracted and saved into the following variables: 1) Y; 2) 
+* python_adjustedRsquared and; 3) Y_hat. Subsequently, the evaluation
+* metric known as the adjusted coefficient of determination will be
+* applied with respect to the two output matrixes "Y" and "Y_hat".
+* Finally, the result obtained will be compared with the one obtained
+* in Python and whether the result ended in a match or not, it will be
+* shown in the terminal in which this program was excecuted.
 */
 
  // ------------------------------------------------- //
@@ -44,10 +44,11 @@
 // ----- THE MAIN FUNCTION STARTS HERE ----- //
 // ----------------------------------------- //
 /**
-* This is the main function of the program. Here we will read two .csv files and
-* then calculate the coefficient of determination metric between their output
-* values. Finally, the results of the applied metric will be saved in a new .csv
-* file for further comparation and validation purposes. 
+* This is the main function of the program. Here we will three .csv files and
+* then calculate the coefficient of determination metric between two output
+* matrixes. Finally, the results of the applied metric will be compared with
+* the ones obtained in Python (this result is stored in one of those three
+* .csv files) for validation purposes.
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -62,7 +63,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 12, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 13, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
