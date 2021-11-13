@@ -83,17 +83,17 @@ int main(int argc, char **argv) {
 	}
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
 	csv1.allData = (double *) malloc(n*m*sizeof(double));
-	// Allocate the memory required for the variable "X", which will contain the input data of the system to be evaluated.
-	double *X = (double *) malloc(n*desired_m*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the data from the reference .csv file.
 	printf("Data extraction from .csv file containing %d samples for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, m, (n*m), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
-	// Create the input data (X) with the same rows as in the reference .csv file and the desired number of columns by duplicating several times the data from such .csv file as needed.
 	printf("Innitializing input data with %d samples for each of the %d columns (total samples = %d)...\n", n, desired_m, (n*desired_m));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
+	// Allocate the memory required for the variable "X", which will contain the input data of the system to be evaluated.
+	double *X = (double *) malloc(n*desired_m*sizeof(double));
+	// Create the input data (X) with the same rows as in the reference .csv file and the desired number of columns by duplicating several times the data from such .csv file as needed.
 	for (int currentRow=0; currentRow<n; currentRow++) {
 		for (int currentColumn=0; currentColumn<(desired_m/m); currentColumn++) {
 			for (int currentColumnCsv=0; currentColumnCsv<m; currentColumnCsv++) {

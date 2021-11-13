@@ -91,17 +91,17 @@ int main(int argc, char **argv) {
 	int databaseColumns1 = csv1.rowsAndColumnsDimensions[1]; // total number of columns of the database that was opened.
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
 	csv1.allData = (double *) malloc(n*databaseColumns1*sizeof(double));
-	// Allocate the memory required for the variable "Y", which will contain the real output data of the system under study.
-	double *Y = (double *) malloc(n*p*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the data from the reference .csv file.
 	printf("Data extraction from .csv file 1 containing %d rows for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, databaseColumns1, (n*databaseColumns1), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA 1 ------------------ //
-	// Pass the real output data into the pointer variable "Y".
 	printf("Innitializing real output data with %d samples for each of the %d columns (total samples = %d)...\n", n, p, (n*p));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the real output data to be used.
+	// Allocate the memory required for the variable "Y", which will contain the real output data of the system under study.
+	double *Y = (double *) malloc(n*p*sizeof(double));
+	// Pass the real output data into the pointer variable "Y".
 	for (int currentRow=0; currentRow<n; currentRow++) {
 		for (int currentColumn=0; currentColumn<p; currentColumn++) {
 			Y[currentColumn + currentRow*p] = csv1.allData[columnIndexOfOutputDataInCsvFile + currentColumn + currentRow*databaseColumns1];
@@ -119,17 +119,17 @@ int main(int argc, char **argv) {
 	int databaseColumns2 = csv2.rowsAndColumnsDimensions[1]; // total number of columns of the database that was opened.
 	// From the structure variable "csv2", we allocate the memory required for the variable (csv2.allData) so that we can store the data of the .csv file in it.
 	csv2.allData = (double *) malloc(n*databaseColumns2*sizeof(double));
-	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
-	double *Y_hat = (double *) malloc(n*p*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv2); // We input the memory location of the "csv2" into the argument of this function to get all the data contained in the .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the data from the reference .csv file.
 	printf("Data extraction from .csv file 2 containing %d rows for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, databaseColumns2, (n*databaseColumns2), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA 2 ------------------ //
-	// Pass the predicted output data into the pointer variable "Y_hat".
 	printf("Innitializing predicted output data with %d samples for each of the %d columns (total samples = %d)...\n", n, p, (n*p));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the predicted output data to be used.
+	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
+	double *Y_hat = (double *) malloc(n*p*sizeof(double));
+	// Pass the predicted output data into the pointer variable "Y_hat".
 	for (int currentRow=0; currentRow<n; currentRow++) {
 		for (int currentColumn=0; currentColumn<p; currentColumn++) {
 			Y_hat[currentColumn + currentRow*p] = csv2.allData[columnIndexOfOutputDataInCsvFile + currentColumn + currentRow*databaseColumns2];

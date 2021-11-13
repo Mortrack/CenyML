@@ -29,7 +29,7 @@ from sklearn.metrics import r2_score # version 1.0.1
 # -------------------------------------------- #
 # ----- Define the user variables values ----- #
 # -------------------------------------------- #
-p = 1 # This variable is used to define the number of independent variables
+p = 1 # This variable is used to define the number of dependent variables
       # that the system under study has.
 columnIndexOfOutputDataInCsvFile = 2; # This variable will contain the index
                                       # of the first column in which we will
