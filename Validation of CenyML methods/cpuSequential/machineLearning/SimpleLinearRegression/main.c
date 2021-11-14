@@ -1,10 +1,16 @@
 /*
- * This program will read the .csv file "100systems_100samplesPerAxisPerSys.csv"
-* to then exctact all its data and save it into the matrix "X". Subsequently,
-* the mean of each row will be calculated and stored in "B_x_bar". Finally,
-* a new .csv file "CenyML_getMean_Results.csv" will be created and in it, the
-* means for each column will be saved for further comparations and validations
-* of the mean method.
+* This program will read a .csv file containing the data of a linear
+* equation system to then exctact all its data. Its input data will be
+* saved into the matrix "X" and its output data into the matrix "Y".
+* Subsequently, a simple linear regression method will be applied to
+* obtain the best fitting coefficient values of such data. Then,
+* some evaluation metrics will be applied. Next, two new .csv files
+* will be created to save: 1) the coefficient values that were
+* obtained and 2) the results obtained with the evaluation metrics.
+* Finally, a plot of the predicted data by the obtained model with
+* respect to the actual data, will be plotted and saved into a .png
+* file. Both the .csv files and this .png file will serve for further
+* comparations and validation purposes.
  */
 
  // ------------------------------------------------- //
@@ -42,8 +48,10 @@
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then calculate the mean of each column. Finally, the results will be saved
-* in a new .csv file for further comparation and validation purposes.
+* then apply the simple linear regression on the input and output data contained
+* in it. In addition, some evaluation metrics will be applied to evaluate the
+* model. Finally, the results will be saved in two new .csv files and in a .png
+* file for further comparation and validation purposes.
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -62,7 +70,7 @@
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../Databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
+	char csv1Directory[] = "../../../../Databases/regressionDBs/randLinearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile1[] = "CenyML_getSimpleLinearRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
 	char nameOfTheCsvFile2[] = "CenyML_getSimpleLinearRegression_EvalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
@@ -249,7 +257,7 @@ int main(int argc, char **argv) {
     if(success){
         size_t length;
         double *pngdata = ConvertToPNG(&length, imageReference->image);
-        WriteToFile(pngdata, length, "plotOfMachineLearningModel.png");
+        WriteToFile(pngdata, length, "plotOfMachineLearningModel (CenyML).png");
         DeleteImage(imageReference->image);
 	}else{
 	    fprintf(stderr, "Error: ");
