@@ -22,6 +22,7 @@
 #include <math.h>
 
 void getSimpleLinearRegression(double *, double *, int, int, int, double *);
+void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, double *Y_hat);
 
 #endif
 

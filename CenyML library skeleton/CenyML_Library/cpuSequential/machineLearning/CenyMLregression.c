@@ -111,3 +111,75 @@ void getSimpleLinearRegression(double *X, double *Y, int n, int m, int p, double
 	b[0] = (sumOf_y - b[1]*sumOf_x)/n;
 }
 
+
+/**
+* The "predictSimpleLinearRegression()" function is used to make the
+* predictions of the requested input values (X) by applying the
+* simple linear equation system with the specified coefficient values
+* (b). The predicted values will be stored in the argument pointer
+* variable "Y_hat".
+* 
+* @param double *X - This argument will contain the pointer to a
+*					 memory allocated input matrix, from which the
+*					 desired machine learning predictions will be
+*					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
+*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 WITH A SIZE OF "n" TIMES "m=1" 'DOUBLE' MEMORY
+*					 SPACES.
+*
+* @param double *b - This argument will contain the pointer to a
+*					 memory allocated variable containing the
+*					 coefficient values for the desired machine
+*					 learning algorithm and that will be used to make
+*					 the specified predictions. IT IS INDISPENSABLE
+*					 THAT THIS VARIABLE IS ALLOCATED AND INNITIALIZED
+*					 BEFORE CALLING THIS FUNCTION WITH A VARIABLE
+*					 SIZE OF "m+1=2" 'DOUBLE' MEMORY SPACES.
+*
+* @param int n - This argument will represent the total number of
+*				 samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
+*
+* @param int m - This argument will represent the total number of
+*				 features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
+*
+* @param int p - This argument will represent the total number of 
+*				 outputs that exist in the the output matrix,
+*				 containing the real results of the system under
+*				 study.
+*
+* @param double *Y_hat - This argument will contain the pointer to a
+*					 	 memory allocated output matrix, representing
+*					 	 the predicted data of the system under study.
+*						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
+*						 CALLING THIS FUNCTION WITH A SIZE OF "n"
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*		"Y_hat".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: NOVEMBER 13, 2021
+* LAST UPDATE: N/A
+*/
+void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, double *Y_hat) {
+	// If the machine learning features exceed the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (m > 1) {
+		printf("\nERROR: The machine learning features (independent variables) must be equal to 1 for this particular algorithm.\n");
+		exit(1);
+	}
+	// If the output of the system under study exceed the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (p > 1) {
+		printf("\nERROR: The outputs of the system under study must be equal to 1 for this particular algorithm.\n");
+		exit(1);
+	}
+	
+	// We predict all the requested input values (X) with the desired machine learning algorithm and its especified coefficient values (b).
+	for (int currentRow = 0; currentRow < n; currentRow++) {
+		Y_hat[currentRow] = b[0] + b[1]*X[currentRow];
+	}
+}
+
