@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+static void getPermutations(int, int, int, int *, int *);
 void getSimpleLinearRegression(double *, double *, int, int, int, double *);
 void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, double *Y_hat);
 
