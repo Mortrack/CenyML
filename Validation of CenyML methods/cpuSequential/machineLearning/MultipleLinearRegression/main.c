@@ -117,15 +117,6 @@ int main(int argc, char **argv) {
 			X[currentColumn + currentRow*m] = csv1.allData[columnIndexOfInputDataInCsvFile + currentColumn + currentRow*databaseColumns1];
 		}
 	}
-	// Allocate the memory required for the variable "X_tilde", which will contain the input data of the system under study and an additional first row with values of "1".
-	double *X_tilde = (double *) malloc(n*(m+1)*sizeof(double));
-	// Store the data that must be contained in the input matrix "X_tilde".
-	for (int currentRow=0; currentRow<n; currentRow++) {
-		X_tilde[currentRow*(m+1)] = 1;
-		for (int currentColumn=1; currentColumn<(m+1); currentColumn++) {
-			X_tilde[currentColumn + currentRow*(m+1)] = X[currentColumn-1 + currentRow*m];
-		}
-	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to innitialize the input data to be used.
 	printf("Output and input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -143,7 +134,7 @@ int main(int argc, char **argv) {
 	double *b = (double *) calloc(factorialValue*mPlusOne, sizeof(double));
 	// We apply the simple linear regression algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
 	char isVariableOptimizer = 0;
-	getMultipleLinearRegression(X_tilde, Y,  n, m, p, isVariableOptimizer, b);
+	getMultipleLinearRegression(X, Y,  n, m, p, isVariableOptimizer, b);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the simple linear regression with the input data (X).
 	printf("CenyML multiple linear regression algorithm elapsed %f seconds.\n\n", elapsedTime);
 	

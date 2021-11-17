@@ -372,7 +372,7 @@ NOTE: "b" will temporarly be have to be allocated with "m+1" columns and an equi
 * CREATION DATE: NOVEMBER XX, 2021
 * LAST UPDATE: N/A
 */
-void getMultipleLinearRegression(double *X_tilde, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
+void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if (m < 1) {
 		printf("\nERROR: The machine learning features (independent variables) must be equal or greater than 1 for this particular algorithm.\n");
@@ -389,8 +389,19 @@ void getMultipleLinearRegression(double *X_tilde, double *Y, int n, int m, int p
 		exit(1);
 	}
 	
-	// Obtain the number of possible permutations (which will be the factorial of "(m+1)").
+	// Store the data that must be contained in the input matrix "X_tilde", which will contain the input data of the system under study ("X") and an additional first row with values of "1".
+	int currentRowTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
+	double *X_tilde = (double *) malloc(n*mPlusOne*sizeof(double));
+	for (int currentRow=0; currentRow<n; currentRow++) {
+		currentRowTimesMplusOne = currentRow*mPlusOne;
+		X_tilde[currentRow*mPlusOne] = 1;
+		for (int currentColumn=1; currentColumn<mPlusOne; currentColumn++) {
+			X_tilde[currentColumn + currentRow*mPlusOne] = X[currentColumn-1 + currentRow*m];
+		}
+	}
+	
+	// Obtain the number of possible permutations (which will be the factorial of "(m+1)").
 	int factorialValue = mPlusOne;
 	for (int i=1; i<mPlusOne; i++) {
 		factorialValue = factorialValue*i;
@@ -405,7 +416,6 @@ void getMultipleLinearRegression(double *X_tilde, double *Y, int n, int m, int p
 	getPermutations(0, m, mPlusOne, &current_Permutation, columnPermutations);
 	
 	// Apply the desired machine learning algorithm over each permutation identified.
-	int currentRowTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int currentPermutationTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
 	double *new_X_tilde = (double *) malloc(n*mPlusOne*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the data from which the desired machine learning method will be calcualted.
@@ -525,6 +535,7 @@ void getMultipleLinearRegression(double *X_tilde, double *Y, int n, int m, int p
 	}
 	
 	// Free the Heap memory used for the locally allocated variables since they will no longer be used.
+	free(X_tilde);
 	free(columnPermutations);
 	free(new_X_tilde);
 	free(TransposeOf_new_X_tilde);
