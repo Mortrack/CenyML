@@ -1,16 +1,14 @@
 /*
-* This program will read a .csv file containing the data of a linear
-* equation system to then exctact all its data. Its input data will be
-* saved into the matrix "X" and its output data into the matrix "Y".
-* Subsequently, a simple linear regression method will be applied to
-* obtain the best fitting coefficient values of such data. Then,
-* some evaluation metrics will be applied. Next, two new .csv files
-* will be created to save: 1) the coefficient values that were
+* This program will read a .csv file containing the data of a multiple
+* linear equation system to then exctact all its data. Its input data
+* will be saved into the matrix "X" and its output data into the matrix
+* "Y". Subsequently, a multiple linear regression method will be
+* applied to obtain the best fitting coefficient values of such data.
+* Then, some evaluation metrics will be applied. Next, two new .csv
+* files will be created to save: 1) the coefficient values that were
 * obtained and 2) the results obtained with the evaluation metrics.
-* Finally, a plot of the predicted data by the obtained model with
-* respect to the actual data, will be plotted and saved into a .png
-* file. Both the .csv files and this .png file will serve for further
-* comparations and validation purposes.
+* Both of these .csv files will serve for further comparations and
+* validation purposes.
  */
 
  // ------------------------------------------------- //
@@ -20,8 +18,6 @@
 #include <stdlib.h>
 #include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
-#include "../../../../CenyML library skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
-#include "../../../../CenyML library skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h" // library to use the regression evaluation metrics of CenyML.
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/machineLearning/CenyMLregression.h" // library to use the regression algorithms of CenyML.
 
@@ -48,10 +44,10 @@
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then apply the simple linear regression on the input and output data contained
+* then apply the multiple linear regression on the input and output data contained
 * in it. In addition, some evaluation metrics will be applied to evaluate the
-* model. Finally, the results will be saved in two new .csv files and in a .png
-* file for further comparation and validation purposes.
+* model. Finally, the results will be saved in two new .csv files for further
+* comparation and validation purposes.
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -65,12 +61,12 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 13, 2021
-* LAST UPDATE: NOVEMBER 14, 2021
+* CREATION DATE: NOVEMBER 17, 2021
+* LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../Databases/regressionDBs/randMultipleLinearSystem/1systems_10samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
+	char csv1Directory[] = "../../../../Databases/regressionDBs/multipleLinearEquationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile1[] = "CenyML_getMultipleLinearRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
 	char nameOfTheCsvFile2[] = "CenyML_getMultipleLinearRegression_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
@@ -123,46 +119,23 @@ int main(int argc, char **argv) {
 	
 	// ------------------------- DATA MODELING ----------------------- //
 	printf("Innitializing CenyML multiple linear regression algorithm ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the simple linear regression with the input data (X).
-	// Obtain the number of possible permutations (which will be the factorial of "(m+1)").
-	int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
-	int factorialValue = mPlusOne;
-	for (int i=1; i<mPlusOne; i++) {
-		factorialValue = factorialValue*i;
-	}
-	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the simple linear regression algorithm.
-	double *b = (double *) calloc(factorialValue*mPlusOne, sizeof(double));
-	// We apply the simple linear regression algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
-	char isVariableOptimizer = 0;
-	getMultipleLinearRegression(X, Y,  n, m, p, isVariableOptimizer, b);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the simple linear regression with the input data (X).
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the multiple linear regression with the input data (X).
+	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the multiple linear regression algorithm.
+	double *b = (double *) calloc((m+1)*p, sizeof(double));
+	// We apply the multiple linear regression algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
+	getMultipleLinearRegression(X, Y,  n, m, p, 0, b);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the multiple linear regression with the input data (X).
 	printf("CenyML multiple linear regression algorithm elapsed %f seconds.\n\n", elapsedTime);
 	
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
-	// We store the resulting evaluation metrics that were obtained.
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results of the evaluation metrics that were obtained.
-	// Define the desired header names for the new .csv file to be create.
-    char csvHeaders2[strlen("coefficients")+1]; // Variable where the following code will store the .csv headers.
-    csvHeaders2[0] = '\0'; // Innitialize this char variable with a null value.
-	strcat(csvHeaders2, "coefficients"); // We add the headers into "csvHeaders".
-	// Create a new .csv file and save the results obtained in it.
-	char is_nArray2 = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
-	char isInsertId2 = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	int csvFile_n2 = factorialValue; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
-	createCsvFile(nameOfTheCsvFile1, csvHeaders2, b, &csvFile_n2, is_nArray2, m+1, isInsertId2); // We create the desired .csv file.
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
-	printf("Creation of the .csv file to store the evaluation metrics that were obtained, elapsed %f seconds.\n\n", elapsedTime);
-	printf("The program has been successfully completed!");
-	
-	/*
 	// We predict the input values (X) with the machine learning model that was obtained.
 	printf("Innitializing CenyML predictions with the model that was obtained ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the prediction with the model that was obtained.
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(n*p*sizeof(double));
 	// We obtain the predicted values with the machine learning model that was obtained.
-	predictSimpleLinearRegression(X, b, n, m, p, Y_hat);
+	predictMultipleLinearRegression(X, b, n, m, p, Y_hat);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
 	printf("The CenyML predictions with the model that was obtained elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -170,7 +143,7 @@ int main(int argc, char **argv) {
 	printf("Innitializing CenyML mean squared error metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the mean squared error metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "MSE" (which will contain the results of the mean squared error metric between "Y" and "Y_hat").
-	double *MSE = (double *) malloc(p*sizeof(double));
+	double *MSE = (double *) calloc(p, sizeof(double));
 	// We apply the mean squared error metric between "Y" and "Y_hat".
 	getMeanSquaredError(Y, Y_hat, n, m, p, -m, MSE);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the mean squared error metric between "Y" and "Y_hat".
@@ -180,7 +153,7 @@ int main(int argc, char **argv) {
 	printf("Innitializing CenyML coefficient of determination metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the coefficient of determination metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "Rsquared" (which will contain the results of the coefficient of determination metric between "Y" and "Y_hat").
-	double *Rsquared = (double *) malloc(p*sizeof(double));
+	double *Rsquared = (double *) calloc(p, sizeof(double));
 	// We apply the coefficient of determination metric between "Y" and "Y_hat".
 	getCoefficientOfDetermination(Y, Y_hat, n, p, Rsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the coefficient of determination metric between "Y" and "Y_hat".
@@ -190,7 +163,7 @@ int main(int argc, char **argv) {
 	printf("Innitializing CenyML adjusted coefficient of determination metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "adjustedRsquared" (which will contain the results of the adjusted coefficient of determination metric between "Y" and "Y_hat").
-	double *adjustedRsquared = (double *) malloc(p*sizeof(double));
+	double *adjustedRsquared = (double *) calloc(p, sizeof(double));
 	// We apply the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	getAdjustedCoefficientOfDetermination(Y, Y_hat, n, m, p, 1, adjustedRsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".
@@ -216,8 +189,8 @@ int main(int argc, char **argv) {
 	// Create a new .csv file and save the results obtained in it.
 	char is_nArray1 = 0; // Indicate through this flag variable that the variable that indicates the samples (n) is not an array because it has the same amount of samples per columns.
 	char isInsertId1 = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	int csvFile_n1 = 2; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
-	createCsvFile(nameOfTheCsvFile1, csvHeaders1, b, &csvFile_n1, is_nArray1, 1, isInsertId1); // We create the desired .csv file.
+	int csvFile_n1 = m+1; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
+	createCsvFile(nameOfTheCsvFile1, csvHeaders1, b, &csvFile_n1, is_nArray1, p, isInsertId1); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the coefficients that were obtained, elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -236,63 +209,6 @@ int main(int argc, char **argv) {
 	printf("Creation of the .csv file to store the evaluation metrics that were obtained, elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
 	
-	// Plot a graph with the model that was obtained and saved it into a .png file.
-	// Trying the "pbPlots" library (https://github.com/InductiveComputerScience/pbPlots)
-	_Bool success;
-    StringReference *errorMessage;
-	RGBABitmapImageReference *imageReference = CreateRGBABitmapImageReference();
-
-	ScatterPlotSeries *series = GetDefaultScatterPlotSeriesSettings();
-	series->xs = X;
-	series->xsLength = n;
-	series->ys = Y;
-	series->ysLength = n;
-	series->linearInterpolation = false;
-	series->pointType = L"dots";
-	series->pointTypeLength = wcslen(series->pointType);
-	series->color = CreateRGBColor(0.929, 0.196, 0.216);
-
-	ScatterPlotSeries *series2 = GetDefaultScatterPlotSeriesSettings();
-	series2->xs = X;
-	series2->xsLength = n;
-	series2->ys = Y_hat;
-	series2->ysLength = n;
-	series2->linearInterpolation = true;
-	series2->lineType = L"solid";
-	series2->lineTypeLength = wcslen(series->lineType);
-	series2->lineThickness = 2;
-	series2->color = CreateRGBColor(0.153, 0.153, 0.996);
-
-	ScatterPlotSettings *settings = GetDefaultScatterPlotSettings();
-	settings->width = 600;
-	settings->height = 400;
-	settings->autoBoundaries = true;
-	settings->autoPadding = true;
-	settings->title = L"";
-	settings->titleLength = wcslen(settings->title);
-	settings->xLabel = L"independent variable";
-	settings->xLabelLength = wcslen(settings->xLabel);
-	settings->yLabel = L"dependent variable";
-	settings->yLabelLength = wcslen(settings->yLabel);
-	ScatterPlotSeries *s [] = {series, series2};
-	settings->scatterPlotSeries = s;
-	settings->scatterPlotSeriesLength = 2;
-
-    errorMessage = (StringReference *)malloc(sizeof(StringReference));
-	success = DrawScatterPlotFromSettings(imageReference, settings, errorMessage);
-
-    if(success){
-        size_t length;
-        double *pngdata = ConvertToPNG(&length, imageReference->image);
-        WriteToFile(pngdata, length, "plotOfMachineLearningModel (CenyML).png");
-        DeleteImage(imageReference->image);
-	}else{
-	    fprintf(stderr, "Error: ");
-        for(int i = 0; i < errorMessage->stringLength; i++){
-            fprintf(stderr, "%c", errorMessage->string[i]);
-        }
-        fprintf(stderr, "\n");
-	}
 	
 	// Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.
 	free(csv1.rowsAndColumnsDimensions);
@@ -305,7 +221,6 @@ int main(int argc, char **argv) {
 	free(Rsquared);
 	free(adjustedRsquared);
 	free(evaluationMetrics);
-	*/
 	return (0); // end of program.
 }
 

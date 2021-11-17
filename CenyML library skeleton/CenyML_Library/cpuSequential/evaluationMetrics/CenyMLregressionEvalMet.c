@@ -76,14 +76,14 @@
 *					   between the argument pointer variables
 *					   "realOutputMatrix" and "predictedOutputMatrix".
 *					   IT IS INDISPENSABLE THAT THIS VARIABLE IS
-*					   ALLOCATED BEFORE CALLING THIS FUNCTION WITH A
-*					   SIZE OF "p" 'DOUBLE' MEMORY SPACES, WHERE "p"
-*					   STANDS FOR THE NUMBER OF OUTPUTS THAT THE SYSTEM
-*					   UNDER STUDY HAS. Note that the results will be
-*					   stored in ascending order with respect to the
-*					   outputs of the system under study. In other words,
-*					   from the first output in index "0" up to the last
-*					   output in index "p-1".
+*					   ALLOCATED AND INNITIALIZED WITH ZERO BEFORE
+*					   CALLING THIS FUNCTION WITH A SIZE OF "p" 'DOUBLE'
+*					   MEMORY SPACES, WHERE "p" STANDS FOR THE NUMBER OF
+*					   OUTPUTS THAT THE SYSTEM UNDER STUDY HAS. Note that
+*					   the results will be stored in ascending order with
+*					   respect to the outputs of the system under study.
+*					   In other words, from the first output in index "0"
+*					   up to the last output in index "p-1".
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "MSE".
@@ -92,7 +92,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 09, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 17, 2021
 */
 void getMeanSquaredError(double *realOutputMatrix, double *predictedOutputMatrix, int n, int m, int p, int degreesOfFreedom, double *MSE) {
 	// We calculate the mean squared error between the argument pointer variables "realOutputMatrix" and "predictedOutputMatrix".
@@ -167,15 +167,16 @@ void getMeanSquaredError(double *realOutputMatrix, double *predictedOutputMatrix
 *							the argument pointer variables
 *					   		"realOutputMatrix" and
 *							"predictedOutputMatrix". IT IS INDISPENSABLE
-*							THAT THIS VARIABLE IS ALLOCATED BEFORE
-*							CALLING THIS FUNCTION WITH A SIZE OF "p"
-*							'DOUBLE' MEMORY SPACES, WHERE "p" STANDS FOR
-*							THE NUMBER OF OUTPUTS THAT THE SYSTEM UNDER
-*							STUDY HAS. Note that the results will be
-*							stored in ascending order with respect to the
-*					   		outputs of the system under study. In other
-*							words, from the first output in index "0" up
-*							to the last output in index "p-1".
+*							THAT THIS VARIABLE IS ALLOCATED AND
+*							INNITIALIZED WITH ZERO BEFORE CALLING THIS
+*							FUNCTION WITH A SIZE OF "p" 'DOUBLE' MEMORY
+*							SPACES, WHERE "p" STANDS FOR THE NUMBER OF
+*							OUTPUTS THAT THE SYSTEM UNDER STUDY HAS. Note
+*							that the results will be stored in ascending
+*							order with respect to the outputs of the
+*							system under study. In other words, from the
+*							first output in index "0" up to the last
+*							output in index "p-1".
 *
 * NOTE: RESULTS ARE STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "Rsquared".
@@ -184,7 +185,7 @@ void getMeanSquaredError(double *realOutputMatrix, double *predictedOutputMatrix
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 09, 2021
-* LAST UPDATE: NOVEMBER 12, 2021
+* LAST UPDATE: NOVEMBER 17, 2021
 */
 void getCoefficientOfDetermination(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *Rsquared) {
 	// We obtain the sums required for the means to be calculated and the SSE values for each of the columns of the input matrix.
@@ -292,14 +293,15 @@ void getCoefficientOfDetermination(double *realOutputMatrix, double *predictedOu
 *					   				"realOutputMatrix" and
 *									"predictedOutputMatrix". IT IS
 *									INDISPENSABLE THAT THIS VARIABLE IS
-*									ALLOCATED BEFORE CALLING THIS FUNCTION
-*									WITH A SIZE OF "p" 'DOUBLE' MEMORY
-*									SPACES. Note that the results will be
-*									stored in ascending order with respect
-*									to the outputs of the system under
-*									study. In other words, from the first
-*									output in index "0" up to the last
-*									output in index "p-1".
+*									ALLOCATED AND INNITIALIZED WITH ZERO
+*									BEFORE CALLING THIS FUNCTION WITH A
+*									SIZE OF "p" 'DOUBLE' MEMORY SPACES.
+*									Note that the results will be stored
+*									in ascending order with respect to the
+*									outputs of the system under study. In
+*									other words, from the first output in
+*									index "0" up to the last output in
+*									index "p-1".
 *
 * NOTE: RESULTS ARE STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "adjustedRsquared".
@@ -308,7 +310,7 @@ void getCoefficientOfDetermination(double *realOutputMatrix, double *predictedOu
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 12, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 17, 2021
 */
 void getAdjustedCoefficientOfDetermination(double *realOutputMatrix, double *predictedOutputMatrix, int n, int m, int p, int degreesOfFreedom, double *adjustedRsquared) {
 	// We obtain the sums required for the means to be calculated and the SSE values for each of the columns of the input matrix.

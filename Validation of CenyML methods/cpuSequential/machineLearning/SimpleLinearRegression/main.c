@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
 	printf("Innitializing CenyML mean squared error metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the mean squared error metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "MSE" (which will contain the results of the mean squared error metric between "Y" and "Y_hat").
-	double *MSE = (double *) malloc(p*sizeof(double));
+	double *MSE = (double *) calloc(p, sizeof(double));
 	// We apply the mean squared error metric between "Y" and "Y_hat".
 	getMeanSquaredError(Y, Y_hat, n, m, p, -m, MSE);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the mean squared error metric between "Y" and "Y_hat".
@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
 	printf("Innitializing CenyML coefficient of determination metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the coefficient of determination metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "Rsquared" (which will contain the results of the coefficient of determination metric between "Y" and "Y_hat").
-	double *Rsquared = (double *) malloc(p*sizeof(double));
+	double *Rsquared = (double *) calloc(p, sizeof(double));
 	// We apply the coefficient of determination metric between "Y" and "Y_hat".
 	getCoefficientOfDetermination(Y, Y_hat, n, p, Rsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the coefficient of determination metric between "Y" and "Y_hat".
@@ -162,7 +162,7 @@ int main(int argc, char **argv) {
 	printf("Innitializing CenyML adjusted coefficient of determination metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "adjustedRsquared" (which will contain the results of the adjusted coefficient of determination metric between "Y" and "Y_hat").
-	double *adjustedRsquared = (double *) malloc(p*sizeof(double));
+	double *adjustedRsquared = (double *) calloc(p, sizeof(double));
 	// We apply the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	getAdjustedCoefficientOfDetermination(Y, Y_hat, n, m, p, 1, adjustedRsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".

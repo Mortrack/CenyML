@@ -21,10 +21,10 @@
 #include <stdlib.h>
 #include <math.h>
 
-static void getPermutations(int, int, int, int *, int *);
 void getSimpleLinearRegression(double *, double *, int, int, int, double *);
 void predictSimpleLinearRegression(double *, double *, int, int, int, double *);
 void getMultipleLinearRegression(double *, double *, int, int, int, char, double *);
+void predictMultipleLinearRegression(double *, double *, int, int, int, double *);
 
 #endif
 

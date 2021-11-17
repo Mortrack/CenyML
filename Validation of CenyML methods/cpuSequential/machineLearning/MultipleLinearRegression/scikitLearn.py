@@ -2,16 +2,16 @@
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
-# COMPLETITION DATE: November 13, 2021.
-# LAST UPDATE: November 14, 2021.
+# COMPLETITION DATE: November 17, 2021.
+# LAST UPDATE: N/A
 #
-# This code is used to apply the machine learning method known as the simple
-# linear regression. This is done with the database used for linear equation
-# systems that contains a random bias value. In addition, this database has
-# 1'000'000 samples. Moreover, the well known scikit-learn library will be
-# used to such machine learning algorithm (https://bit.ly/3FghUqa). Then, some
-# metrics will be obtained, along with a plot to use these as a comparative
-# evaluation of the results obtained in the CenyML library.
+# This code is used to apply the machine learning method known as the multiple
+# linear regression. This is done with the database used for multiple linear
+# equation systems. In addition, this database has 1'000'000 samples. Moreover,
+# the well known scikit-learn library will be used to such machine learning
+# algorithm (https://bit.ly/3FghUqa). Then, some metrics will be obtained to
+# be used as a comparative evaluation of the results obtained in the CenyML
+# library.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # Python version 3.9.7
@@ -25,13 +25,12 @@ import numpy as np # version 1.21.2
 import time
 from sklearn.linear_model import LinearRegression # version 1.0.1
 from sklearn.metrics import mean_squared_error # version 1.0.1
-import matplotlib.pyplot as plt # version 3.4.3
 
 
 # -------------------------------------------- #
 # ----- Define the user variables values ----- #
 # -------------------------------------------- #
-m = 1 # This variable is used to define the number of independent variables
+m = 2 # This variable is used to define the number of independent variables
       # that the system under study has.
 p = 1 # This variable is used to define the number of dependent variables
       # that the system under study has.
@@ -51,7 +50,7 @@ columnIndexOfInputDataInCsvFile = 3; # This variable will contain the index
 # Read the .csv file containing the results of the CenyML library.
 print("Innitializing data extraction from .csv file containing the CenyML coefficient results ...")
 startingTime = time.time()
-dataset_CenyML_linearRegresCoeff = pd.read_csv('CenyML_getSimpleLinearRegression_Coefficients.csv')
+dataset_CenyML_linearRegresCoeff = pd.read_csv('CenyML_getMultipleLinearRegression_Coefficients.csv')
 elapsedTime = time.time() - startingTime
 print("Data extraction from .csv file with the CenyML coefficient results elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -59,10 +58,10 @@ print("")
 # Read the .csv file containing the data to be trained with.
 print("Innitializing data extraction from .csv file containing the data to train with ...")
 startingTime = time.time()
-dataset_rLES1000S1000SPS = pd.read_csv("../../../../Databases/regressionDBs/randLinearEquationSystem/1000systems_1000samplesPerSys.csv")
+dataset_rMLES100S100SPAPS = pd.read_csv("../../../../Databases/regressionDBs/multipleLinearEquationSystem/100systems_100samplesPerAxisPerSys.csv")
 elapsedTime = time.time() - startingTime
-n = len(dataset_rLES1000S1000SPS)
-csvColumns = len(dataset_rLES1000S1000SPS.iloc[0])
+n = len(dataset_rMLES100S100SPAPS)
+csvColumns = len(dataset_rMLES100S100SPAPS.iloc[0])
 print("Data extraction from .csv file containing " + format(n) + " samples for each of the " + format(csvColumns) + " columns (total samples = " + format(n*csvColumns) + ") elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
@@ -73,13 +72,14 @@ print("")
 # Retrieving the real data of its corresponding dataset
 print("Innitializing input and output data with " + format(n) + " samples for each of the " + format(p) + " columns (total samples = " + format(n*p) + ") ...")
 startingTime = time.time()
-X = np.ones((n, m))
 Y = np.ones((n, 0))
-for currentColumn in range(0, m):
-    temporalRow = dataset_rLES1000S1000SPS.iloc[:,columnIndexOfInputDataInCsvFile].values.reshape(n, 1)
-    X = np.append(X, temporalRow, axis=1)
-    temporalRow = dataset_rLES1000S1000SPS.iloc[:,columnIndexOfOutputDataInCsvFile].values.reshape(n, 1)
+X = np.ones((n, 0))
+for currentColumn in range(0, p):
+    temporalRow = dataset_rMLES100S100SPAPS.iloc[:,columnIndexOfOutputDataInCsvFile].values.reshape(n, 1)
     Y = np.append(Y, temporalRow, axis=1)
+for currentColumn in range(0, m):
+    temporalRow = dataset_rMLES100S100SPAPS.iloc[:,columnIndexOfInputDataInCsvFile].values.reshape(n, 1)
+    X = np.append(X, temporalRow, axis=1)
 elapsedTime = time.time() - startingTime
 print("Input and output data innitialization elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -92,7 +92,9 @@ print("Innitializing model training with the scikit-learn library ...")
 startingTime = time.time()
 regressor = LinearRegression()
 regressor.fit(X, Y)
-b = regressor.coef_
+b = np.zeros((1, m+1))
+b[0][1] = regressor.coef_[0][0]
+b[0][2] = regressor.coef_[0][1]
 elapsedTime = time.time() - startingTime
 print("Model training with the scikit-learn library elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -127,19 +129,11 @@ print("R-squared = " + format(Rsquared))
 print("R-squared metric with the scikit-learn library elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
-# We visualize the trainning set results
-X_plot = dataset_rLES1000S1000SPS.independent_variable_1
-plt.scatter(X_plot, Y, color='red')
-plt.plot(X_plot, Y_hat, color='blue')
-plt.title('Simple linear regression with scikit-learn')
-plt.xlabel('Independent variable')
-plt.ylabel('Dependent variable')
-
 # We display, in console, the coefficient values obtained with the ML method used.
-# print("b_0 = " + format(b[0][0])) # NOTE: According to what i understood from the documentation, I beleive that there is an error/bug that is not allowing this coefficient value to be displayed.
-b[0][0] = Y_hat[0][0] - b[0][1]*X[0][1]
+b[0][0] = Y_hat[0][0] - b[0][1]*X[0][0] - b[0][2]*X[0][1]
 print("b_0 = " + format(b[0][0]))
 print("b_1 = " + format(b[0][1]))
+print("b_2 = " + format(b[0][2]))
 
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The coefficients will begin their comparation process...")

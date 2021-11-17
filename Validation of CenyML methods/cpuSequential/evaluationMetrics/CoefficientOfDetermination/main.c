@@ -61,7 +61,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 10, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 17, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
 	printf("Innitializing CenyML coefficient of determination metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the coefficient of determination metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "Rsquared" (which will contain the results of the coefficient of determination metric between "Y" and "Y_hat").
-	double *Rsquared = (double *) malloc(p*sizeof(double));
+	double *Rsquared = (double *) calloc(p, sizeof(double));
 	// We apply the coefficient of determination metric between "Y" and "Y_hat".
 	getCoefficientOfDetermination(Y, Y_hat, n, p, Rsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the coefficient of determination metric between "Y" and "Y_hat".

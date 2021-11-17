@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
 # COMPLETITION DATE: November 13, 2021.
-# LAST UPDATE: November 14, 2021.
+# LAST UPDATE: November 17, 2021.
 #
 # This code is used to apply the machine learning method known as the simple
 # linear regression. This is done with the database used for linear equation
@@ -73,7 +73,7 @@ print("")
 # Retrieving the real data of its corresponding dataset
 print("Innitializing input and output data with " + format(n) + " samples for each of the " + format(p) + " columns (total samples = " + format(n*p) + ") ...")
 startingTime = time.time()
-X = np.ones((n, m))
+X = np.ones((n, 0))
 Y = np.ones((n, 0))
 for currentColumn in range(0, m):
     temporalRow = dataset_rLES1000S1000SPS.iloc[:,columnIndexOfInputDataInCsvFile].values.reshape(n, 1)
@@ -92,7 +92,8 @@ print("Innitializing model training with the scikit-learn library ...")
 startingTime = time.time()
 regressor = LinearRegression()
 regressor.fit(X, Y)
-b = regressor.coef_
+b = np.zeros((1, m+1))
+b[0][1] = regressor.coef_[0][0]
 elapsedTime = time.time() - startingTime
 print("Model training with the scikit-learn library elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -136,8 +137,7 @@ plt.xlabel('Independent variable')
 plt.ylabel('Dependent variable')
 
 # We display, in console, the coefficient values obtained with the ML method used.
-# print("b_0 = " + format(b[0][0])) # NOTE: According to what i understood from the documentation, I beleive that there is an error/bug that is not allowing this coefficient value to be displayed.
-b[0][0] = Y_hat[0][0] - b[0][1]*X[0][1]
+b[0][0] = Y_hat[0][0] - b[0][1]*X[0][0]
 print("b_0 = " + format(b[0][0]))
 print("b_1 = " + format(b[0][1]))
 
