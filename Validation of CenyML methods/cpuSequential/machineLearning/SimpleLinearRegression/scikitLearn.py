@@ -7,11 +7,11 @@
 #
 # This code is used to apply the machine learning method known as the simple
 # linear regression. This is done with the database used for linear equation
-# systems that contains a random bias value. In addition, this database has
-# 1'000'000 samples. Moreover, the well known scikit-learn library will be
-# used to such machine learning algorithm (https://bit.ly/3FghUqa). Then, some
-# metrics will be obtained, along with a plot to use these as a comparative
-# evaluation of the results obtained in the CenyML library.
+# systems. In addition, this database has 1'000'000 samples. Moreover, the
+# well known scikit-learn library will be used for such machine learning
+# algorithm (https://bit.ly/3FghUqa). Then, some metrics will be obtained,
+# along with a plot to use these as a comparative evaluation of the results
+# obtained in the CenyML library.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # Python version 3.9.7
@@ -59,7 +59,7 @@ print("")
 # Read the .csv file containing the data to be trained with.
 print("Innitializing data extraction from .csv file containing the data to train with ...")
 startingTime = time.time()
-dataset_rLES1000S1000SPS = pd.read_csv("../../../../Databases/regressionDBs/randLinearEquationSystem/1000systems_1000samplesPerSys.csv")
+dataset_rLES1000S1000SPS = pd.read_csv("../../../../Databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_rLES1000S1000SPS)
 csvColumns = len(dataset_rLES1000S1000SPS.iloc[0])

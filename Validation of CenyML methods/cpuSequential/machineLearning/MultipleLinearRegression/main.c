@@ -76,7 +76,10 @@ int main(int argc, char **argv) {
 	int p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
-	
+	double b_ideal[3]; // This variable will be used to contain the ideal coefficient values that the model to be trained should give.
+	b_ideal[0] = 10;
+	b_ideal[1] = 0.4;
+	b_ideal[2] = 0.4;
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
 	printf("Innitializing data extraction from .csv file containing the data to be used ...\n");
@@ -207,8 +210,28 @@ int main(int argc, char **argv) {
 	createCsvFile(nameOfTheCsvFile2, csvHeaders2, evaluationMetrics, &csvFile_n2, is_nArray2, 3*p, isInsertId2); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the evaluation metrics that were obtained, elapsed %f seconds.\n\n", elapsedTime);
-	printf("The program has been successfully completed!");
 	
+	// We validate the getMultipleLinearRegression method.
+	printf("Innitializing validation of the CenyML getMultipleLinearRegression method ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getMultipleLinearRegression method.
+	double differentiation; // Variable used to store the error obtained for a certain value.
+	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
+	char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
+	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
+	for (int currentRow=0; currentRow<m+1; currentRow++) {
+		differentiation = fabs(b[currentRow] - b_ideal[currentRow]);
+		if (differentiation > epsilon) { // if the error surpassed the value permitted, then terminate validation process and emit message to indicate a non match.
+			isMatch = 0;
+			printf("Validation process DID NOT MATCH!\n");
+			break;
+		}
+	}
+	if (isMatch == 1) { // If the flag "isMatch" indicates a true/high value, then emit message to indicate that the validation process matched.
+		printf("Validation process MATCHED!\n");
+	}
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to validate the getMultipleLinearRegression method.
+	printf("The validation of the CenyML getMultipleLinearRegression method elapsed %f seconds.\n\n", elapsedTime);
+	printf("The program has been successfully completed!");
 	
 	// Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.
 	free(csv1.rowsAndColumnsDimensions);
