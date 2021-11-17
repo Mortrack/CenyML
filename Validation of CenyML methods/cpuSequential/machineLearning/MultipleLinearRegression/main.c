@@ -70,13 +70,13 @@
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../Databases/regressionDBs/randLinearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile1[] = "CenyML_getSimpleLinearRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
-	char nameOfTheCsvFile2[] = "CenyML_getSimpleLinearRegression_EvalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
+	char csv1Directory[] = "../../../../Databases/regressionDBs/randMultipleLinearSystem/1systems_10samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
+	char nameOfTheCsvFile1[] = "CenyML_getMultipleLinearRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
+	char nameOfTheCsvFile2[] = "CenyML_getMultipleLinearRegression_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
-	int m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
+	int m = 2; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	int p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
@@ -105,29 +105,66 @@ int main(int argc, char **argv) {
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
 	// Allocate the memory required for the variable "Y", which will contain the real output data of the system under study.
 	double *Y = (double *) malloc(n*p*sizeof(double));
+	// Store the data that must be contained in the output matrix "Y".
+	for (int currentRow=0; currentRow<n; currentRow++) {
+		Y[currentRow] = csv1.allData[columnIndexOfOutputDataInCsvFile + currentRow*databaseColumns1];
+	}
 	// Allocate the memory required for the variable "X", which will contain the input data of the system under study.
 	double *X = (double *) malloc(n*m*sizeof(double));
-	// Create the output (Y) and input (X) data with the same rows as in the reference .csv file and their corresponding number of columns.
-	for (int currentRow=0; currentRow<n; currentRow++) { // Since m=p=1 for this particular ML algorithm, both "Y" and "X" will be innitialized here.
-		Y[currentRow] = csv1.allData[columnIndexOfOutputDataInCsvFile + currentRow*databaseColumns1];
-		X[currentRow] = csv1.allData[columnIndexOfInputDataInCsvFile + currentRow*databaseColumns1];
+	// Store the data that must be contained in the input matrix "X".
+	for (int currentRow=0; currentRow<n; currentRow++) {
+		for (int currentColumn=0; currentColumn<m; currentColumn++) {
+			X[currentColumn + currentRow*m] = csv1.allData[columnIndexOfInputDataInCsvFile + currentColumn + currentRow*databaseColumns1];
+		}
+	}
+	// Allocate the memory required for the variable "X_tilde", which will contain the input data of the system under study and an additional first row with values of "1".
+	double *X_tilde = (double *) malloc(n*(m+1)*sizeof(double));
+	// Store the data that must be contained in the input matrix "X_tilde".
+	for (int currentRow=0; currentRow<n; currentRow++) {
+		X_tilde[currentRow*(m+1)] = 1;
+		for (int currentColumn=1; currentColumn<(m+1); currentColumn++) {
+			X_tilde[currentColumn + currentRow*(m+1)] = X[currentColumn-1 + currentRow*m];
+		}
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to innitialize the input data to be used.
 	printf("Output and input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Innitializing CenyML simple linear regression algorithm ...\n");
+	printf("Innitializing CenyML multiple linear regression algorithm ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the simple linear regression with the input data (X).
+	// Obtain the number of possible permutations (which will be the factorial of "(m+1)").
+	int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
+	int factorialValue = mPlusOne;
+	for (int i=1; i<mPlusOne; i++) {
+		factorialValue = factorialValue*i;
+	}
 	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the simple linear regression algorithm.
-	double *b = (double *) malloc((m+1)*sizeof(double));
+	double *b = (double *) calloc(factorialValue*mPlusOne, sizeof(double));
 	// We apply the simple linear regression algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
-	getSimpleLinearRegression(X, Y, n, m, p, b);
+	char isVariableOptimizer = 0;
+	getMultipleLinearRegression(X_tilde, Y,  n, m, p, isVariableOptimizer, b);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the simple linear regression with the input data (X).
-	printf("CenyML simple linear regression algorithm elapsed %f seconds.\n\n", elapsedTime);
+	printf("CenyML multiple linear regression algorithm elapsed %f seconds.\n\n", elapsedTime);
 	
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
+	// We store the resulting evaluation metrics that were obtained.
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results of the evaluation metrics that were obtained.
+	// Define the desired header names for the new .csv file to be create.
+    char csvHeaders2[strlen("coefficients")+1]; // Variable where the following code will store the .csv headers.
+    csvHeaders2[0] = '\0'; // Innitialize this char variable with a null value.
+	strcat(csvHeaders2, "coefficients"); // We add the headers into "csvHeaders".
+	// Create a new .csv file and save the results obtained in it.
+	char is_nArray2 = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
+	char isInsertId2 = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
+	int csvFile_n2 = factorialValue; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
+	createCsvFile(nameOfTheCsvFile1, csvHeaders2, b, &csvFile_n2, is_nArray2, m+1, isInsertId2); // We create the desired .csv file.
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
+	printf("Creation of the .csv file to store the evaluation metrics that were obtained, elapsed %f seconds.\n\n", elapsedTime);
+	printf("The program has been successfully completed!");
+	
+	/*
 	// We predict the input values (X) with the machine learning model that was obtained.
 	printf("Innitializing CenyML predictions with the model that was obtained ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the prediction with the model that was obtained.
@@ -277,6 +314,7 @@ int main(int argc, char **argv) {
 	free(Rsquared);
 	free(adjustedRsquared);
 	free(evaluationMetrics);
+	*/
 	return (0); // end of program.
 }
 

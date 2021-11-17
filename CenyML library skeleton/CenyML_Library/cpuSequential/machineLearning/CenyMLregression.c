@@ -408,27 +408,29 @@ void getMultipleLinearRegression(double *X_tilde, double *Y, int n, int m, int p
 	int currentRowTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int currentPermutationTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
-	double new_X_tilde = (double *) malloc(n*mPlusOne*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the data from which the desired machine learning method will be calcualted.
-	double TransposeOf_new_X_tilde = (double *) malloc(mPlusOne*n*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the input data from which the desired machine learning method will be calcualted.
-	double matMul1 = (double *) malloc(mPlusOne*mPlusOne*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the result of making a matrix multiplication between "new_X_tilde" and its transpose.
-	int currentRow2 = 0; // This variable is used in the for-loop for the matrix transpose that will be made.
-	int currentColumn2 = 0; // This variable is used in the for-loop for the matrix transpose that will be made.
+	double *new_X_tilde = (double *) malloc(n*mPlusOne*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the data from which the desired machine learning method will be calcualted.
+	double *TransposeOf_new_X_tilde = (double *) malloc(mPlusOne*n*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the input data from which the desired machine learning method will be calcualted.
+	double *matMul1 = (double *) malloc(mPlusOne*mPlusOne*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the result of making a matrix multiplication between "new_X_tilde" and its transpose.
+	int currentRow2; // This variable is used in the for-loop for the matrix transpose that will be made.
+	int currentColumn2; // This variable is used in the for-loop for the matrix transpose that will be made.
 	int currentRowTimesN; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int currentColumnTimesN; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	double ratioModifier; // This variable is used to store the ratio modifier for the current row whose values will be updated due to the inverse matrix method.
 	int currentColumnTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int currentRowAndColumn2; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
-	double matMul2 = (double *) malloc(mPlusOne*n*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the result of making a matrix multiplication between the resulting inverse matrix of this process and the transpose of the matrix "new_X_tilde".
+	double *matMul2 = (double *) malloc(mPlusOne*n*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the result of making a matrix multiplication between the resulting inverse matrix of this process and the transpose of the matrix "new_X_tilde".
 	for (int currentPermutation=0; currentPermutation<factorialValue; currentPermutation++) {
 		// Fill "new_X_tilde" with the data of X_tilde but arranged with the current permutation indicated in "columnPermutations". In addition, we obtain the transpose of "new_X_tilde".
+		currentColumn2 = 0; // We reset the counters used in the following for-loop.
 		for (int currentRow=0; currentRow<n; currentRow++) {
+			currentRow2 = 0; // We reset the counters used in the following for-loop.
 			currentRowTimesMplusOne = currentRow*mPlusOne;
 			currentPermutationTimesMplusOne = currentPermutation*mPlusOne;
 			for (int currentColumn=0; currentColumn<mPlusOne; currentColumn++) {
 				currentRowAndColumn = currentColumn + currentRowTimesMplusOne;
 		        new_X_tilde[currentRowAndColumn] = X_tilde[columnPermutations[currentColumn + currentPermutationTimesMplusOne] + currentRowTimesMplusOne];
-		        TransposeOf_new_X_tilde[currentColumn2 + currentRow2*mPlusOne] = new_X_tilde[currentRowAndColumn]; 
-		        currentRow2++;
+		        TransposeOf_new_X_tilde[currentColumn2 + currentRow2*n] = new_X_tilde[currentRowAndColumn]; 
+				currentRow2++;
 		    }
 		    currentColumn2++;
 		}
@@ -440,6 +442,7 @@ void getMultipleLinearRegression(double *X_tilde, double *Y, int n, int m, int p
 			for (int currentColumn=0; currentColumn<mPlusOne; currentColumn++) {
 				currentColumnTimesN = currentColumn*n;
 				currentRowAndColumn = currentColumn + currentRowTimesMplusOne;
+				matMul1[currentRowAndColumn] = 0; // reset the value that will be used for the current matrix multiplication.
 				for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
 					// Here we want to multiply "TransposeOf_new_X_tilde" with the matrix "new_X_tilde", but we will use "TransposeOf_new_X_tilde" for such multiplication since they contain the same data, for performance purposes.
 					matMul1[currentRowAndColumn] = matMul1[currentRowAndColumn] + TransposeOf_new_X_tilde[currentMultipliedElements + currentRowTimesN] * TransposeOf_new_X_tilde[currentMultipliedElements + currentColumnTimesN];
@@ -504,6 +507,7 @@ void getMultipleLinearRegression(double *X_tilde, double *Y, int n, int m, int p
 			for (int currentColumn=0; currentColumn<n; currentColumn++) {
 				currentRowAndColumn = currentColumn + currentRowTimesN;
 				currentColumnTimesMplusOne = currentColumn*mPlusOne;
+				matMul2[currentRowAndColumn] = 0; // reset the value that will be used for the current matrix multiplication.
 				for (int currentMultipliedElements=0; currentMultipliedElements<mPlusOne; currentMultipliedElements++) {
 					matMul2[currentRowAndColumn] = matMul2[currentRowAndColumn] + TransposeOf_new_X_tilde[currentMultipliedElements + currentRowTimesMplusOne] * new_X_tilde[currentMultipliedElements + currentColumnTimesMplusOne];
 				}
@@ -511,9 +515,9 @@ void getMultipleLinearRegression(double *X_tilde, double *Y, int n, int m, int p
 		}
 		
 		// In order to conclude obtaining the coefficients ("b"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y".
-		for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
-			currentRowAndColumn = currentRow + currentPermutation*mPlusOne;
-			currentRowTimesN = currentRow*n;
+		for (int currentColumn=0; currentColumn<mPlusOne; currentColumn++) {
+			currentRowAndColumn = currentColumn + currentPermutation*mPlusOne;
+			currentRowTimesN = currentColumn*n;
 			for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
 				b[currentRowAndColumn] = b[currentRowAndColumn] + matMul2[currentMultipliedElements + currentRowTimesN] * Y[currentMultipliedElements];
 			}
