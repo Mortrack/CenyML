@@ -9,9 +9,9 @@
 # linear regression. This is done with the database used for multiple linear
 # equation systems. In addition, this database has 1'000'000 samples. Moreover,
 # the well known scikit-learn library will be used to such machine learning
-# algorithm (https://bit.ly/3FghUqa). Then, some metrics will be obtained to
-# be used as a comparative evaluation of the results obtained in the CenyML
-# library.
+# algorithm (https://bit.ly/3FghUqa and https://bit.ly/3kOue9s). Then, some
+# metrics will be obtained to be used as a comparative evaluation of the
+# results obtained in the CenyML library.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # Python version 3.9.7
@@ -23,6 +23,7 @@
 import pandas as pd  # version 1.3.3
 import numpy as np # version 1.21.2
 import time
+from sklearn.preprocessing import PolynomialFeatures # version 1.0.1
 from sklearn.linear_model import LinearRegression # version 1.0.1
 from sklearn.metrics import mean_squared_error # version 1.0.1
 
@@ -90,11 +91,10 @@ print("")
 # -------------------------- #
 print("Innitializing model training with the scikit-learn library ...")
 startingTime = time.time()
+poly_reg = PolynomialFeatures(degree=1)
+X_tilde = poly_reg.fit_transform(X)
 regressor = LinearRegression()
-regressor.fit(X, Y)
-b = np.zeros((1, m+1))
-b[0][1] = regressor.coef_[0][0]
-b[0][2] = regressor.coef_[0][1]
+regressor.fit(X_tilde, Y)
 elapsedTime = time.time() - startingTime
 print("Model training with the scikit-learn library elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -106,7 +106,7 @@ print("")
 # We obtained the predicted results by the model that was constructed.
 print("Innitializing predictions of the model obtained ...")
 startingTime = time.time()
-Y_hat = regressor.predict(X)
+Y_hat = regressor.predict(X_tilde)
 elapsedTime = time.time() - startingTime
 print("Model predictions elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -123,14 +123,17 @@ print("")
 # We obtained the coefficient of determination metric on the obtained ML model.
 print("Innitializing scikit-learn R-squared metric calculation ...")
 startingTime = time.time()
-Rsquared = regressor.score(X, Y)
+Rsquared = regressor.score(X_tilde, Y)
 elapsedTime = time.time() - startingTime
 print("R-squared = " + format(Rsquared))
 print("R-squared metric with the scikit-learn library elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 # We display, in console, the coefficient values obtained with the ML method used.
-b[0][0] = Y_hat[0][0] - b[0][1]*X[0][0] - b[0][2]*X[0][1]
+b = np.zeros((1, m+1))
+b[0][1] = regressor.coef_[0][1]
+b[0][2] = regressor.coef_[0][2]
+b[0][0] = Y_hat[0][0] - b[0][1]*X_tilde[0][1] - b[0][2]*X_tilde[0][2]
 print("b_0 = " + format(b[0][0]))
 print("b_1 = " + format(b[0][1]))
 print("b_2 = " + format(b[0][2]))

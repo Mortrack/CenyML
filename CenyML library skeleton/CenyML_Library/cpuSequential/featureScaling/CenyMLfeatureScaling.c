@@ -258,9 +258,10 @@ void getReverseMinMaxNormalization(double *inputMatrix_dot, int n, int m, double
 *							 with respect to the column arrangement. In
 *							 other words, from the first column up to
 *							 the last one. Finally, IT IS INDISPENSABLE
-*							 THAT THIS VARIABLE IS ALLOCATED BEFORE
-*							 CALLING THIS FUNCTION WITH A SIZE OF "m"
-*							 'DOUBLE' MEMORY SPACES.
+*							 THAT THIS VARIABLE IS ALLOCATED AND
+*							 INITIALIZED WITH ZEROS BEFORE CALLING THIS
+*							 FUNCTION WITH A SIZE OF "m" 'DOUBLE'
+*							 MEMORY SPACES.
 *
 * @param double *inputMatrix_dot - This argument will contain the
 * 								   pointer to a memory allocated
@@ -283,7 +284,7 @@ void getReverseMinMaxNormalization(double *inputMatrix_dot, int n, int m, double
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 08, 2021
-* LAST UPDATE: NOVEMBER 09, 2021
+* LAST UPDATE: NOVEMBER 18, 2021
 */
 void getL2Normalization(double *inputMatrix, int n, int m, double *magnitude, double *inputMatrix_dot) {
 	// In order to incrase performance, we will first calculate the magnitude with respect to each column of the argument pointer variable "inputMatrix".
@@ -438,9 +439,10 @@ void getReverseL2Normalization(double *inputMatrix_dot, int n, int m, double *ma
 *								 the parameters for the last column of
 *								 the pointer variable "inputMatrix".
 *								 Finally, IT IS INDISPENSABLE THAT THIS
-*								 VARIABLE IS ALLOCATED BEFORE CALLING
-*								 THIS FUNCTION WITH A SIZE OF TWO TIMES
-*								 "m" 'DOUBLE' MEMORY SPACES.
+*								 VARIABLE IS ALLOCATED AND INITIALIZED
+*								 WITH ZEROS BEFORE CALLING THIS
+*								 FUNCTION WITH A SIZE OF TWO TIMES "m"
+*								 'DOUBLE' MEMORY SPACES.
 *
 * @param double *inputMatrix_dot - This argument will contain the
 * 								   pointer to a memory allocated
@@ -465,7 +467,7 @@ void getReverseL2Normalization(double *inputMatrix_dot, int n, int m, double *ma
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 08, 2021
-* LAST UPDATE: NOVEMBER 09, 2021
+* LAST UPDATE: NOVEMBER 18, 2021
 */
 void getZscoreNormalization(double *inputMatrix, int n, int m, int degreesOfFreedom, double *meanAndstdDev, double *inputMatrix_dot) {
 	// We obtain the mean for each of the columns of the input matrix.

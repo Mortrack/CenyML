@@ -269,7 +269,7 @@ int main(int argc, char **argv) {
 	}
 	
 	// We validate the getSimpleLinearRegression method.
-	printf("Innitializing validation of the CenyML getSimpleLinearRegression method ...\n");
+	printf("Innitializing coefficients validation of the CenyML getSimpleLinearRegression method ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getSimpleLinearRegression method.
 	double differentiation; // Variable used to store the error obtained for a certain value.
 	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
@@ -287,7 +287,7 @@ int main(int argc, char **argv) {
 		printf("Validation process MATCHED!\n");
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to validate the getSimpleLinearRegression method.
-	printf("The validation of the CenyML getSimpleLinearRegression method elapsed %f seconds.\n\n", elapsedTime);
+	printf("The coefficients validation of the CenyML getSimpleLinearRegression method elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
 	
 	

@@ -62,7 +62,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 17, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 18, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
 	printf("Creation of the .csv file to store the evaluation metrics that were obtained, elapsed %f seconds.\n\n", elapsedTime);
 	
 	// We validate the getMultipleLinearRegression method.
-	printf("Innitializing validation of the CenyML getMultipleLinearRegression method ...\n");
+	printf("Innitializing coefficients validation of the CenyML getMultipleLinearRegression method ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getMultipleLinearRegression method.
 	double differentiation; // Variable used to store the error obtained for a certain value.
 	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
@@ -230,7 +230,7 @@ int main(int argc, char **argv) {
 		printf("Validation process MATCHED!\n");
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to validate the getMultipleLinearRegression method.
-	printf("The validation of the CenyML getMultipleLinearRegression method elapsed %f seconds.\n\n", elapsedTime);
+	printf("The coefficients validation of the CenyML getMultipleLinearRegression method elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
 	
 	// Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.

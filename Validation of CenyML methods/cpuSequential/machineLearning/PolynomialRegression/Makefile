@@ -3,4 +3,4 @@ oLib = ../../../../"CenyML library skeleton"/otherLibraries
 cM = ../../../../"CenyML library skeleton"/CenyML_Library
 
 main.x:
-	gcc main.c $(oLib)/time/mTimeTer.c $(oLib)/csv/csvManager.c $(cM)/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.c $(cM)/cpuSequential/machineLearning/CenyMLregression.c -O3 -o main.x -lm
+	gcc main.c $(oLib)/time/mTimeTer.c $(oLib)/csv/csvManager.c $(oLib)/pbPlots/pbPlots.c $(oLib)/pbPlots/supportLib.c $(cM)/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.c $(cM)/cpuSequential/machineLearning/CenyMLregression.c -O3 -o main.x -lm

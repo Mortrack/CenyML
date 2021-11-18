@@ -1,14 +1,16 @@
 /*
-* This program will read a .csv file containing the data of a multiple
-* linear equation system to then exctact all its data. Its input data
-* will be saved into the matrix "X" and its output data into the matrix
-* "Y". Subsequently, a multiple linear regression method will be
+* This program will read a .csv file containing the data of a
+* polynomial equation system to then exctact all its data. Its input
+* data will be saved into the matrix "X" and its output data into the
+* matrix "Y". Subsequently, a polynomial regression method will be
 * applied to obtain the best fitting coefficient values of such data.
 * Then, some evaluation metrics will be applied. Next, two new .csv
 * files will be created to save: 1) the coefficient values that were
 * obtained and 2) the results obtained with the evaluation metrics.
-* Both of these .csv files will serve for further comparations and
-* validation purposes.
+* Finally, a plot of the predicted data by the obtained model with
+* respect to the actual data, will be plotted and saved into a .png
+* file. Both the .csv files and this .png file will serve for further
+* comparations and validation purposes.
  */
 
  // ------------------------------------------------- //
@@ -18,6 +20,8 @@
 #include <stdlib.h>
 #include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
+#include "../../../../CenyML library skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
+#include "../../../../CenyML library skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h" // library to use the regression evaluation metrics of CenyML.
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/machineLearning/CenyMLregression.h" // library to use the regression algorithms of CenyML.
 
@@ -44,10 +48,10 @@
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then apply the multiple linear regression on the input and output data contained
+* then apply the polynomial regression on the input and output data contained
 * in it. In addition, some evaluation metrics will be applied to evaluate the
-* model. Finally, the results will be saved in two new .csv files for further
-* comparation and validation purposes.
+* model. Finally, the results will be saved in two new .csv files and in a .png
+* file for further comparation and validation purposes.
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -61,14 +65,14 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 17, 2021
+* CREATION DATE: NOVEMBER 18, 2021
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "../../../../Databases/regressionDBs/polynomialEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile1[] = "CenyML_getMultipleLinearRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
-	char nameOfTheCsvFile2[] = "CenyML_getMultipleLinearRegression_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
+	char nameOfTheCsvFile1[] = "CenyML_getPolynomialRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
+	char nameOfTheCsvFile2[] = "CenyML_getPolynomialRegression_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
@@ -125,14 +129,14 @@ int main(int argc, char **argv) {
 	
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Innitializing CenyML multiple linear regression algorithm ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the multiple linear regression with the input data (X).
-	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the multiple linear regression algorithm.
+	printf("Innitializing CenyML polynomial regression algorithm ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the polynomial regression with the input data (X).
+	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the polynomial regression algorithm.
 	double *b = (double *) calloc((N+1)*p, sizeof(double));
-	// We apply the multiple linear regression algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
+	// We apply the polynomial regression algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
 	getPolynomialRegression(X, Y, n, m, p, N, 0, b);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the multiple linear regression with the input data (X).
-	printf("CenyML multiple linear regression algorithm elapsed %f seconds.\n\n", elapsedTime);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the polynomial regression with the input data (X).
+	printf("CenyML polynomial regression algorithm elapsed %f seconds.\n\n", elapsedTime);
 	
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
@@ -215,11 +219,69 @@ int main(int argc, char **argv) {
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the evaluation metrics that were obtained, elapsed %f seconds.\n\n", elapsedTime);
 	
-	// We validate the getMultipleLinearRegression method.
-	printf("Innitializing validation of the CenyML getMultipleLinearRegression method ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getMultipleLinearRegression method.
+	// Plot a graph with the model that was obtained and saved it into a .png file.
+	// Trying the "pbPlots" library (https://github.com/InductiveComputerScience/pbPlots)
+	_Bool success;
+    StringReference *errorMessage;
+	RGBABitmapImageReference *imageReference = CreateRGBABitmapImageReference();
+
+	ScatterPlotSeries *series = GetDefaultScatterPlotSeriesSettings();
+	series->xs = X;
+	series->xsLength = n;
+	series->ys = Y;
+	series->ysLength = n;
+	series->linearInterpolation = false;
+	series->pointType = L"dots";
+	series->pointTypeLength = wcslen(series->pointType);
+	series->color = CreateRGBColor(0.929, 0.196, 0.216);
+
+	ScatterPlotSeries *series2 = GetDefaultScatterPlotSeriesSettings();
+	series2->xs = X;
+	series2->xsLength = n;
+	series2->ys = Y_hat;
+	series2->ysLength = n;
+	series2->linearInterpolation = true;
+	series2->lineType = L"solid";
+	series2->lineTypeLength = wcslen(series->lineType);
+	series2->lineThickness = 2;
+	series2->color = CreateRGBColor(0.153, 0.153, 0.996);
+
+	ScatterPlotSettings *settings = GetDefaultScatterPlotSettings();
+	settings->width = 600;
+	settings->height = 400;
+	settings->autoBoundaries = true;
+	settings->autoPadding = true;
+	settings->title = L"";
+	settings->titleLength = wcslen(settings->title);
+	settings->xLabel = L"independent variable";
+	settings->xLabelLength = wcslen(settings->xLabel);
+	settings->yLabel = L"dependent variable";
+	settings->yLabelLength = wcslen(settings->yLabel);
+	ScatterPlotSeries *s [] = {series, series2};
+	settings->scatterPlotSeries = s;
+	settings->scatterPlotSeriesLength = 2;
+
+    errorMessage = (StringReference *)malloc(sizeof(StringReference));
+	success = DrawScatterPlotFromSettings(imageReference, settings, errorMessage);
+
+    if(success){
+        size_t length;
+        double *pngdata = ConvertToPNG(&length, imageReference->image);
+        WriteToFile(pngdata, length, "plotOfMachineLearningModel (CenyML).png");
+        DeleteImage(imageReference->image);
+	}else{
+	    fprintf(stderr, "Error: ");
+        for(int i = 0; i < errorMessage->stringLength; i++){
+            fprintf(stderr, "%c", errorMessage->string[i]);
+        }
+        fprintf(stderr, "\n");
+	}
+	
+	// We validate the getPolynomialRegression method.
+	printf("Innitializing coefficients validation of the CenyML getPolynomialRegression method ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getPolynomialRegression method.
 	double differentiation; // Variable used to store the error obtained for a certain value.
-	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
+	double epsilon = 1.01E-6; // Variable used to store the max error value permitted during validation process.
 	char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
 	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
 	for (int currentRow=0; currentRow<N+1; currentRow++) {
@@ -233,8 +295,8 @@ int main(int argc, char **argv) {
 	if (isMatch == 1) { // If the flag "isMatch" indicates a true/high value, then emit message to indicate that the validation process matched.
 		printf("Validation process MATCHED!\n");
 	}
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to validate the getMultipleLinearRegression method.
-	printf("The validation of the CenyML getMultipleLinearRegression method elapsed %f seconds.\n\n", elapsedTime);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to validate the getPolynomialRegression method.
+	printf("The coefficients validation of the CenyML getPolynomialRegression method elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
 	
 	// Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.

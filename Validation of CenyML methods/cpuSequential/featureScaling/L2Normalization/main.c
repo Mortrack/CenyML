@@ -61,7 +61,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 08, 2021
-* LAST UPDATE: NOVEMBER 12, 2021
+* LAST UPDATE: NOVEMBER 18, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
 	double *x_dot = (double *) malloc(n*desired_m*sizeof(double));
 	// We apply the L2 normalization method for each of the values contained in the matrix "X" and the result is stored in the memory location of the pointer "x_dot".
 	// At the same time, the variable "minMax" will store the parameters identified for the L2 normalization method. There, the first "m" values will stand for the minimum values and the last "m" values for the maximum values of each column of the matrix "X".
-	double *magnitude = (double *) malloc(desired_m*sizeof(double));
+	double *magnitude = (double *) calloc(desired_m, sizeof(double));
 	getL2Normalization(X, n, desired_m, magnitude, x_dot);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the L2 normalization applied to the input data (X).
 	printf("CenyML L2 normalization method elapsed %f seconds.\n\n", elapsedTime);

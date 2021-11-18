@@ -512,9 +512,9 @@ void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedo
 *					 memory allocated variable in which each "k-th"
 *					 column will store the rows length value of the
 *					 "k-th" column of the argument variable "Mo".
-*					 THIS VARIABLE SHOULD BE ALLOCATED BEFORE CALLING
-*					 THIS FUNCTION WITH A SIZE OF "n" 'DOUBLE' MEMORY
-*					 SPACES.
+*					 THIS VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
+*                    WITH ZEROS BEFORE CALLING THIS FUNCTION WITH A
+*                    SIZE OF "n" 'DOUBLE' MEMORY SPACES.
 *
 * @param double *Mo - This argument will contain the pointer to a
 *					  memory allocated variable in which the sort
@@ -536,7 +536,7 @@ void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedo
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 19, 2021
-* LAST UPDATE: NOVEMBER 09, 2021
+* LAST UPDATE: NOVEMBER 18, 2021
 */
 //TODO: Test the performance of the "quick sort" method when argumenting the entire matrix in "applyQuickSort()" instead of several vectors, to compare it with the current method.
 void getQuickMode(char desiredSortMethod[], int n, int m, double *inputMatrix, int *Mo_n, double *Mo) {

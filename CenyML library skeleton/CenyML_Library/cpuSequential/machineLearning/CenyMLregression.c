@@ -206,7 +206,7 @@ void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, do
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
 *					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
-*					 WITH A SIZE OF "n" TIMES "m=1" 'DOUBLE' MEMORY
+*					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
 * @param double *Y - This argument will contain the pointer to a
@@ -250,9 +250,9 @@ void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, do
 *					 index 0 and the last coefficient (b_m) will be
 *					 stored in the row with index "m". IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
-*					 WITH A VARIABLE SIZE OF "m+1" TIMES "p=1" 'DOUBLE'
-*					 MEMORY SPACES.
+*					 AND INNITIALIZED WITH ZEROS BEFORE CALLING THIS
+*					 FUNCTION WITH A VARIABLE SIZE OF "m+1" TIMES "p=1"
+*					 'DOUBLE' MEMORY SPACES.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE "b".
 * 
@@ -260,7 +260,7 @@ void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, do
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 17, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 18, 2021
 */
 void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -415,7 +415,7 @@ void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char
 *					 desired machine learning predictions will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
 *					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
-*					 WITH A SIZE OF "n" TIMES "m=1" 'DOUBLE' MEMORY
+*					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
 * @param double *b - This argument will contain the pointer to a
@@ -454,7 +454,7 @@ void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 17, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 18, 2021
 */
 void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, double *Y_hat) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -482,10 +482,10 @@ void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, 
 
 
 /**
-* The "getMultipleLinearRegression()" function is used to apply the
-* machine learning algorithm called multiple linear regression.
-* Within this process, the best fitting equation with the form of
-* "y_hat = b_0 + b_1*x_1 + b_2*x_2 + ... +  + b_m*x_m" will be
+* The "getPolynomialRegression()" function is used to apply the
+* machine learning algorithm called polynomial regression. Within
+* this process, the best fitting equation with the form of "y_hat =
+* b_0 + b_1*x + b_2*x^2 + b_3*x^3 + ... +  + b_N*x^N" will be
 * identified with respect to the sampled data given through the
 * argument pointer variables "X" and "Y". As a result, the
 * identified coefficient values will be stored in the argument
@@ -528,6 +528,9 @@ void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, 
 *				 containing the real results of the system under
 *				 study.
 *
+* @param int N - This argument will represent the desired order of
+*				 degree for the machine learning model to be trained.
+*
 * @param char isVariableOptimizer = This argument variable is not
 *									having any effect on this function
 *									at the moment, as its functionality
@@ -544,19 +547,19 @@ void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, 
 *					 coefficients will each be stored in the same
 *					 column but under different rows where the first
 *					 coefficient (b_0) will be stored in the row with
-*					 index 0 and the last coefficient (b_m) will be
-*					 stored in the row with index "m". IT IS
+*					 index 0 and the last coefficient (b_N) will be
+*					 stored in the row with index "N". IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
-*					 WITH A VARIABLE SIZE OF "m+1" TIMES "p=1" 'DOUBLE'
-*					 MEMORY SPACES.
+*					 AND INNITIALIZED WITH ZEROS BEFORE CALLING THIS
+*					 FUNCTION WITH A VARIABLE SIZE OF "N+1" TIMES "p=1"
+*					 'DOUBLE' MEMORY SPACES.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE "b".
 * 
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER XX, 2021
+* CREATION DATE: NOVEMBER 18, 2021
 * LAST UPDATE: N/A
 */
 void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, char isVariableOptimizer, double *b) {
@@ -579,15 +582,14 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 	double *TransposeOf_X_tilde = (double *) malloc(NplusOne*n*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the input data from which the desired machine learning method will be calcualted.
 	int currentRow2; // This variable is used in the for-loop for the matrix transpose that will be made.
 	int currentColumn2 = 0; // This variable is used in the for-loop for the matrix transpose that will be made.
-	double increaseExponentialOfThisValue; // Variable used to store the value that wants to be raised +1 exponential.
+	double increaseExponentialOfThisValue; // Variable used to store the value that wants to be raised exponentially.
 	for (int currentRow=0; currentRow<n; currentRow++) {
 		currentRow2 = 0; // We reset the counters used in the following for-loop.
 		currentRowTimesNplusOne = currentRow*NplusOne;
 		X_tilde[currentRowTimesNplusOne] = 1;
 		TransposeOf_X_tilde[currentColumn2] = X_tilde[currentRowTimesNplusOne];
-		increaseExponentialOfThisValue = X[currentRow];
-		X_tilde[1 + currentRowTimesNplusOne] = increaseExponentialOfThisValue;
-		for (int currentExponential=2; currentExponential<NplusOne; currentExponential++) {
+		increaseExponentialOfThisValue = 1;
+		for (int currentExponential=1; currentExponential<NplusOne; currentExponential++) {
 			currentRowAndColumn = currentExponential + currentRowTimesNplusOne;
 			increaseExponentialOfThisValue = increaseExponentialOfThisValue * X[currentRow];
 			X_tilde[currentRowAndColumn] = increaseExponentialOfThisValue;
@@ -700,9 +702,9 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 /**
 * The "predictMultipleLinearRegression()" function is used to make the
 * predictions of the requested input values (X) by applying the
-* multiple linear equation system with the specified coefficient values
-* (b). The predicted values will be stored in the argument pointer
-* variable "Y_hat".
+* polynomial equation system with the specified order of degree (N)
+* and coefficient values (b). The predicted values will be stored in
+* the argument pointer variable "Y_hat".
 * 
 * @param double *X - This argument will contain the pointer to a
 *					 memory allocated input matrix, from which the
@@ -712,6 +714,9 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 *					 WITH A SIZE OF "n" TIMES "m=1" 'DOUBLE' MEMORY
 *					 SPACES.
 *
+* @param int N - This argument will represent the desired order of
+*				 degree of the machine learning model to be used.
+*
 * @param double *b - This argument will contain the pointer to a
 *					 memory allocated variable containing the
 *					 coefficient values for the desired machine
@@ -719,7 +724,7 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 *					 the specified predictions. IT IS INDISPENSABLE
 *					 THAT THIS VARIABLE IS ALLOCATED AND INNITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A VARIABLE
-*					 SIZE OF "m+1" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*					 SIZE OF "N+1" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
 * @param int n - This argument will represent the total number of
 *				 samples (rows) that the input matrix has, with which 
@@ -747,7 +752,7 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 17, 2021
+* CREATION DATE: NOVEMBER 18, 2021
 * LAST UPDATE: N/A
 */
 void predictPolynomialRegression(double *X, int N, double *b, int n, int m, int p, double *Y_hat) {
@@ -764,9 +769,10 @@ void predictPolynomialRegression(double *X, int N, double *b, int n, int m, int 
 	
 	// We predict all the requested input values (X) with the desired machine learning algorithm and its especified coefficient values (b).
 	int NplusOne = N+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
-	double increaseExponentialOfThisValue = 1; // Variable used to store the value that wants to be raised +1 exponential.
+	double increaseExponentialOfThisValue; // Variable used to store the value that wants to be raised exponentially.
 	for (int currentRow=0; currentRow<n; currentRow++) {
 		Y_hat[currentRow] = b[0];
+		increaseExponentialOfThisValue = 1;
 		for (int currentExponential=1; currentExponential<NplusOne; currentExponential++) {
 			increaseExponentialOfThisValue = increaseExponentialOfThisValue * X[currentRow];
 			Y_hat[currentRow] = Y_hat[currentRow] + b[currentExponential]*increaseExponentialOfThisValue;

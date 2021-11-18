@@ -92,8 +92,6 @@ print("Innitializing model training with the scikit-learn library ...")
 startingTime = time.time()
 regressor = LinearRegression()
 regressor.fit(X, Y)
-b = np.zeros((1, m+1))
-b[0][1] = regressor.coef_[0][0]
 elapsedTime = time.time() - startingTime
 print("Model training with the scikit-learn library elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -137,6 +135,8 @@ plt.xlabel('Independent variable')
 plt.ylabel('Dependent variable')
 
 # We display, in console, the coefficient values obtained with the ML method used.
+b = np.zeros((1, m+1))
+b[0][1] = regressor.coef_[0][0]
 b[0][0] = Y_hat[0][0] - b[0][1]*X[0][0]
 print("b_0 = " + format(b[0][0]))
 print("b_1 = " + format(b[0][1]))

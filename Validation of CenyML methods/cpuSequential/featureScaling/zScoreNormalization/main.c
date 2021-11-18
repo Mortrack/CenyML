@@ -61,7 +61,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 08, 2021
-* LAST UPDATE: NOVEMBER 12, 2021
+* LAST UPDATE: NOVEMBER 18, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
 	double *x_dot = (double *) malloc(n*desired_m*sizeof(double));
 	// We apply the Z score normalization method for each of the values contained in the matrix "X" and the result is stored in the memory location of the pointer "x_dot".
 	// At the same time, the variable "minMax" will store the parameters identified for the Z score normalization method. There, the first "m" values will stand for the minimum values and the last "m" values for the maximum values of each column of the matrix "X".
-	double *meanAndstdDev = (double *) malloc(2*desired_m*sizeof(double));
+	double *meanAndstdDev = (double *) calloc(2*desired_m, sizeof(double));
 	getZscoreNormalization(X, n, desired_m, degreesOfFreedom, meanAndstdDev, x_dot);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the Z score normalization applied to the input data (X).
 	printf("CenyML Z score normalization method elapsed %f seconds.\n\n", elapsedTime);
