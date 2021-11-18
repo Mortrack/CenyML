@@ -25,6 +25,8 @@ void getSimpleLinearRegression(double *, double *, int, int, int, double *);
 void predictSimpleLinearRegression(double *, double *, int, int, int, double *);
 void getMultipleLinearRegression(double *, double *, int, int, int, char, double *);
 void predictMultipleLinearRegression(double *, double *, int, int, int, double *);
+void getPolynomialRegression(double *, double *, int, int, int, int, char, double *);
+void predictPolynomialRegression(double *, int, double *, int, int, int, double *);
 
 #endif
 
