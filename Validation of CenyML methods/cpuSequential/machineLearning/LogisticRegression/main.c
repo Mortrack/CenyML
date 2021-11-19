@@ -1,21 +1,21 @@
 /*
-* This program will read a .csv file containing the data of a linear
+* This program will read a .csv file containing the data of a logistic
 * equation system to then exctact all its data. Its input data will be
 * saved into the matrix "X" and its output data into the matrix "Y".
-* Subsequently, a simple linear regression method will be applied to
-* obtain the best fitting coefficient values of such data. Then,
-* some evaluation metrics will be applied. Next, two new .csv files
-* will be created to save: 1) the coefficient values that were
-* obtained and 2) the results obtained with the evaluation metrics.
-* Finally, a plot of the predicted data by the obtained model with
-* respect to the actual data, will be plotted and saved into a .png
-* file. Both the .csv files and this .png file will serve for further
-* comparations and validation purposes.
- */
+* Subsequently, a logistic regression method will be applied to obtain
+* the best fitting coefficient values of such data. Then, some
+* evaluation metrics will be applied. Next, two new .csv files will be
+* created to save: 1) the coefficient values that were obtained and 2)
+* the results obtained with the evaluation metrics. Finally, a plot of
+* the predicted data by the obtained model with respect to the actual
+* data, will be plotted and saved into a .png file. Both the .csv files
+* and this .png file will serve for further comparations and validation
+* purposes.
+*/
 
- // ------------------------------------------------- //
- // ----- DEFINE THE LIBRARIES THAT WE WILL USE ----- //
- // ------------------------------------------------- //
+// ------------------------------------------------- //
+// ----- DEFINE THE LIBRARIES THAT WE WILL USE ----- //
+// ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
@@ -48,8 +48,8 @@
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then apply the simple linear regression on the input and output data contained
-* in it. In addition, some evaluation metrics will be applied to evaluate the
+* then apply the logistic regression on the input and output data contained in
+* it. In addition, some evaluation metrics will be applied to evaluate the
 * model. Finally, the results will be saved in two new .csv files and in a .png
 * file for further comparation and validation purposes.
 *
@@ -65,14 +65,14 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 13, 2021
-* LAST UPDATE: NOVEMBER 17, 2021
+* CREATION DATE: NOVEMBER 19, 2021
+* LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../Databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile1[] = "CenyML_getSimpleLinearRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
-	char nameOfTheCsvFile2[] = "CenyML_getSimpleLinearRegression_EvalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
+	char csv1Directory[] = "../../../../Databases/regressionDBs/logisticEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
+	char nameOfTheCsvFile1[] = "CenyML_getLogisticRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
+	char nameOfTheCsvFile2[] = "CenyML_getLogisticRegression_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
@@ -81,9 +81,8 @@ int main(int argc, char **argv) {
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
 	double b_ideal[2]; // This variable will be used to contain the ideal coefficient values that the model to be trained should give.
-	b_ideal[0] = 10;
-	b_ideal[1] = 0.8;
-	
+	b_ideal[0] = -8.26;
+	b_ideal[1] = 0.165;
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
 	printf("Initializing data extraction from .csv file containing the data to be used ...\n");
@@ -108,26 +107,37 @@ int main(int argc, char **argv) {
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
 	// Allocate the memory required for the variable "Y", which will contain the real output data of the system under study.
 	double *Y = (double *) malloc(n*p*sizeof(double));
+	// Store the data that must be contained in the output matrix "Y".
+	for (int currentRow=0; currentRow<n; currentRow++) {
+		Y[currentRow] = csv1.allData[columnIndexOfOutputDataInCsvFile + currentRow*databaseColumns1];
+		if (Y[currentRow] == 1) {
+			Y[currentRow] = 0.9999;
+		}
+		if (Y[currentRow] == 0) {
+			Y[currentRow] = 0.0001;
+		}
+	}
 	// Allocate the memory required for the variable "X", which will contain the input data of the system under study.
 	double *X = (double *) malloc(n*m*sizeof(double));
-	// Create the output (Y) and input (X) data with the same rows as in the reference .csv file and their corresponding number of columns.
-	for (int currentRow=0; currentRow<n; currentRow++) { // Since m=p=1 for this particular ML algorithm, both "Y" and "X" will be innitialized here.
-		Y[currentRow] = csv1.allData[columnIndexOfOutputDataInCsvFile + currentRow*databaseColumns1];
-		X[currentRow] = csv1.allData[columnIndexOfInputDataInCsvFile + currentRow*databaseColumns1];
+	// Store the data that must be contained in the input matrix "X".
+	for (int currentRow=0; currentRow<n; currentRow++) {
+		for (int currentColumn=0; currentColumn<m; currentColumn++) {
+			X[currentColumn + currentRow*m] = csv1.allData[columnIndexOfInputDataInCsvFile + currentColumn + currentRow*databaseColumns1];
+		}
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to innitialize the input data to be used.
 	printf("Output and input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Initializing CenyML simple linear regression algorithm ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the simple linear regression with the input data (X).
-	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the simple linear regression algorithm.
-	double *b = (double *) malloc((m+1)*sizeof(double));
-	// We apply the simple linear regression algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
-	getSimpleLinearRegression(X, Y, n, m, p, b);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the simple linear regression with the input data (X).
-	printf("CenyML simple linear regression algorithm elapsed %f seconds.\n\n", elapsedTime);
+	printf("Initializing CenyML logistic regression algorithm ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the logistic regression with the input data (X).
+	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the logistic regression algorithm.
+	double *b = (double *) calloc((m+1)*p, sizeof(double));
+	// We apply the logistic regression algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
+	getLogisticRegression(X, Y,  n, m, p, 0, b);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the logistic regression with the input data (X).
+	printf("CenyML logistic regression algorithm elapsed %f seconds.\n\n", elapsedTime);
 	
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
@@ -137,7 +147,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(n*p*sizeof(double));
 	// We obtain the predicted values with the machine learning model that was obtained.
-	predictSimpleLinearRegression(X, b, n, m, p, Y_hat);
+	predictLogisticRegression(X, b, n, m, p, Y_hat);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
 	printf("The CenyML predictions with the model that was obtained elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -191,8 +201,8 @@ int main(int argc, char **argv) {
 	// Create a new .csv file and save the results obtained in it.
 	char is_nArray1 = 0; // Indicate through this flag variable that the variable that indicates the samples (n) is not an array because it has the same amount of samples per columns.
 	char isInsertId1 = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	int csvFile_n1 = 2; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
-	createCsvFile(nameOfTheCsvFile1, csvHeaders1, b, &csvFile_n1, is_nArray1, 1, isInsertId1); // We create the desired .csv file.
+	int csvFile_n1 = m+1; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
+	createCsvFile(nameOfTheCsvFile1, csvHeaders1, b, &csvFile_n1, is_nArray1, p, isInsertId1); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the coefficients that were obtained, elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -268,11 +278,11 @@ int main(int argc, char **argv) {
         fprintf(stderr, "\n");
 	}
 	
-	// We validate the getSimpleLinearRegression method.
-	printf("Initializing coefficients validation of the CenyML getSimpleLinearRegression method ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getSimpleLinearRegression method.
+	// We validate the getLogisticRegression method.
+	printf("Initializing coefficients validation of the CenyML getLogisticRegression method ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getLogisticRegression method.
 	double differentiation; // Variable used to store the error obtained for a certain value.
-	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
+	double epsilon = 1.0E-6; // Variable used to store the max error value permitted during validation process.
 	char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
 	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
 	for (int currentRow=0; currentRow<m+1; currentRow++) {
@@ -286,10 +296,9 @@ int main(int argc, char **argv) {
 	if (isMatch == 1) { // If the flag "isMatch" indicates a true/high value, then emit message to indicate that the validation process matched.
 		printf("Validation process MATCHED!\n");
 	}
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to validate the getSimpleLinearRegression method.
-	printf("The coefficients validation of the CenyML getSimpleLinearRegression method elapsed %f seconds.\n\n", elapsedTime);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to validate the getLogisticRegression method.
+	printf("The coefficients validation of the CenyML getLogisticRegression method elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
-	
 	
 	// Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.
 	free(csv1.rowsAndColumnsDimensions);

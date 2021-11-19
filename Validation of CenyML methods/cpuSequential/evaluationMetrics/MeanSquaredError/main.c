@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 	
 	
 	// ---------------------- IMPORT DATA 1 TO BE USED --------------------- //
-	printf("Innitializing data extraction from .csv file 1 containing the real output data ...\n");
+	printf("Initializing data extraction from .csv file 1 containing the real output data ...\n");
 	double startingTime, elapsedTime; // Declaration of variables used to count time in seconds.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 	printf("Data extraction from .csv file 1 containing %d rows for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, databaseColumns1, (n*databaseColumns1), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA 1 ------------------ //
-	printf("Innitializing real output data with %d samples for each of the %d columns (total samples = %d)...\n", n, p, (n*p));
+	printf("Initializing real output data with %d samples for each of the %d columns (total samples = %d)...\n", n, p, (n*p));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the real output data to be used.
 	// Allocate the memory required for the variable "Y", which will contain the real output data of the system under study.
 	double *Y = (double *) malloc(n*p*sizeof(double));
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
 	printf("Real output data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ---------------------- IMPORT DATA 2 TO BE USED --------------------- //
-	printf("Innitializing data extraction from .csv file 2 containing the predicted output data ...\n");
+	printf("Initializing data extraction from .csv file 2 containing the predicted output data ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
 	csv2.rowsAndColumnsDimensions = (int *) malloc(2*sizeof(int)); // We initialize the variable that will store the rows & columns dimensions.
@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
 	printf("Data extraction from .csv file 2 containing %d rows for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, databaseColumns2, (n*databaseColumns2), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA 2 ------------------ //
-	printf("Innitializing predicted output data with %d samples for each of the %d columns (total samples = %d)...\n", n, p, (n*p));
+	printf("Initializing predicted output data with %d samples for each of the %d columns (total samples = %d)...\n", n, p, (n*p));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the predicted output data to be used.
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(n*p*sizeof(double));
@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
 	
 	// ------------------------- DATA MODELING ----------------------- //
 	// We apply the mean squared error metric.
-	printf("Innitializing CenyML mean squared error metric ...\n");
+	printf("Initializing CenyML mean squared error metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the mean squared error metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "MSE" (which will contain the results of the mean squared error metric between "Y" and "Y_hat").
 	double *MSE = (double *) calloc(p, sizeof(double));

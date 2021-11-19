@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 	int desired_m = 5; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
-	printf("Innitializing data extraction from .csv file containing the reference input data ...\n");
+	printf("Initializing data extraction from .csv file containing the reference input data ...\n");
 	double startingTime, elapsedTime; // Declaration of variables used to count time in seconds.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 	printf("Data extraction from .csv file containing %d samples for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, m, (n*m), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
-	printf("Innitializing input data with %d samples for each of the %d columns (total samples = %d)...\n", n, desired_m, (n*desired_m));
+	printf("Initializing input data with %d samples for each of the %d columns (total samples = %d)...\n", n, desired_m, (n*desired_m));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
 	// Allocate the memory required for the variable "X", which will contain the input data of the system on which the feature scaling method will be applied.
 	double *X = (double *) malloc(n*desired_m*sizeof(double));
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
 	
 	// ------------------------- DATA MODELING ----------------------- //
 	// We apply the L2 normalization method.
-	printf("Innitializing CenyML L2 normalization method ...\n");
+	printf("Initializing CenyML L2 normalization method ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the L2 normalization method applied to the input data (X).
 	// Allocate the memory required for the variable "x_dot" (which will contain the values of the input data "X" but with the L2 normalization method applied to it).
 	double *x_dot = (double *) malloc(n*desired_m*sizeof(double));
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 	printf("CenyML L2 normalization method elapsed %f seconds.\n\n", elapsedTime);
 	
 	// We apply the reverse of the L2 normalization method.
-	printf("Innitializing CenyML reverse L2 normalization method ...\n");
+	printf("Initializing CenyML reverse L2 normalization method ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the reverse of the L2 normalization method that was previously applied.
 	// Allocate the memory required for the variable "reverse_x_dot" (which will contain the values of the reverse L2 normalization method applied to "x_dot").
 	double *reverse_x_dot = (double *) malloc(n*desired_m*sizeof(double));
@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
 	printf("CenyML reverse L2 normalization method elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
-	printf("Innitializing validation of the CenyML reverse L2 normalization method ...\n");
+	printf("Initializing validation of the CenyML reverse L2 normalization method ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the reverse of the L2 normalization method.
 	// We validate the reverse of the L2 normalization method.
 	double differentiation; // Variable used to store the error obtained for a certain value.
@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
 			differentiation = fabs(reverse_x_dot[currentColumn + currentRow*desired_m] - X[currentColumn + currentRow*desired_m]);
 			if (differentiation > epsilon) { // if the error surpassed the value permitted, then terminate validation process and emit message to indicate a non match.
 				isMatch = 0;
-				printf("Validation process DID NOT MATCH!\n");
+				printf("Validation process DID NOT MATCH! and a difference of %f was obtained.\n", differentiation);
 				break;
 			}
 		}

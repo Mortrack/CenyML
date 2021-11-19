@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
 	int degreesOfFreedom = 1; // Desired degrees of freedom, specified with the variable "q" in the documentation, to be applied in the adjusted R-squared to be calculated.
 	
 	// ---------------------- IMPORT DATA 1 TO BE USED --------------------- //
-	printf("Innitializing data extraction from .csv file 1 containing the real output data ...\n");
+	printf("Initializing data extraction from .csv file 1 containing the real output data ...\n");
 	double startingTime, elapsedTime; // Declaration of variables used to count time in seconds.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
 	printf("Data extraction from .csv file 1 containing %d rows for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, databaseColumns1, (n*databaseColumns1), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA 1 ------------------ //
-	printf("Innitializing real output data with %d samples for each of the %d columns (total samples = %d)...\n", n, p, (n*p));
+	printf("Initializing real output data with %d samples for each of the %d columns (total samples = %d)...\n", n, p, (n*p));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the real output data to be used.
 	// Allocate the memory required for the variable "Y", which will contain the real output data of the system under study.
 	double *Y = (double *) malloc(n*p*sizeof(double));
@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 	printf("Real output data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ---------------------- IMPORT DATA 2 TO BE USED --------------------- //
-	printf("Innitializing data extraction from .csv file 2 containing the results to be used as a reference ...\n");
+	printf("Initializing data extraction from .csv file 2 containing the results to be used as a reference ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
 	csv2.rowsAndColumnsDimensions = (int *) malloc(2*sizeof(int)); // We initialize the variable that will store the rows & columns dimensions.
@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
 	printf("Data extraction from .csv file 2 containing %d rows for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", databaseRows2, databaseColumns2, (databaseRows2*databaseColumns2), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA 2 ------------------ //
-	printf("Innitializing Python results data with %d samples for each of the %d columns (total samples = %d)...\n", databaseRows2, databaseColumns2, (databaseRows2*databaseColumns2));
+	printf("Initializing Python results data with %d samples for each of the %d columns (total samples = %d)...\n", databaseRows2, databaseColumns2, (databaseRows2*databaseColumns2));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the Python results data to be used.
 	// Allocate the memory required for the variable "python_adjustedRsquared", which will contain the results that were obtained in the reference library on Python.
 	double *python_adjustedRsquared = (double *) malloc(databaseRows2*databaseColumns2*sizeof(double));
@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
 	printf("Python results data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ---------------------- IMPORT DATA 3 TO BE USED --------------------- //
-	printf("Innitializing data extraction from .csv file 3 containing the predicted output data ...\n");
+	printf("Initializing data extraction from .csv file 3 containing the predicted output data ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
 	csv3.rowsAndColumnsDimensions = (int *) malloc(2*sizeof(int)); // We initialize the variable that will store the rows & columns dimensions.
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
 	printf("Data extraction from .csv file 3 containing %d rows for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, databaseColumns2, (n*databaseColumns2), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA 3 ------------------ //
-	printf("Innitializing predicted output data with %d samples for each of the %d columns (total samples = %d)...\n", n, p, (n*p));
+	printf("Initializing predicted output data with %d samples for each of the %d columns (total samples = %d)...\n", n, p, (n*p));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the predicted output data to be used.
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(n*p*sizeof(double));
@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
 	
 	// ------------------------- DATA MODELING ----------------------- //
 	// We apply the adjusted coefficient of determination metric.
-	printf("Innitializing CenyML adjusted coefficient of determination metric ...\n");
+	printf("Initializing CenyML adjusted coefficient of determination metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "adjustedRsquared" (which will contain the results of the adjusted coefficient of determination metric between "Y" and "Y_hat").
 	double *adjustedRsquared = (double *) calloc(p, sizeof(double));
@@ -188,7 +188,7 @@ int main(int argc, char **argv) {
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
 	// We validate the CenyML adjusted coefficient of determination metric.
-	printf("Innitializing CenyML validation process with respect to the results obtained in Python ...\n");
+	printf("Initializing CenyML validation process with respect to the results obtained in Python ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results that were obtained.
 	double differentiation; // Variable used to store the error obtained for a certain value.
 	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
@@ -199,7 +199,7 @@ int main(int argc, char **argv) {
 			differentiation = fabs(adjustedRsquared[currentColumn + currentRow*p] - python_adjustedRsquared[currentColumn + currentRow*p]);
 			if (differentiation > epsilon) { // if the error surpassed the value permitted, then terminate validation process and emit message to indicate a non match.
 				isMatch = 0;
-				printf("Validation process DID NOT MATCH!\n");
+				printf("Validation process DID NOT MATCH! and a difference of %f was obtained.\n", differentiation);
 				break;
 			}
 		}

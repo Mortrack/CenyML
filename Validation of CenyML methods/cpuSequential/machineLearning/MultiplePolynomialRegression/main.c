@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 	
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
-	printf("Innitializing data extraction from .csv file containing the data to be used ...\n");
+	printf("Initializing data extraction from .csv file containing the data to be used ...\n");
 	double startingTime, elapsedTime; // Declaration of variables used to count time in seconds.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
 	
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
-	printf("Innitializing the output and input data with %d samples for each of the %d columns (total samples = %d) each...\n", n, m, (n*m));
+	printf("Initializing the output and input data with %d samples for each of the %d columns (total samples = %d) each...\n", n, m, (n*m));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
 	// Allocate the memory required for the variable "Y", which will contain the real output data of the system under study.
 	double *Y = (double *) malloc(n*p*sizeof(double));
@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
 	
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Innitializing CenyML multiple polynomial regression algorithm ...\n");
+	printf("Initializing CenyML multiple polynomial regression algorithm ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the multiple polynomial regression with the input data (X).
 	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the multiple polynomial regression algorithm.
 	double *b = (double *) calloc((m*N+1)*p, sizeof(double));
@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
 	// We predict the input values (X) with the machine learning model that was obtained.
-	printf("Innitializing CenyML predictions with the model that was obtained ...\n");
+	printf("Initializing CenyML predictions with the model that was obtained ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the prediction with the model that was obtained.
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(n*p*sizeof(double));
@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
 	printf("The CenyML predictions with the model that was obtained elapsed %f seconds.\n\n", elapsedTime);
 	
 	// We apply the mean squared error metric.
-	printf("Innitializing CenyML mean squared error metric ...\n");
+	printf("Initializing CenyML mean squared error metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the mean squared error metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "MSE" (which will contain the results of the mean squared error metric between "Y" and "Y_hat").
 	double *MSE = (double *) calloc(p, sizeof(double));
@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
 	printf("CenyML mean squared error metric elapsed %f seconds.\n\n", elapsedTime);
 	
 	// We apply the coefficient of determination metric.
-	printf("Innitializing CenyML coefficient of determination metric ...\n");
+	printf("Initializing CenyML coefficient of determination metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the coefficient of determination metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "Rsquared" (which will contain the results of the coefficient of determination metric between "Y" and "Y_hat").
 	double *Rsquared = (double *) calloc(p, sizeof(double));
@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
 	printf("CenyML coefficient of determination metric elapsed %f seconds.\n\n", elapsedTime);
 	
 	// We apply the adjusted coefficient of determination metric.
-	printf("Innitializing CenyML adjusted coefficient of determination metric ...\n");
+	printf("Initializing CenyML adjusted coefficient of determination metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "adjustedRsquared" (which will contain the results of the adjusted coefficient of determination metric between "Y" and "Y_hat").
 	double *adjustedRsquared = (double *) calloc(p, sizeof(double));
@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
 	printf("CenyML adjusted coefficient of determination metric elapsed %f seconds.\n\n", elapsedTime);
 	
 	// We create a single variable that contains within all the evaluation metrics that were tested.
-	printf("Innitializing single variable that will store all the evaluation metrics done ...\n");
+	printf("Initializing single variable that will store all the evaluation metrics done ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "evaluationMetrics" (which will contain all the results of the evaluation metrics that were obtained).
 	double *evaluationMetrics = (double *) malloc(3*p*sizeof(double));
@@ -216,7 +216,7 @@ int main(int argc, char **argv) {
 	printf("Creation of the .csv file to store the evaluation metrics that were obtained, elapsed %f seconds.\n\n", elapsedTime);
 	
 	// We validate the getMultiplePolynomialRegression method.
-	printf("Innitializing coefficients validation of the CenyML getMultiplePolynomialRegression method ...\n");
+	printf("Initializing coefficients validation of the CenyML getMultiplePolynomialRegression method ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getMultiplePolynomialRegression method.
 	double differentiation; // Variable used to store the error obtained for a certain value.
 	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
@@ -226,7 +226,7 @@ int main(int argc, char **argv) {
 		differentiation = fabs(b[currentRow] - b_ideal[currentRow]);
 		if (differentiation > epsilon) { // if the error surpassed the value permitted, then terminate validation process and emit message to indicate a non match.
 			isMatch = 0;
-			printf("Validation process DID NOT MATCH!\n");
+			printf("Validation process DID NOT MATCH! and a difference of %f was obtained.\n", differentiation);
 			break;
 		}
 	}

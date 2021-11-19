@@ -29,6 +29,8 @@ void getPolynomialRegression(double *, double *, int, int, int, int, char, doubl
 void predictPolynomialRegression(double *, int, double *, int, int, int, double *);
 void getMultiplePolynomialRegression(double *, double *, int, int, int, int, char, char, double *);
 void predictMultiplePolynomialRegression(double *, int, char, double *, int, int, int, double *);
+void getLogisticRegression(double *, double *, int, int, int, char, double *);
+void predictLogisticRegression(double *, double *, int, int, int, double *);
 
 #endif
 

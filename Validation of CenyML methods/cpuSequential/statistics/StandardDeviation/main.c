@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 	int degreesOfFreedom = 1; // Desired degrees of freedom to be applied in the standard deviation to be calculated. A "0" would represent a degrees of freedom of "n", a "1" would represent a "n-1", ..., a "degrees" would represent a "n-degrees".
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
-	printf("Innitializing data extraction from .csv file containing the reference input data ...\n");
+	printf("Initializing data extraction from .csv file containing the reference input data ...\n");
 	double startingTime, elapsedTime; // Declaration of variables used to count time in seconds.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to obtain the data from the reference .csv file.
 	// Obtain the rows and columns dimensions of the data of the csv file (excluding headers)
@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
 	printf("Data extraction from .csv file containing %d samples for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", n, m, (n*m), elapsedTime);
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
-	printf("Innitializing input data with %d samples for each of the %d columns (total samples = %d)...\n", n, desired_m, (n*desired_m));
+	printf("Initializing input data with %d samples for each of the %d columns (total samples = %d)...\n", n, desired_m, (n*desired_m));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
 	// Allocate the memory required for the variable "X", which will contain the input data of the system whose standard deviation will be obtained.
 	double *X = (double *) malloc(n*desired_m*sizeof(double));
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 	printf("Input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Innitializing CenyML standard deviation method calculation ...\n");
+	printf("Initializing CenyML standard deviation method calculation ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the standard deviation of the input data (X).
 	// Allocate the memory required for the variable "sigma" (which will contain the standard deviation of the input data "X") and innitialize it with zeros.
 	double *sigma = (double *) calloc(desired_m, sizeof(double));
