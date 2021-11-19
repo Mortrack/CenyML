@@ -2,7 +2,7 @@
 # Explanation of the purpose of these files and how to use them
   
 ## What are these files for
-The files located in this directory path are all used for the validation of the method of interest that was developed in the CenyML library. Both the "main.c" and "scikitLearn.py" files contain a program that applies the same method, where the first one applies it through the CenyML library and the second one with a Python library. After running both programs, either by console; .png or .csv files, it is expected to have obtained some evaluation metrics and execution times of all the processes performed so that they can also be compared. In addition, this data should also help to determine whether the CenyML results were consistent or not.
+The files located in this directory path are all used for the validation of the method of interest that was developed in the CenyML library. Both the "main.c" and "scikitLearn.py" files contain a program that applies the same method, where the first one applies it through the CenyML library and the second one with a Python library. After running both programs, either by console or outputted .png/.csv files, it is expected to have obtained some evaluation metrics and execution times of all the processes performed so that they can also be compared. In addition, this data should also help to determine whether the CenyML results were consistent or not.
 
 ## How to compile and execute these files
 The instructions to excecute both programs are the following:

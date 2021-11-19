@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the multiple polynomial regression algorithm.
 	double *b = (double *) calloc((m*N+1)*p, sizeof(double));
 	// We apply the multiple polynomial regression algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
-	getMultiplePolynomialRegression(X, Y, n, m, p, N, 0, b);
+	getMultiplePolynomialRegression(X, Y, n, m, p, N, (char) 0, (char) 0, b);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the multiple polynomial regression with the input data (X).
 	printf("CenyML multiple polynomial regression algorithm elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(n*p*sizeof(double));
 	// We obtain the predicted values with the machine learning model that was obtained.
-	predictMultiplePolynomialRegression(X, N, b, n, m, p, Y_hat);
+	predictMultiplePolynomialRegression(X, N, (char) 0, b, n, m, p, Y_hat);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
 	printf("The CenyML predictions with the model that was obtained elapsed %f seconds.\n\n", elapsedTime);
 	
