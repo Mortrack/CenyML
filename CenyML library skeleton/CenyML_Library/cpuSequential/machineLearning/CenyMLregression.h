@@ -31,6 +31,7 @@ void getMultiplePolynomialRegression(double *, double *, int, int, int, int, cha
 void predictMultiplePolynomialRegression(double *, int, char, double *, int, int, int, double *);
 void getLogisticRegression(double *, double *, int, int, int, char, double *);
 void predictLogisticRegression(double *, double *, int, int, int, double *);
+void getGaussianRegression(double *, double *, int, int, int, char, double *);
 
 #endif
 
