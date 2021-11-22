@@ -63,6 +63,20 @@
 *				 outputs that exist in the the output matrix, containing
 *				 the real/predicted results of the system under study.
 *
+* @param double NLLepsilon - This argument will contain the user defined
+*							 epsilon value that will be used to temporarly
+*							 store the sum of any "0" value with it and
+*							 substract it to any "1" value of any of the
+*							 output matrixes ("realOutputMatrix" and/or
+*							 "predictedOutputMatrix"). This process is a
+*							 strictly needed mathematical operation in
+*							 the calculus of the desired error metric.
+*							 If not followed, a mathematical error will
+*							 be obtained due to the calculation of ln(0).
+*							 IMPORTANT NOTE: The results will be
+*							 temporarly stored so that the values of the
+*							 output matrixes are not modified.
+*
 * @param double *NLL - This argument will contain the pointer to a
 *					   memory allocated variable in which we will store
 *					   the resulting metric evaluation obtained after
@@ -88,15 +102,37 @@
 * CREATION DATE: NOVEMBER 22, 2021
 * LAST UPDATE: N/A
 */
-void getCrossEntropyError(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *NLL) {
+void getCrossEntropyError(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double NLLepsilon, double *NLL) {
 	// We calculate the cross entropy error between the argument pointer variables "realOutputMatrix" and "predictedOutputMatrix".
 	int currentRowTimesP; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+	double oneMinusEpsilon = 1 - NLLepsilon; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+	double rOM; // This variable is used to store the current value of the real output matrix in which, if the value if zero, it will be replaced with the value of the argument variable "NLLepsilon".
+	double pOM; // This variable is used to store the current value of the predicted output matrix in which, if the value if zero, it will be replaced with the value of the argument variable "NLLepsilon".
 	for (int currentRow = 0; currentRow < n; currentRow++) {
 		currentRowTimesP = currentRow*p;
 		for (int currentOutput=0; currentOutput<p; currentOutput++) {
+			// We temporarly store the sum the user defined epsilon value in "NLLepsilon" to any "0" value and substract it to any "1" value of the real output matrix.
 			currentRowAndColumn = currentOutput + currentRowTimesP;
-			NLL[currentOutput] = NLL[currentOutput] - realOutputMatrix[currentRowAndColumn]*log(predictedOutputMatrix[currentRowAndColumn]) - (1-realOutputMatrix[currentRowAndColumn]) * log(1-predictedOutputMatrix[currentRowAndColumn]);
+			if (realOutputMatrix[currentRowAndColumn] == 0) {
+				rOM = NLLepsilon;
+			} else if (realOutputMatrix[currentRowAndColumn] == 1) {
+				rOM = oneMinusEpsilon;
+			} else {
+				rOM = realOutputMatrix[currentRowAndColumn];
+			}
+			
+			// We temporarly store the sum the user defined epsilon value in "NLLepsilon" to any "0" value and substract it to any "1" value of the predicted output matrix.
+			if (predictedOutputMatrix[currentRowAndColumn] == 0) {
+				pOM = NLLepsilon;
+			} else if (predictedOutputMatrix[currentRowAndColumn] == 1) {
+				pOM = oneMinusEpsilon;
+			} else {
+				pOM = predictedOutputMatrix[currentRowAndColumn];
+			}
+			
+			// We calculate the current error and add it into the memory space were it will be stored.
+			NLL[currentOutput] = NLL[currentOutput] - rOM*log(pOM) - (1-rOM) * log(1-pOM);
 		}
 	}
 }

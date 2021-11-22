@@ -51,7 +51,7 @@ columnIndexOfInputDataInCsvFile = 3; # This variable will contain the index
 # Read the .csv file containing the data to be trained with.
 print("Innitializing data extraction from .csv file containing the data to train with ...")
 startingTime = time.time()
-dataset_gES1000S1000SPS = pd.read_csv("../../../../Databases/regressionDBs/gaussianEquationSystem/100systems_100samplesPerSys.csv")
+dataset_gES1000S1000SPS = pd.read_csv("../../../../databases/regressionDBs/gaussianEquationSystem/100systems_100samplesPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_gES1000S1000SPS)
 csvColumns = len(dataset_gES1000S1000SPS.iloc[0])

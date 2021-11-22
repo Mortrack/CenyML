@@ -2,17 +2,17 @@
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
-# COMPLETITION DATE: November 10, 2021.
-# LAST UPDATE: N/A
+# COMPLETITION DATE: November 22, 2021.
+# LAST UPDATE: N/A.
 #
-# This code is used to apply the regression evaluation metric known as the
-# coefficient of determination. This is done with the two databases for linear
+# This code is used to apply the classification evaluation metric known as the
+# cross entropy error. This is done with the two databases for linear
 # equation systems, that differ only because one has a random bias value and
 # the other does not. In addition, both of these databases have 1'000'000
 # samples each. Moreover, the well known scikit-learn library will be used to
-# calculate the coefficient of determination metric (https://bit.ly/3wEUDez)
-# and then its result will be compared with the one obtained with the CenyML
-# library as a means of validating the code of CenyML.
+# calculate the cross entropy error metric (https://bit.ly/3kYS8PQ) and then
+# its result will be compared with the one obtained with the CenyML library as
+# a means of validating the code of CenyML.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # Python version 3.9.7
@@ -24,11 +24,13 @@
 import pandas as pd  # version 1.3.3
 import numpy as np # version 1.21.2
 import time
-from sklearn.metrics import r2_score # version 1.0.1
+from sklearn.metrics import log_loss # version 1.0.1
 
 # -------------------------------------------- #
 # ----- Define the user variables values ----- #
 # -------------------------------------------- #
+m = 1 # This variable is used to define the number of independent variables
+      # that the system under study has.
 p = 1 # This variable is used to define the number of dependent variables
       # that the system under study has.
 columnIndexOfOutputDataInCsvFile = 2; # This variable will contain the index
@@ -36,35 +38,38 @@ columnIndexOfOutputDataInCsvFile = 2; # This variable will contain the index
                                       # specify the location of the output
                                       # values (Y and/or Y_hat).
 
+
 # ------------------------------ #
 # ----- Import the dataset ----- #
 # ------------------------------ #
 # Read the .csv file containing the results of the CenyML library.
 print("Innitializing data extraction from .csv file containing the CenyML results ...")
 startingTime = time.time()
-dataset_CenyML_getMeanSquaredErrorResults = pd.read_csv('CenyML_getCoefficientOfDetermination_Results.csv')
-p = len(dataset_CenyML_getMeanSquaredErrorResults.iloc[0])
+dataset_CenyML_getMeanSquaredErrorResults = pd.read_csv('CenyML_getCrossEntropyError_Results.csv')
 elapsedTime = time.time() - startingTime
 print("Data extraction from .csv file with the CenyML results elapsed " + format(elapsedTime) + " seconds.")
 print("")
+
 # Read the .csv file containing the real output data.
 print("Innitializing data extraction from .csv file containing the real output data ...")
 startingTime = time.time()
-dataset_lES1000S1000SPS = pd.read_csv("../../../../databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv")
+dataset_lES1000S1000SPS = pd.read_csv("../../../../databases/classificationDBs/randLinearClassificationSystem/100systems_100samplesPerAxisPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_lES1000S1000SPS)
 csvColumns = len(dataset_lES1000S1000SPS.iloc[0])
 print("Data extraction from .csv file containing " + format(n) + " samples for each of the " + format(csvColumns) + " columns (total samples = " + format(n*csvColumns) + ") elapsed " + format(elapsedTime) + " seconds.")
 print("")
+
 # Read the .csv file containing the predicted output data.
 print("Innitializing data extraction from .csv file containing the predicted output data ...")
 startingTime = time.time()
-dataset_rLES1000S1000SPS = pd.read_csv("../../../../databases/regressionDBs/randLinearEquationSystem/1000systems_1000samplesPerSys.csv")
+dataset_rLES1000S1000SPS = pd.read_csv("../../../../databases/classificationDBs/linearClassificationSystem/100systems_100samplesPerAxisPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_rLES1000S1000SPS)
 csvColumns = len(dataset_rLES1000S1000SPS.iloc[0])
 print("Data extraction from .csv file containing " + format(n) + " samples for each of the " + format(csvColumns) + " columns (total samples = " + format(n*csvColumns) + ") elapsed " + format(elapsedTime) + " seconds.")
 print("")
+
 
 # ------------------------------------- #
 # ----- Preprocessing of the data ----- #
@@ -79,6 +84,7 @@ for currentColumn in range(0, p):
 elapsedTime = time.time() - startingTime
 print("Real output data innitialization elapsed " + format(elapsedTime) + " seconds.")
 print("")
+
 # Retrieving the predicted data of its corresponding dataset
 print("Innitializing predicted output data with " + format(n) + " samples for each of the " + format(p) + " columns (total samples = " + format(n*p) + ") ...")
 startingTime = time.time()
@@ -90,15 +96,18 @@ elapsedTime = time.time() - startingTime
 print("Predicted output data innitialization elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
-# --------------------------------------------------------- #
-# ----- Apply the coefficient of determination metric ----- #
-# --------------------------------------------------------- #
-print("Innitializing scikit-learn coefficient of determination metric calculation ...")
+
+# ----------------------------------------------- #
+# ----- Apply the mean squared error metric ----- #
+# ----------------------------------------------- #
+print("Innitializing scikit-learn cross entropy error metric calculation ...")
 startingTime = time.time()
-Rsquared = r2_score(Y, Y_hat) # We apply the desired evaluation metric.
+NLL = log_loss(Y, Y_hat, normalize=False) # We apply the desired evaluation metric.
 elapsedTime = time.time() - startingTime
-print("scikit-learn coefficient of determination metric elapsed " + format(elapsedTime) + " seconds.")
+print("The result obtained was NLL = " + format(NLL) )
+print("scikit-learn cross entropy error metric elapsed " + format(elapsedTime) + " seconds.")
 print("")
+
 
 # ---------------------------------------------------------------- #
 # ----- Determine if the CenyML Library's method was correct ----- #
@@ -106,10 +115,10 @@ print("")
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The results will begin their comparation process...")
 startingTime = time.time()
-epsilon = 1e-6
+epsilon = 4.04e-6
 isMatch = 1
 for currentColumn in range(0, p):
-    differentiation = abs(dataset_CenyML_getMeanSquaredErrorResults.iloc[0][currentColumn] - Rsquared)
+    differentiation = abs(dataset_CenyML_getMeanSquaredErrorResults.iloc[0][currentColumn] - NLL)
     if (differentiation > epsilon):
         isMatch = 0
         print("The absolute differentiation of the Column: " + dataset_CenyML_getMeanSquaredErrorResults.columns.tolist()[currentColumn] + " and the Row: " + format(0) + " exceeded the value defined for epsilon.")

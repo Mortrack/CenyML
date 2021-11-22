@@ -59,7 +59,7 @@ print("")
 # Read the .csv file containing the data to be trained with.
 print("Innitializing data extraction from .csv file containing the data to train with ...")
 startingTime = time.time()
-dataset_rLES1000S1000SPS = pd.read_csv("../../../../Databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv")
+dataset_rLES1000S1000SPS = pd.read_csv("../../../../databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_rLES1000S1000SPS)
 csvColumns = len(dataset_rLES1000S1000SPS.iloc[0])

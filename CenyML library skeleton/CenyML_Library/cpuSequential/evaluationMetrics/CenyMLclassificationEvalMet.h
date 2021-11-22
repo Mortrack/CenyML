@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-void getCrossEntropyError(double *, double *, int, int, double *);
+void getCrossEntropyError(double *, double *, int, int, double, double *);
 
 #endif
 

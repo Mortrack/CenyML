@@ -52,7 +52,7 @@ columnIndexOfInputDataInCsvFile = 3; # This variable will contain the index
 # Read the .csv file containing the predicted output data.
 print("Innitializing data extraction from .csv file containing the predicted output data ...")
 startingTime = time.time()
-dataset_rMLES100S100SPAPS = pd.read_csv("../../../../Databases/regressionDBs/randMultipleLinearSystem/100systems_100samplesPerAxisPerSys.csv")
+dataset_rMLES100S100SPAPS = pd.read_csv("../../../../databases/regressionDBs/randMultipleLinearSystem/100systems_100samplesPerAxisPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_rMLES100S100SPAPS)
 csvColumns = len(dataset_rMLES100S100SPAPS.iloc[0])
