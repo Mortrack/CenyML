@@ -392,10 +392,10 @@ void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char
 	}
 	
 	// In order to conclude obtaining the coefficients ("b"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y".
-	for (int currentColumn=0; currentColumn<mPlusOne; currentColumn++) {
-		currentColumnTimesN = currentColumn*n;
+	for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
+		currentRowTimesN = currentRow*n;
 		for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
-			b[currentColumn] = b[currentColumn] + matMul2[currentMultipliedElements + currentColumnTimesN] * Y[currentMultipliedElements];
+			b[currentRow] = b[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y[currentMultipliedElements];
 		}
 	}
 	
@@ -691,10 +691,10 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 	}
 	
 	// In order to conclude obtaining the coefficients ("b"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y".
-	for (int currentColumn=0; currentColumn<NplusOne; currentColumn++) {
-		currentColumnTimesN = currentColumn*n;
+	for (int currentRow=0; currentRow<NplusOne; currentRow++) {
+		currentRowTimesN = currentRow*n;
 		for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
-			b[currentColumn] = b[currentColumn] + matMul2[currentMultipliedElements + currentColumnTimesN] * Y[currentMultipliedElements];
+			b[currentRow] = b[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y[currentMultipliedElements];
 		}
 	}
 	
@@ -1032,10 +1032,10 @@ void getMultiplePolynomialRegression(double *X, double *Y, int n, int m, int p, 
 		}
 		
 		// In order to conclude obtaining the coefficients ("b"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y".
-		for (int currentColumn=0; currentColumn<mTimesNPlusOne; currentColumn++) {
-			currentColumnTimesN = currentColumn*n;
+		for (int currentRow=0; currentRow<mTimesNPlusOne; currentRow++) {
+			currentRowTimesN = currentRow*n;
 			for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
-				b[currentColumn] = b[currentColumn] + matMul2[currentMultipliedElements + currentColumnTimesN] * Y[currentMultipliedElements];
+				b[currentRow] = b[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y[currentMultipliedElements];
 			}
 		}
 		
@@ -1399,10 +1399,10 @@ void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVar
 	}
 	
 	// In order to conclude obtaining the coefficients ("b"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y_tilde".
-	for (int currentColumn=0; currentColumn<mPlusOne; currentColumn++) {
-		currentColumnTimesN = currentColumn*n;
+	for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
+		currentRowTimesN = currentRow*n;
 		for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
-			b[currentColumn] = b[currentColumn] + matMul2[currentMultipliedElements + currentColumnTimesN] * Y_tilde[currentMultipliedElements];
+			b[currentRow] = b[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y_tilde[currentMultipliedElements];
 		}
 	}
 	
@@ -1496,13 +1496,22 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 
 /**
 * The "getGaussianRegression()" function is used to apply the
-* machine learning algorithm called logistic regression. Within
-* this process, the best fitting equation with the form of "y_hat
-* = 1 / (1+e^{-(b_{0} + b_{1}x_{1} + b_{2}x_{2} + ... +
-* b_{m}x_{m})})" will be identified with respect to the sampled
-* data given through the argument pointer variables "X" and "Y".
-* As a result, the identified coefficient values will be stored
-* in the argument pointer variable "b".
+* machine learning algorithm called gaussian regression. Within
+* this process, the equation with the form of "y_hat =
+* exp(-( ((x_{1}-mean_{1})^2)/2*variance_{1} +
+* ((x_{2}-mean_{2})^2)/2*variance_{2} + ... +
+* ((x_{m}-mean_{m})^2)/2*variance_{m} ))" will correspond to
+* when the gaussian curve is forced. On the other hand, the
+* equation with the form of "y_hat = exp( b_tilde_{0} +
+* b_tilde_{1}*x_{1} + b_tilde_{2}*x_{1}^2 + b_tilde_{3}*x_{2} +
+* b_tilde_{4}*x_{2}^2 + ... + b_tilde_{2*m-1}*x_{m} +
+* b_tilde_{2*m}*x_{m}^2 )" will correspond to when the gaussian with
+* multiple the polynomial equation without the interaction terms is
+* used instead. For any of these two cases, their corresponding
+* best fitting coefficient values will be identified with respect to
+* the sampled data given through the argument pointer variables "X"
+* and "Y". As a result, the identified coefficient values will be
+* stored in the argument pointer variable "b".
 *
 * NOTE: The algorithm section that applied the matrix inverse using
 * the Gauss-Jordan method was inspired in the following source:
@@ -1541,6 +1550,42 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 *				 containing the real results of the system under
 *				 study.
 *
+* @param char isForceGaussianCurve = This argument variable will
+*							determine the types of coefficients to be
+*							obtained during the training process. If
+*							"isForceGaussianCurve" = 0, then the
+*							coefficients to be obtained will be
+*							directly from a model that has an
+*							exponential with the multiple polynomial
+*							equation without its interaction terms from
+*							the following mathematical form "y_hat =
+*							exp( b_tilde_{0} + b_tilde_{1}*x_{1} +
+*							b_tilde_{2}*x_{1}^2 + b_tilde_{3}*x_{2} +
+* 							b_tilde_{4}*x_{2}^2 + ... +
+*							b_tilde_{2*m-1}*x_{m} +
+* 							b_tilde_{2*m}*x_{m}^2 )".
+*							If "isForceGaussianCurve" = 1, then the
+*							coefficients to be obtained will be in the
+*							from of an approximation from the previous
+*							equation, such that each machine learning
+*							feature will have a particular "mean" and
+*							"variance" coefficient values. These will be
+*							used to govern the following model instead
+*							"y_hat =
+*							exp(-( ((x_{1}-mean_{1})^2)/2*variance_{1} +
+* 							((x_{2}-mean_{2})^2)/2*variance_{2} + ... +
+* 							((x_{m}-mean_{m})^2)/2*variance_{m} ))".
+*							On the other hand, have in consideration
+*							that because the solution of the multiple
+*							polynomial equation can sometimes give a non
+*							perfect square binomial (when
+*							"isForceGaussianCurve" = 0), you may not get
+*							a true gaussian form under such circumstance.
+*							Therefore, by setting "isForceGaussianCurve"
+*							= 1, you will force the solution to always
+*							have a gaussian form but this may increase
+*							the total obtained error as a consequence.
+*
 * @param char isVariableOptimizer = This argument variable is not
 *									having any effect on this function
 *									at the moment, as its functionality
@@ -1553,26 +1598,48 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 * @param double *b - This argument will contain the pointer to a
 *					 memory allocated variable in which we will store
 *					 the identified best fitting coefficient values
-*					 for the desired machine learning algorithm. These
-*					 coefficients will each be stored in the same
-*					 column but under different rows where the first
-*					 coefficient (b_0) will be stored in the row with
-*					 index 0 and the last coefficient (b_m) will be
-*					 stored in the row with index "m". IT IS
+*					 for the desired machine learning algorithm. IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
 *					 AND INNITIALIZED WITH ZEROS BEFORE CALLING THIS
-*					 FUNCTION WITH A VARIABLE SIZE OF "m+1" TIMES "p=1"
-*					 'DOUBLE' MEMORY SPACES.
+*					 FUNCTION WITH A VARIABLE SIZE OF "m*2+1" TIMES
+*					 "p=1" 'DOUBLE' MEMORY SPACES. However, the
+*					 coefficients will be stored in a different manner
+*					 depending on the value of the argument variable
+*					 "isForceGaussianCurve". If its value equals 0, the
+*					 coefficients will each be stored in the same column
+*					 but under different rows where the first coefficient
+*					 (b_0) will be stored in the row with index 0 and the
+*					 last coefficient (b_{2*m}) will be stored in the row
+*					 with index "2*m". On the other hand, if
+*					 "isForceGaussianCurve" = 1, then each machine learning
+*					 feature will contain two coefficients. The first will
+*					 be the "mean" and the second will be the "variance".
+*					 Both of these will be stored in the same row, where
+*					 the first column (column index 0) will store the mean
+*					 and the variance will be stored in the second column
+*					 (column index 1). In addition, each of the identified
+*					 means and variances for each different machine learning
+*					 feature will be stored separately in rows. The first
+*					 row (row index 0) will contain the mean and variance
+*					 for the first machine learning feature and the last row
+*					 (row index "m") will contain the mean and variance for
+*					 the "m"-th machine learning feature. Finally, if
+*					 "isForceGaussianCurve" = 1. then the true size to be
+*					 taken into account of the argument pointer variable "b"
+*					 will be from "m*2+1" to "m*2". This means that the last
+*					 index with respect to the entirely allocated memory in
+*					 "b" will not be used or have any meaning under this
+*					 case.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE "b".
 * 
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER XX, 2021
+* CREATION DATE: NOVEMBER 21, 2021
 * LAST UPDATE: N/A
 */
-void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
+void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isForceGaussianCurve, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if (m < 1) {
 		printf("\nERROR: The machine learning features (independent variables) must be equal or greater than 1 for this particular algorithm.\n");
@@ -1587,6 +1654,12 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isVar
 	if (p != 1) {
 		printf("\nERROR: With respect to the system under study, there must only be only one output for this particular algorithm.\n");
 		exit(1);
+	}
+	if (isForceGaussianCurve != 1) {
+		if (isForceGaussianCurve != 0) {
+			printf("\nERROR: Please assign a valid value for the flag \"isForceGaussianCurve\", which may be 1 or 0.\n");
+			exit(1);
+		}
 	}
 	
 	// --------------- PREPROCESSING OF THE OUTPUT DATA --------------- //
@@ -1724,15 +1797,26 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isVar
 	}
 	
 	// In order to conclude obtaining the coefficients ("b_tilde"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y".
-	for (int currentColumn=0; currentColumn<mTimesNPlusOne; currentColumn++) {
-		currentColumnTimesN = currentColumn*n;
+	for (int currentRow=0; currentRow<mTimesNPlusOne; currentRow++) {
+		currentRowTimesN = currentRow*n;
 		for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
-			b[currentColumn] = b[currentColumn] + matMul2[currentMultipliedElements + currentColumnTimesN] * Y[currentMultipliedElements];
+			b[currentRow] = b[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y_tilde[currentMultipliedElements];
 		}
 	}
 	
-	// Finally, we use the resulting coefficients data ("b_tilde") to obtain the true coefficient values. This is because the previously obtained coefficients ("b_tilde") are transformed values (see the documentation for more details).
-	// TODO (NOTE: b[0] = 0 and should be ignored by the user).
+	// Finally, if the flag "isForceGaussianCurve" is set, then we use the resulting coefficients data ("b_tilde") to obtain an approximation of the variance and the mean values that are part of the gaussian equation. This is because the previously obtained coefficients ("b_tilde") are transformed values (see the mathematical formulation for more details).
+	// NOTE: If the flag "isForceGaussianCurve" is not set, then the complete coefficients of the multiple polynomial solution will be returned instead.
+	if (isForceGaussianCurve == 1) {
+		int currentRowTimesTwo; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		int onePlusCurrentRowTimesTwo; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		for (int currentRow=0; currentRow<m; currentRow++) {
+			currentRowTimesTwo = currentRow*2;
+			onePlusCurrentRowTimesTwo = 1 + currentRowTimesTwo;
+			b[currentRowTimesTwo] = b[onePlusCurrentRowTimesTwo];
+			b[onePlusCurrentRowTimesTwo] = -1/(2*b[2 + currentRowTimesTwo]); // We obtain and store the approximation/expected value of the variance coefficient value of the current machine learning feature.
+			b[currentRowTimesTwo] = b[currentRowTimesTwo] * b[onePlusCurrentRowTimesTwo]; // We obtain and store the approximation/expected value of the mean coefficient value of the current machine learning feature.
+		}
+	}
 	
 	
 	// Free the Heap memory used for the locally allocated variables since they will no longer be used.
@@ -1741,5 +1825,160 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isVar
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+}
+
+
+/**
+* The "predictGaussianRegression()" function is used to make the
+* predictions of the requested input values (X) by applying the gaussian
+* equation system with the specified coefficient values (b). The
+* predicted values will be stored in the argument pointer variable
+* "Y_hat".
+*
+* @param double *X - This argument will contain the pointer to a
+*					 memory allocated input matrix, from which the
+*					 desired machine learning predictions will be
+*					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
+*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
+*					 SPACES.
+*
+* @param char isForceGaussianCurve = This argument variable will
+*							determine the types of coefficients that
+*							were obtained during the training process.
+*							If "isForceGaussianCurve" = 0, then the
+*							coefficients were obtained directly from a
+*							model that has an exponential with the
+*							multiple polynomial equation without its
+*							interaction terms from the following
+*							mathematical form "y_hat = exp( b_tilde_{0}
+*							+ b_tilde_{1}*x_{1} + b_tilde_{2}*x_{1}^2 +
+*							b_tilde_{3}*x_{2} + b_tilde_{4}*x_{2}^2
+*							+ ... + b_tilde_{2*m-1}*x_{m} +
+* 							b_tilde_{2*m}*x_{m}^2 )".
+*							If "isForceGaussianCurve" = 1, then the
+*							coefficients were obtained as an
+*							approximation from the previous equation,
+*							such that each machine learning feature
+*							will have a particular "mean" and "variance"
+*							coefficient values. These will be used to
+*							govern the following model instead "y_hat =
+*							exp(-( ((x_{1}-mean_{1})^2)/2*variance_{1} +
+* 							((x_{2}-mean_{2})^2)/2*variance_{2} + ... +
+* 							((x_{m}-mean_{m})^2)/2*variance_{m} ))".
+*
+* @param double *b - This argument will contain the pointer to a
+*					 memory allocated variable containing the
+*					 coefficient values for the desired machine
+*					 learning algorithm and that will be used to make
+*					 the specified predictions. IT IS INDISPENSABLE
+*					 THAT THIS VARIABLE WAS ALLOCATED AND INNITIALIZED
+*					 BEFORE CALLING ITS TRAINING FUNCTION WITH A
+*					 VARIABLE SIZE OF "m*2+1" TIMES "p=1" 'DOUBLE'
+*					 MEMORY SPACES. This is because its actual used
+*					 memory space will differ depending on the value
+*					 defined on the argument pointer variable
+*					 "isForceGaussianCurve" during the training
+*					 process of the model. This is very important to
+*					 have into consideration because when using the
+*					 function "predictGaussianRegression()",
+*					 "isForceGaussianCurve" should have the same value
+*					 as in the training function in order to take into
+*					 account the right coefficients and also the way
+*					 they were distributed in "b".
+*
+* @param int n - This argument will represent the total number of
+*				 samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
+*
+* @param int m - This argument will represent the total number of
+*				 features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
+*
+* @param int p - This argument will represent the total number of 
+*				 outputs that exist in the the output matrix,
+*				 containing the real results of the system under
+*				 study.
+*
+* @param double *Y_hat - This argument will contain the pointer to a
+*					 	 memory allocated output matrix, representing
+*					 	 the predicted data of the system under study.
+*						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
+*						 CALLING THIS FUNCTION WITH A SIZE OF "n"
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*		"Y_hat".
+*
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: NOVEMBER 21, 2021
+* LAST UPDATE: N/A
+*/
+void predictGaussianRegression(double *X, char isForceGaussianCurve, double *b, int n, int m, int p, double *Y_hat) {
+	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (m < 1) {
+		printf("\nERROR: The machine learning features (independent variables) must be equal or greater than 1 for this particular algorithm.\n");
+		exit(1);
+	}
+	// If the output of the system under study is different than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (p != 1) {
+		printf("\nERROR: With respect to the system under study, there must only be only one output for this particular algorithm.\n");
+		exit(1);
+	}
+	
+	
+	// Determine the types of coefficient values that were given for the model that was trained under the gaussian regression.
+	if (isForceGaussianCurve == 1) { // The given coefficient values are the literal mean and variance.
+		// We predict all the requested input values (X) with the desired machine learning algorithm and its especified coefficient values (b).
+		double squareThisValue; // Variable used to store the value that wants to be squared.
+		int currentColumnTimesTwo; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		for (int currentRow=0; currentRow<n; currentRow++) {
+			Y_hat[currentRow] = 0;
+			for (int currentColumn=0; currentColumn<m; currentColumn++) {
+				currentColumnTimesTwo = currentColumn*2;
+				squareThisValue = X[currentColumn + currentRow*m] - b[currentColumnTimesTwo];
+				Y_hat[currentRow] = Y_hat[currentRow] + squareThisValue * squareThisValue / (2*b[1 + currentColumnTimesTwo]);
+			}
+			Y_hat[currentRow] = exp(-Y_hat[currentRow]);
+		}
+		
+		
+	} else if (isForceGaussianCurve == 0) { // The given coefficient values are the ones obtained from the multiple polynomial regression that was applied during the training of this model.
+		// We predict all the requested input values (X) with the desired machine learning algorithm and its especified coefficient values (b).
+		int N = 2; // This variable is used to store the order of degree of the machine learning model that was trained.
+		int mTimesNPlusOne = m*N+1; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		int currentRowTimesmTimesNplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+		int currentRowTimesM; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+		int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
+		int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		double increaseExponentialOfThisValue; // Variable used to store the value that wants to be raised exponentially.
+		int currentRowAndColumn2; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		int currentColumnMinusOne; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		int currentColumnMinusOneTimesN; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		for (int currentRow=0; currentRow<n; currentRow++) {
+			currentRowTimesmTimesNplusOne = currentRow*mTimesNPlusOne;
+			currentRowTimesM = currentRow*m;
+			Y_hat[currentRow] = b[0];
+			for (int currentColumn=1; currentColumn<mPlusOne; currentColumn++) {
+				currentColumnMinusOne = currentColumn-1;
+				currentColumnMinusOneTimesN = currentColumnMinusOne*N;
+				currentRowAndColumn = currentColumnMinusOneTimesN + currentRowTimesmTimesNplusOne;
+				increaseExponentialOfThisValue = 1;
+				for (int currentExponential=1; currentExponential<(N+1); currentExponential++) {
+					currentRowAndColumn2 = currentExponential + currentRowAndColumn;
+					increaseExponentialOfThisValue = increaseExponentialOfThisValue * X[currentColumnMinusOne + currentRowTimesM];
+					Y_hat[currentRow] = Y_hat[currentRow] + b[currentExponential + currentColumnMinusOneTimesN]*increaseExponentialOfThisValue;
+				}
+			}
+			Y_hat[currentRow] = exp(Y_hat[currentRow]);
+		}
+		
+		
+	} else { // The argument variable "isForceGaussianCurve" has been assigned an invalid value. Therefore, inform the user about this and terminate the program.
+		printf("\nERROR: Please assign a valid value for the flag \"isForceGaussianCurve\", which may be 1 or 0.\n");
+		exit(1);
+	}
 }
 

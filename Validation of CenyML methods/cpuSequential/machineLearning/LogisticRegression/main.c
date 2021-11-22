@@ -221,6 +221,8 @@ int main(int argc, char **argv) {
 	printf("Creation of the .csv file to store the evaluation metrics that were obtained, elapsed %f seconds.\n\n", elapsedTime);
 	
 	// Plot a graph with the model that was obtained and saved it into a .png file.
+	printf("Initializing creation of .png image to store the plot of the predicted data and the actual data ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .png file that will store the results of the predicted and actual data.
 	// Trying the "pbPlots" library (https://github.com/InductiveComputerScience/pbPlots)
 	_Bool success;
     StringReference *errorMessage;
@@ -277,6 +279,8 @@ int main(int argc, char **argv) {
         }
         fprintf(stderr, "\n");
 	}
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .png file that will store the results of the predicted and actual data.
+	printf("Innitialization of the creation of the .png file elapsed %f seconds.\n\n", elapsedTime);
 	
 	// We validate the getLogisticRegression method.
 	printf("Initializing coefficients validation of the CenyML getLogisticRegression method ...\n");
