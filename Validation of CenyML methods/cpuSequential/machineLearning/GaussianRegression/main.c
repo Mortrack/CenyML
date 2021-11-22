@@ -65,12 +65,12 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 21, 2021
+* CREATION DATE: NOVEMBER 22, 2021
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../Databases/regressionDBs/gaussianEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
+	char csv1Directory[] = "../../../../Databases/regressionDBs/gaussianEquationSystem/100systems_100samplesPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile1[] = "CenyML_getGaussianRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
 	char nameOfTheCsvFile2[] = "CenyML_getGaussianRegression_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
@@ -303,7 +303,7 @@ int main(int argc, char **argv) {
 		printf("Initializing coefficients validation of the CenyML getLogisticRegression method ...\n");
 		startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getLogisticRegression method.
 		double differentiation; // Variable used to store the error obtained for a certain value.
-		double epsilon = 1.0E-6; // Variable used to store the max error value permitted during validation process.
+		double epsilon = 8.0E-6; // Variable used to store the max error value permitted during validation process.
 		char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
 		// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
 		for (int currentRow=0; currentRow<m+1; currentRow++) {
