@@ -59,12 +59,12 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 09, 2021
-* LAST UPDATE: NOVEMBER 17, 2021
+* LAST UPDATE: NOVEMBER 23, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the .csv file containing the real data of the system under study.
-	char csv2Directory[] = "../../../../databases/regressionDBs/randLinearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the .csv file containing the predicted data of the system under study.
+	char csv1Directory[] = "../../../../databases/regressionDBs/randLinearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the .csv file containing the real data of the system under study.
+	char csv2Directory[] = "../../../../databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the .csv file containing the predicted data of the system under study.
 	char nameOfTheCsvFile[] = "CenyML_getMeanSquaredError_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file containing the real data of the system under study (which is declared in "csvManager.h").
 	struct csvManager csv2; // We create a csvManager structure variable to manage the desired .csv file containing the predicted data of the system under study (which is declared in "csvManager.h").

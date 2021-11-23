@@ -22,6 +22,7 @@
 #include <math.h>
 
 void getCrossEntropyError(double *, double *, int, int, double, double *);
+void getConfusionMatrix(double *, double *, int, int, double *);
 
 #endif
 

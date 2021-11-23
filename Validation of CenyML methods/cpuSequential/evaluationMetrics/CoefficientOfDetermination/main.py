@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
 # COMPLETITION DATE: November 10, 2021.
-# LAST UPDATE: N/A
+# LAST UPDATE: November 23, 2021.
 #
 # This code is used to apply the regression evaluation metric known as the
 # coefficient of determination. This is done with the two databases for linear
@@ -47,8 +47,8 @@ p = len(dataset_CenyML_getMeanSquaredErrorResults.iloc[0])
 elapsedTime = time.time() - startingTime
 print("Data extraction from .csv file with the CenyML results elapsed " + format(elapsedTime) + " seconds.")
 print("")
-# Read the .csv file containing the real output data.
-print("Innitializing data extraction from .csv file containing the real output data ...")
+# Read the .csv file containing the predicted output data.
+print("Innitializing data extraction from .csv file containing the predicted output data ...")
 startingTime = time.time()
 dataset_lES1000S1000SPS = pd.read_csv("../../../../databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv")
 elapsedTime = time.time() - startingTime
@@ -56,8 +56,8 @@ n = len(dataset_lES1000S1000SPS)
 csvColumns = len(dataset_lES1000S1000SPS.iloc[0])
 print("Data extraction from .csv file containing " + format(n) + " samples for each of the " + format(csvColumns) + " columns (total samples = " + format(n*csvColumns) + ") elapsed " + format(elapsedTime) + " seconds.")
 print("")
-# Read the .csv file containing the predicted output data.
-print("Innitializing data extraction from .csv file containing the predicted output data ...")
+# Read the .csv file containing the real output data.
+print("Innitializing data extraction from .csv file containing the real output data ...")
 startingTime = time.time()
 dataset_rLES1000S1000SPS = pd.read_csv("../../../../databases/regressionDBs/randLinearEquationSystem/1000systems_1000samplesPerSys.csv")
 elapsedTime = time.time() - startingTime
@@ -74,7 +74,7 @@ print("Innitializing real output data with " + format(n) + " samples for each of
 startingTime = time.time()
 Y = np.zeros((n, 0))
 for currentColumn in range(0, p):
-    temporalRow = dataset_lES1000S1000SPS.iloc[:,(currentColumn + columnIndexOfOutputDataInCsvFile)].values.reshape(n, 1)
+    temporalRow = dataset_rLES1000S1000SPS.iloc[:,(currentColumn + columnIndexOfOutputDataInCsvFile)].values.reshape(n, 1)
     Y = np.append(Y, temporalRow, axis=1)
 elapsedTime = time.time() - startingTime
 print("Real output data innitialization elapsed " + format(elapsedTime) + " seconds.")
@@ -84,7 +84,7 @@ print("Innitializing predicted output data with " + format(n) + " samples for ea
 startingTime = time.time()
 Y_hat = np.zeros((n, 0))
 for currentColumn in range(0, p):
-    temporalRow = dataset_rLES1000S1000SPS.iloc[:,(currentColumn + columnIndexOfOutputDataInCsvFile)].values.reshape(n, 1)
+    temporalRow = dataset_lES1000S1000SPS.iloc[:,(currentColumn + columnIndexOfOutputDataInCsvFile)].values.reshape(n, 1)
     Y_hat = np.append(Y_hat, temporalRow, axis=1)
 elapsedTime = time.time() - startingTime
 print("Predicted output data innitialization elapsed " + format(elapsedTime) + " seconds.")

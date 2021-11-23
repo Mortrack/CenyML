@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
 # COMPLETITION DATE: November 12, 2021.
-# LAST UPDATE: N/A
+# LAST UPDATE: November 23, 2021.
 #
 # This code is used to apply the regression evaluation metric known as the
 # adjusted coefficient of determination. This is done with the database used
@@ -49,8 +49,8 @@ columnIndexOfInputDataInCsvFile = 3; # This variable will contain the index
 # ------------------------------ #
 # ----- Import the dataset ----- #
 # ------------------------------ #
-# Read the .csv file containing the predicted output data.
-print("Innitializing data extraction from .csv file containing the predicted output data ...")
+# Read the .csv file containing the real output data.
+print("Innitializing data extraction from .csv file containing the real output data ...")
 startingTime = time.time()
 dataset_rMLES100S100SPAPS = pd.read_csv("../../../../databases/regressionDBs/randMultipleLinearSystem/100systems_100samplesPerAxisPerSys.csv")
 elapsedTime = time.time() - startingTime

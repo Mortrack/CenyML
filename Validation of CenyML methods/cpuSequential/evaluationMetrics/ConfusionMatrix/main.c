@@ -3,11 +3,11 @@
 * the linear equation system for both with and without the random bias
 * value. Then all their output data will be extracted and saved into the
 * matrix "Y" (for the real data) and "Y_hat" (for the predicted data).
-* Subsequently, the evaluation metric known as the cross entropy error, will
+* Subsequently, the evaluation metric known as the confusion matrix, will
 * be applied with respect to both of these output matrixes. Finally, a new
-* .csv file "CenyML_getCrossEntropyError_Results.csv" will be created and in
-* it, the resulting values of applying the cross entropy error metric will
-* be saved for further comparations and validations purposes.
+* .csv file "CenyML_getConfusionMatrix_Results.csv" will be created and in
+* it, the resulting values of applying the confusion matrix metric will be
+* saved for further comparations and validations purposes.
 */
 
  // ------------------------------------------------- //
@@ -42,9 +42,9 @@
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read two .csv files and
-* then calculate the cross entropy error metric between their output values.
-* Finally, the results of the applied metric will be saved in a new .csv file for
-* further comparation and validation purposes. 
+* then calculate the confusion matrix metric between their output values. Finally,
+* the results of the applied metric will be saved in a new .csv file for further
+* comparation and validation purposes. 
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -58,14 +58,14 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 22, 2021
-* LAST UPDATE: NOVEMBER 23, 2021
+* CREATION DATE: NOVEMBER 23, 2021
+* LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "../../../../databases/classificationDBs/randLinearClassificationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the .csv file containing the real data of the system under study.
 	char csv2Directory[] = "../../../../databases/classificationDBs/linearClassificationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the .csv file containing the predicted data of the system under study.
-	char nameOfTheCsvFile[] = "CenyML_getCrossEntropyError_Results.csv"; // Name the .csv file that will store the results.
+	char nameOfTheCsvFile[] = "CenyML_getConfusionMatrix_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file containing the real data of the system under study (which is declared in "csvManager.h").
 	struct csvManager csv2; // We create a csvManager structure variable to manage the desired .csv file containing the predicted data of the system under study (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
@@ -75,7 +75,6 @@ int main(int argc, char **argv) {
 	int m = 1; // This variable will contain the number of features or independent variables that the input matrix should have.
 	int p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the output values (Y and/or Y_hat).
-	double NLLepsilon = 1.0E-15; // This variable will contain the user desired epsilon value to be summed to any zero value and substracted to any one value of the output matrixes (Y and/or Y_hat).
 	
 	
 	// ---------------------- IMPORT DATA 1 TO BE USED --------------------- //
@@ -139,28 +138,28 @@ int main(int argc, char **argv) {
 	
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	// We apply the cross entropy error metric.
-	printf("Initializing CenyML cross entropy error metric ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the cross entropy error metric between "Y" and "Y_hat".
-	// Allocate the memory required for the variable "NLL" (which will contain the results of the cross entropy error metric between "Y" and "Y_hat").
-	double *NLL = (double *) calloc(p, sizeof(double));
-	// We apply the cross entropy error metric between "Y" and "Y_hat".
-	getCrossEntropyError(Y, Y_hat, n, p, NLLepsilon, NLL);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the cross entropy error metric between "Y" and "Y_hat".
-	printf("CenyML cross entropy error metric elapsed %f seconds.\n\n", elapsedTime);
+	// We apply the confusion matrix metric.
+	printf("Initializing CenyML confusion matrix metric ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the confusion matrix metric between "Y" and "Y_hat".
+	// Allocate the memory required for the variable "NLL" (which will contain the results of the confusion matrix metric between "Y" and "Y_hat").
+	double *confusionMatrix = (double *) calloc(p*4, sizeof(double));
+	// We apply the confusion matrix metric between "Y" and "Y_hat".
+	getConfusionMatrix(Y, Y_hat, n, p, confusionMatrix);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the confusion matrix metric between "Y" and "Y_hat".
+	printf("CenyML confusion matrix metric elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
-	// We save the results of the applied cross entropy error metric.
+	// We save the results of the applied confusion matrix metric.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results that were obtained.
 	// Define the desired header names for the new .csv file to be create.
-    char csvHeaders[strlen("NLL_result") + 1]; // Variable where the following code will store the .csv headers.
+    char csvHeaders[strlen("TP, FP, FN, TN") + 1]; // Variable where the following code will store the .csv headers.
     csvHeaders[0] = '\0'; // Innitialize this char variable with a null value.
-	strcat(csvHeaders, "NLL_result"); // We add the column headers into "csvHeaders".
+	strcat(csvHeaders, "TP, FP, FN, TN"); // We add the column headers into "csvHeaders".
 	// Create a new .csv file and save the results obtained in it.
 	char is_nArray = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	int csvFile_n = 1; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
-	createCsvFile(nameOfTheCsvFile, csvHeaders, NLL, &csvFile_n, is_nArray, p, isInsertId); // We create the desired .csv file.
+	int csvFile_n = p; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
+	createCsvFile(nameOfTheCsvFile, csvHeaders, confusionMatrix, &csvFile_n, is_nArray, 4, isInsertId); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
@@ -173,7 +172,7 @@ int main(int argc, char **argv) {
 	free(csv2.allData);
 	free(Y);
 	free(Y_hat);
-	free(NLL);
+	free(confusionMatrix);
 	return (0); // end of program.
 }
 

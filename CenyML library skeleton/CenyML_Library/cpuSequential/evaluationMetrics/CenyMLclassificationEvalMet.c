@@ -137,3 +137,111 @@ void getCrossEntropyError(double *realOutputMatrix, double *predictedOutputMatri
 	}
 }
 
+
+/**
+* The "getConfusionMatrix()" function is used to calculate and obtain
+* the classification evaluation metric known as the confusion matrix.
+* Such method will be applied with respect to the argument pointer
+* variables "realOutputMatrix" and "predictedOutputMatrix". Then, its
+* result will be stored in the argument pointer variable
+* "confusionMatrix".
+* 
+* @param double *realOutputMatrix - This argument will contain the
+*							   		pointer to a memory allocated
+*								    output matrix, representing
+*									the real data of the system
+*									under study. This variable will
+*									be used as a reference to
+*									calculate and obtain the
+*									confusion matrix with respect to
+*									the argument pointer variable
+*								    "predictedOutputMatrix". THIS
+*								    VARIABLE SHOULD BE ALLOCATED
+*									AND INNITIALIZED BEFORE CALLING
+*									THIS FUNCTION WITH A SIZE OF "n"
+*									TIMES "p" 'DOUBLE' MEMORY SPACES.
+*
+* @param double *predictedOutputMatrix - This argument will contain
+*										 the pointer to a memory
+*										 allocated output matrix,
+*										 representing the predicted
+*							   			 data of the system under
+*										 study. The data contained
+*										 in this variable will be
+*										 used to calculate and obtain
+*										 the confusion matrix. THIS
+*							   			 VARIABLE SHOULD BE ALLOCATED
+*										 AND INNITIALIZED BEFORE
+*										 CALLING THIS FUNCTION WITH A
+*										 SIZE OF "n" TIMES "p"
+*										 'DOUBLE' MEMORY SPACES.
+*
+* @param int n - This argument will represent the total number of 
+*				 samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
+*
+* @param int p - This argument will represent the total number of 
+*				 outputs that exist in the the output matrix, containing
+*				 the real/predicted results of the system under study.
+*
+* @param double *confusionMatrix - This argument will contain the pointer
+*								   to a memory allocated variable in which
+*								   we will store the resulting metric
+*								   evaluation obtained after having applied
+*								   the confusion matrix metric between the
+*								   argument pointer variables
+*								   "realOutputMatrix" and
+*								   "predictedOutputMatrix". IT IS
+*								   INDISPENSABLE THAT THIS VARIABLE IS
+*					   			   ALLOCATED AND INNITIALIZED WITH ZERO
+*								   BEFORE CALLING THIS FUNCTION WITH A SIZE
+*								   OF "p" TIMES "4" 'DOUBLE' MEMORY SPACES.
+*								   Note that the results will be stored in
+*								   ascending order with respect to the
+*								   outputs of the system under study. In
+*								   other words, from the first output in row
+*								   index "0" up to the last output in row
+*								   index "p-1". Moreover, each individual
+*								   output result will contain four columns
+*								   where the "true positives" will be stored
+*								   in the column index 0; the
+*								   "false positives" will be stored in the
+*								   column index 1; the "false negatives"
+*								   will be stored in the column index 2 and;
+*								   the "true negatives" will be stored in
+*								   the column index 3.
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*       "confusionMatrix".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: NOVEMBER 23, 2021
+* LAST UPDATE: N/A
+*/
+void getConfusionMatrix(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *confusionMatrix) {
+	// We calculate the confusion matrix between the argument pointer variables "realOutputMatrix" and "predictedOutputMatrix".
+	int currentRowTimesP; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+	int currentOutputTimesPtimesFour; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+	for (int currentRow = 0; currentRow < n; currentRow++) {
+		currentRowTimesP = currentRow*p;
+		for (int currentOutput=0; currentOutput<p; currentOutput++) {
+			currentRowAndColumn = currentOutput + currentRowTimesP;
+			currentOutputTimesPtimesFour = currentOutput*p*4;
+			if ((realOutputMatrix[currentRowAndColumn]==1) && (predictedOutputMatrix[currentRowAndColumn]==1)) {
+				confusionMatrix[0 + currentOutputTimesPtimesFour] += 1; // Increase the true positive counter.
+			} else if ((realOutputMatrix[currentRowAndColumn]==0) && (predictedOutputMatrix[currentRowAndColumn]==1)) {
+				confusionMatrix[1 + currentOutputTimesPtimesFour] += 1; // Increase the false positive counter.
+			} else if ((realOutputMatrix[currentRowAndColumn]==1) && (predictedOutputMatrix[currentRowAndColumn]==0)) {
+				confusionMatrix[2 + currentOutputTimesPtimesFour] += 1; // Increase the false negative counter.
+			} else if ((realOutputMatrix[currentRowAndColumn]==0) && (predictedOutputMatrix[currentRowAndColumn]==0)) {
+				confusionMatrix[3 + currentOutputTimesPtimesFour] += 1; // Increase the true negative counter.
+			} else {
+				printf("\nERROR: An output value from either the real or the predicted output matrixes contains a non binary value in the row index %d. and output/column index %d\n", currentRow, currentOutput);
+			}	
+		}
+	}
+}
+
