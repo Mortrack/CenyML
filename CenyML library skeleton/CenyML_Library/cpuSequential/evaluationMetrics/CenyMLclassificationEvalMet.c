@@ -245,3 +245,104 @@ void getConfusionMatrix(double *realOutputMatrix, double *predictedOutputMatrix,
 	}
 }
 
+
+/**
+* The "getAccuracy()" function is used to calculate and obtain the
+* classification evaluation metric known as the accuracy. Such method
+* will be applied with respect to the argument pointer variables
+* "realOutputMatrix" and "predictedOutputMatrix". Then, its result
+* will be stored in the argument pointer variable "accuracy".
+* 
+* @param double *realOutputMatrix - This argument will contain the
+*							   		pointer to a memory allocated
+*								    output matrix, representing
+*									the real data of the system
+*									under study. This variable will
+*									be used as a reference to
+*									calculate and obtain the
+*									accuracy with respect to the
+*									argument pointer variable
+*								    "predictedOutputMatrix". THIS
+*								    VARIABLE SHOULD BE ALLOCATED
+*									AND INNITIALIZED BEFORE CALLING
+*									THIS FUNCTION WITH A SIZE OF "n"
+*									TIMES "p" 'DOUBLE' MEMORY SPACES.
+*
+* @param double *predictedOutputMatrix - This argument will contain
+*										 the pointer to a memory
+*										 allocated output matrix,
+*										 representing the predicted
+*							   			 data of the system under
+*										 study. The data contained
+*										 in this variable will be
+*										 used to calculate and obtain
+*										 the accuracy. THIS VARIABLE
+*										 SHOULD BE ALLOCATED AND
+*										 INNITIALIZED BEFORE CALLING
+*										 THIS FUNCTION WITH A SIZE OF
+*										 "n" TIMES "p" 'DOUBLE'
+*										 MEMORY SPACES.
+*
+* @param int n - This argument will represent the total number of 
+*				 samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
+*
+* @param int p - This argument will represent the total number of 
+*				 outputs that exist in the the output matrix, containing
+*				 the real/predicted results of the system under study.
+*
+* @param double *accuracy - This argument will contain the pointer to a
+*							memory allocated variable in which we will
+*							store the resulting metric evaluation
+*							obtained after having applied the accuracy
+*							metric between the argument pointer variables
+*							"realOutputMatrix" and
+*							"predictedOutputMatrix". IT IS INDISPENSABLE
+*							THAT THIS VARIABLE IS ALLOCATED AND
+*							INNITIALIZED WITH ZERO BEFORE CALLING THIS
+*							FUNCTION WITH A SIZE OF "p" TIMES "1"
+*							'DOUBLE' MEMORY SPACES. Note that the results
+*							will be stored in ascending order with
+*							respect to the outputs of the system under
+*							study. In other words, from the first output
+*							in row index "0" up to the last output in row
+*							index "p-1".
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*       "accuracy".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: NOVEMBER 23, 2021
+* LAST UPDATE: N/A
+*/
+void getAccuracy(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *accuracy) {
+	// In order to calculate the accuracy, we calculate the true positives and true negatives between the argument pointer variables "realOutputMatrix" and "predictedOutputMatrix".
+	int currentRowTimesP; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+	int currentOutputTimesPtimesTwo; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+	double *tp_and_tn = (double *) calloc(p*2, sizeof(double)); // Variable used to store the true positives in column index 0 and true negatives in column index 1 for each of the outputs availabe, each one of them stored in ascending order from row index 0 up to row index p-1.
+	for (int currentRow = 0; currentRow < n; currentRow++) {
+		currentRowTimesP = currentRow*p;
+		for (int currentOutput=0; currentOutput<p; currentOutput++) {
+			currentRowAndColumn = currentOutput + currentRowTimesP;
+			currentOutputTimesPtimesTwo = currentOutput*p*2;
+			if ((realOutputMatrix[currentRowAndColumn]==1) && (predictedOutputMatrix[currentRowAndColumn]==1)) {
+				tp_and_tn[0 + currentOutputTimesPtimesTwo] += 1; // Increase the true positive counter.
+			} else if ((realOutputMatrix[currentRowAndColumn]==0) && (predictedOutputMatrix[currentRowAndColumn]==0)) {
+				tp_and_tn[1 + currentOutputTimesPtimesTwo] += 1; // Increase the true negative counter.
+			}
+		}
+	}
+	
+	// We calculate the accuracy.
+	for (int currentOutput=0; currentOutput<p; currentOutput++) {
+		currentOutputTimesPtimesTwo = currentOutput*p*2;
+		accuracy[currentOutput] = (tp_and_tn[0 + currentOutputTimesPtimesTwo] + tp_and_tn[1 + currentOutputTimesPtimesTwo]) / n;
+	}
+	
+	// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
+	free(tp_and_tn);
+}
+

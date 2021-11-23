@@ -6,13 +6,13 @@
 # LAST UPDATE: N/A.
 #
 # This code is used to apply the classification evaluation metric known as the
-# confusion matrix. This is done with the two databases for linear equation
-# systems, that differ only because one has a random bias value and the other
-# does not. In addition, both of these databases have 1'000'000 samples each.
-# Moreover, the well known scikit-learn library will be used to
-# calculate the confusion matrix metric (https://bit.ly/3cHJws2) and then its
-# result will be compared with the one obtained with the CenyML library as a
-# means of validating the code of CenyML.
+# accuracy. This is done with the two databases for linear equation systems,
+# that differ only because one has a random bias value and the other does not.
+# In addition, both of these databases have 1'000'000 samples each. Moreover,
+# the well known scikit-learn library will be used to calculate the accuracy
+# metric (https://bit.ly/3cFuxPr) and then its result will be compared with
+# the one obtained with the CenyML library as a means of validating the code
+# of CenyML.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # Python version 3.9.7
@@ -24,7 +24,7 @@
 import pandas as pd  # version 1.3.3
 import numpy as np # version 1.21.2
 import time
-from sklearn.metrics import confusion_matrix # version 1.0.1
+from sklearn.metrics import accuracy_score # version 1.0.1
 
 # -------------------------------------------- #
 # ----- Define the user variables values ----- #
@@ -45,7 +45,7 @@ columnIndexOfOutputDataInCsvFile = 2; # This variable will contain the index
 # Read the .csv file containing the results of the CenyML library.
 print("Innitializing data extraction from .csv file containing the CenyML results ...")
 startingTime = time.time()
-dataset_CenyML_getConfusionMatrixResults = pd.read_csv('CenyML_getConfusionMatrix_Results.csv')
+dataset_CenyML_getAccuracyResults = pd.read_csv('CenyML_getAccuracy_Results.csv')
 elapsedTime = time.time() - startingTime
 print("Data extraction from .csv file with the CenyML results elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -97,21 +97,16 @@ print("Predicted output data innitialization elapsed " + format(elapsedTime) + "
 print("")
 
 
-# --------------------------------------------- #
-# ----- Apply the confusion matrix metric ----- #
-# --------------------------------------------- #
-print("Innitializing scikit-learn confusion matrix metric calculation ...")
+# ------------------------------------- #
+# ----- Apply the accuracy metric ----- #
+# ------------------------------------- #
+print("Innitializing scikit-learn accuracy metric calculation ...")
 startingTime = time.time()
-confusionMatrix = confusion_matrix(Y, Y_hat).ravel()
+accuracy = accuracy_score(Y, Y_hat)
 elapsedTime = time.time() - startingTime
-print("scikit-learn confusion matrix metric elapsed " + format(elapsedTime) + " seconds.")
+print("scikit-learn accuracy metric elapsed " + format(elapsedTime) + " seconds.")
 print("")
-# Swap the values contained in the first and last indexes of the result
-# obtained so that they are arranged in the same manner as in the CenyML
-# library.
-tmp = confusionMatrix[0]
-confusionMatrix[0] = confusionMatrix[3]
-confusionMatrix[3] = tmp
+
 
 # ---------------------------------------------------------------- #
 # ----- Determine if the CenyML Library's method was correct ----- #
@@ -119,13 +114,13 @@ confusionMatrix[3] = tmp
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The results will begin their comparation process...")
 startingTime = time.time()
-epsilon = 1.0e-6
+epsilon = 0
 isMatch = 1
-for currentColumn in range(0, 4):
-    differentiation = abs(dataset_CenyML_getConfusionMatrixResults.iloc[0][currentColumn] - confusionMatrix[currentColumn])
+for currentColumn in range(0, p):
+    differentiation = abs(dataset_CenyML_getAccuracyResults.iloc[0][currentColumn] - accuracy)
     if (differentiation > epsilon):
         isMatch = 0
-        print("The absolute differentiation of the Column: " + dataset_CenyML_getConfusionMatrixResults.columns.tolist()[currentColumn] + " and the Row: " + format(0) + " exceeded the value defined for epsilon.")
+        print("The absolute differentiation of the Column: " + dataset_CenyML_getAccuracyResults.columns.tolist()[currentColumn] + " and the Row: " + format(0) + " exceeded the value defined for epsilon.")
         print("The absolute differentiation obtained was: " + format(differentiation))
         break
 if (isMatch == 1):

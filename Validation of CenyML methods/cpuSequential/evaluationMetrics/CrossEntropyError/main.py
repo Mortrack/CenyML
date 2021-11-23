@@ -45,7 +45,7 @@ columnIndexOfOutputDataInCsvFile = 2; # This variable will contain the index
 # Read the .csv file containing the results of the CenyML library.
 print("Innitializing data extraction from .csv file containing the CenyML results ...")
 startingTime = time.time()
-dataset_CenyML_getMeanSquaredErrorResults = pd.read_csv('CenyML_getCrossEntropyError_Results.csv')
+dataset_CenyML_getCrossEntropyErrorResults = pd.read_csv('CenyML_getCrossEntropyError_Results.csv')
 elapsedTime = time.time() - startingTime
 print("Data extraction from .csv file with the CenyML results elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -118,10 +118,10 @@ startingTime = time.time()
 epsilon = 4.04e-6
 isMatch = 1
 for currentColumn in range(0, p):
-    differentiation = abs(dataset_CenyML_getMeanSquaredErrorResults.iloc[0][currentColumn] - NLL)
+    differentiation = abs(dataset_CenyML_getCrossEntropyErrorResults.iloc[0][currentColumn] - NLL)
     if (differentiation > epsilon):
         isMatch = 0
-        print("The absolute differentiation of the Column: " + dataset_CenyML_getMeanSquaredErrorResults.columns.tolist()[currentColumn] + " and the Row: " + format(0) + " exceeded the value defined for epsilon.")
+        print("The absolute differentiation of the Column: " + dataset_CenyML_getCrossEntropyErrorResults.columns.tolist()[currentColumn] + " and the Row: " + format(0) + " exceeded the value defined for epsilon.")
         print("The absolute differentiation obtained was: " + format(differentiation))
         break
 if (isMatch == 1):
