@@ -336,7 +336,7 @@ void getAccuracy(double *realOutputMatrix, double *predictedOutputMatrix, int n,
 		}
 	}
 	
-	// We calculate the accuracy.
+	// We calculate the accuracy for every output given.
 	for (int currentOutput=0; currentOutput<p; currentOutput++) {
 		currentOutputTimesPtimesTwo = currentOutput*p*2;
 		accuracy[currentOutput] = (tp_and_tn[0 + currentOutputTimesPtimesTwo] + tp_and_tn[1 + currentOutputTimesPtimesTwo]) / n;
@@ -344,5 +344,301 @@ void getAccuracy(double *realOutputMatrix, double *predictedOutputMatrix, int n,
 	
 	// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
 	free(tp_and_tn);
+}
+
+
+/**
+* The "getPrecision()" function is used to calculate and obtain the
+* classification evaluation metric known as the precision. Such method
+* will be applied with respect to the argument pointer variables
+* "realOutputMatrix" and "predictedOutputMatrix". Then, its result
+* will be stored in the argument pointer variable "precision".
+* 
+* @param double *realOutputMatrix - This argument will contain the
+*							   		pointer to a memory allocated
+*								    output matrix, representing
+*									the real data of the system
+*									under study. This variable will
+*									be used as a reference to
+*									calculate and obtain the
+*									precision with respect to the
+*									argument pointer variable
+*								    "predictedOutputMatrix". THIS
+*								    VARIABLE SHOULD BE ALLOCATED
+*									AND INNITIALIZED BEFORE CALLING
+*									THIS FUNCTION WITH A SIZE OF "n"
+*									TIMES "p" 'DOUBLE' MEMORY SPACES.
+*
+* @param double *predictedOutputMatrix - This argument will contain
+*										 the pointer to a memory
+*										 allocated output matrix,
+*										 representing the predicted
+*							   			 data of the system under
+*										 study. The data contained
+*										 in this variable will be
+*										 used to calculate and obtain
+*										 the precision. THIS VARIABLE
+*										 SHOULD BE ALLOCATED AND
+*										 INNITIALIZED BEFORE CALLING
+*										 THIS FUNCTION WITH A SIZE OF
+*										 "n" TIMES "p" 'DOUBLE'
+*										 MEMORY SPACES.
+*
+* @param int n - This argument will represent the total number of 
+*				 samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
+*
+* @param int p - This argument will represent the total number of 
+*				 outputs that exist in the the output matrix, containing
+*				 the real/predicted results of the system under study.
+*
+* @param double *precision - This argument will contain the pointer to a
+*							memory allocated variable in which we will
+*							store the resulting metric evaluation
+*							obtained after having applied the precision
+*							metric between the argument pointer variables
+*							"realOutputMatrix" and
+*							"predictedOutputMatrix". IT IS INDISPENSABLE
+*							THAT THIS VARIABLE IS ALLOCATED AND
+*							INNITIALIZED WITH ZERO BEFORE CALLING THIS
+*							FUNCTION WITH A SIZE OF "p" TIMES "1"
+*							'DOUBLE' MEMORY SPACES. Note that the results
+*							will be stored in ascending order with
+*							respect to the outputs of the system under
+*							study. In other words, from the first output
+*							in row index "0" up to the last output in row
+*							index "p-1".
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*       "precision".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: NOVEMBER 23, 2021
+* LAST UPDATE: N/A
+*/
+void getPrecision(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *precision) {
+	// In order to calculate the precision, we temporarly store the sum of the product of "realOutputMatrix" and "predictedOutputMatrix" for each available sample in the variable "precision". In addition, we also calculate the sum of the "predictedOutputMatrix".
+	int currentRowTimesP; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+	double *sumOfPredictedOutputMatrix = (double *) calloc(p, sizeof(double)); // Variable used to store the total sum of values contained in the "predictedOutputMatrix".
+	for (int currentRow = 0; currentRow < n; currentRow++) {
+		currentRowTimesP = currentRow*p;
+		for (int currentOutput=0; currentOutput<p; currentOutput++) {
+			currentRowAndColumn = currentOutput + currentRowTimesP;
+			precision[currentOutput] += (realOutputMatrix[currentRowAndColumn] * predictedOutputMatrix[currentRowAndColumn]);
+			sumOfPredictedOutputMatrix[currentOutput] += predictedOutputMatrix[currentRowAndColumn];
+		}
+	}
+	
+	// We calculate the precision for every output given.
+	for (int currentOutput=0; currentOutput<p; currentOutput++) {
+		precision[currentOutput] = precision[currentOutput] / sumOfPredictedOutputMatrix[currentOutput];
+	}
+	
+	// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
+	free(sumOfPredictedOutputMatrix);
+}
+
+
+/**
+* The "getRecall()" function is used to calculate and obtain the
+* classification evaluation metric known as the precision. Such method
+* will be applied with respect to the argument pointer variables
+* "realOutputMatrix" and "predictedOutputMatrix". Then, its result
+* will be stored in the argument pointer variable "precision".
+* 
+* @param double *realOutputMatrix - This argument will contain the
+*							   		pointer to a memory allocated
+*								    output matrix, representing
+*									the real data of the system
+*									under study. This variable will
+*									be used as a reference to
+*									calculate and obtain the
+*									precision with respect to the
+*									argument pointer variable
+*								    "predictedOutputMatrix". THIS
+*								    VARIABLE SHOULD BE ALLOCATED
+*									AND INNITIALIZED BEFORE CALLING
+*									THIS FUNCTION WITH A SIZE OF "n"
+*									TIMES "p" 'DOUBLE' MEMORY SPACES.
+*
+* @param double *predictedOutputMatrix - This argument will contain
+*										 the pointer to a memory
+*										 allocated output matrix,
+*										 representing the predicted
+*							   			 data of the system under
+*										 study. The data contained
+*										 in this variable will be
+*										 used to calculate and obtain
+*										 the precision. THIS VARIABLE
+*										 SHOULD BE ALLOCATED AND
+*										 INNITIALIZED BEFORE CALLING
+*										 THIS FUNCTION WITH A SIZE OF
+*										 "n" TIMES "p" 'DOUBLE'
+*										 MEMORY SPACES.
+*
+* @param int n - This argument will represent the total number of 
+*				 samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
+*
+* @param int p - This argument will represent the total number of 
+*				 outputs that exist in the the output matrix, containing
+*				 the real/predicted results of the system under study.
+*
+* @param double *precision - This argument will contain the pointer to a
+*							memory allocated variable in which we will
+*							store the resulting metric evaluation
+*							obtained after having applied the precision
+*							metric between the argument pointer variables
+*							"realOutputMatrix" and
+*							"predictedOutputMatrix". IT IS INDISPENSABLE
+*							THAT THIS VARIABLE IS ALLOCATED AND
+*							INNITIALIZED WITH ZERO BEFORE CALLING THIS
+*							FUNCTION WITH A SIZE OF "p" TIMES "1"
+*							'DOUBLE' MEMORY SPACES. Note that the results
+*							will be stored in ascending order with
+*							respect to the outputs of the system under
+*							study. In other words, from the first output
+*							in row index "0" up to the last output in row
+*							index "p-1".
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*       "precision".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: NOVEMBER 23, 2021
+* LAST UPDATE: N/A
+*/
+void getRecall(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *recall) {
+	// In order to calculate the recall, we temporarly store the sum of the product of "realOutputMatrix" and "predictedOutputMatrix" for each available sample in the variable "recall". In addition, we also calculate the sum of the "realOutputMatrix".
+	int currentRowTimesP; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+	double *sumOfRealOutputMatrix = (double *) calloc(p, sizeof(double)); // Variable used to store the total sum of values contained in the "realOutputMatrix".
+	for (int currentRow = 0; currentRow < n; currentRow++) {
+		currentRowTimesP = currentRow*p;
+		for (int currentOutput=0; currentOutput<p; currentOutput++) {
+			currentRowAndColumn = currentOutput + currentRowTimesP;
+			recall[currentOutput] += (realOutputMatrix[currentRowAndColumn] * predictedOutputMatrix[currentRowAndColumn]);
+			sumOfRealOutputMatrix[currentOutput] += realOutputMatrix[currentRowAndColumn];
+		}
+	}
+	
+	// We calculate the recall for every output given.
+	for (int currentOutput=0; currentOutput<p; currentOutput++) {
+		recall[currentOutput] = recall[currentOutput] / sumOfRealOutputMatrix[currentOutput];
+	}
+	
+	// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
+	free(sumOfRealOutputMatrix);
+}
+
+
+/**
+* The "getF1score()" function is used to calculate and obtain the
+* classification evaluation metric known as the F1 score. Such method
+* will be applied with respect to the argument pointer variables
+* "realOutputMatrix" and "predictedOutputMatrix". Then, its result
+* will be stored in the argument pointer variable "F1 score".
+* 
+* @param double *realOutputMatrix - This argument will contain the
+*							   		pointer to a memory allocated
+*								    output matrix, representing
+*									the real data of the system
+*									under study. This variable will
+*									be used as a reference to
+*									calculate and obtain the
+*									F1 score with respect to the
+*									argument pointer variable
+*								    "predictedOutputMatrix". THIS
+*								    VARIABLE SHOULD BE ALLOCATED
+*									AND INNITIALIZED BEFORE CALLING
+*									THIS FUNCTION WITH A SIZE OF "n"
+*									TIMES "p" 'DOUBLE' MEMORY SPACES.
+*
+* @param double *predictedOutputMatrix - This argument will contain
+*										 the pointer to a memory
+*										 allocated output matrix,
+*										 representing the predicted
+*							   			 data of the system under
+*										 study. The data contained
+*										 in this variable will be
+*										 used to calculate and obtain
+*										 the F1 score. THIS VARIABLE
+*										 SHOULD BE ALLOCATED AND
+*										 INNITIALIZED BEFORE CALLING
+*										 THIS FUNCTION WITH A SIZE OF
+*										 "n" TIMES "p" 'DOUBLE'
+*										 MEMORY SPACES.
+*
+* @param int n - This argument will represent the total number of 
+*				 samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
+*
+* @param int p - This argument will represent the total number of 
+*				 outputs that exist in the the output matrix, containing
+*				 the real/predicted results of the system under study.
+*
+* @param double *F1score - This argument will contain the pointer to a
+*						   memory allocated variable in which we will
+*						   store the resulting metric evaluation
+*						   obtained after having applied the F1 score
+*						   metric between the argument pointer variables
+*						   "realOutputMatrix" and "predictedOutputMatrix".
+*						   IT IS INDISPENSABLE THAT THIS VARIABLE IS
+*						   ALLOCATED AND INNITIALIZED WITH ZERO BEFORE
+*						   CALLING THIS FUNCTION WITH A SIZE OF "p" TIMES
+*						   "1" 'DOUBLE' MEMORY SPACES. Note that the
+*						   results will be stored in ascending order with
+*						   respect to the outputs of the system under
+*						   study. In other words, from the first output
+*						   in row index "0" up to the last output in row
+*						   index "p-1".
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*       "F1score".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: NOVEMBER 23, 2021
+* LAST UPDATE: N/A
+*/
+void getF1score(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *F1score) {
+	// In order to calculate the F1score, we first calculate what is described in the following notes:
+	// NOTE: We will temporarly store the sum of the product of "realOutputMatrix" and "predictedOutputMatrix" for each available sample in the variable "precision".
+	// NOTE: we will calculate the sum of the "predictedOutputMatrix" and temporarly store it in the variable "F1score", for performance purposes.
+	// NOTE: we will calculate the sum of the "realOutputMatrix" and temporarly store it in the variable "recall", for performance purposes.
+	int currentRowTimesP; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+	double *precision = (double *) calloc(p, sizeof(double)); // Variable used to store the precision with respect to the output data given in "realOutputMatrix" and "predictedOutputMatrix".
+	double *recall = (double *) calloc(p, sizeof(double)); // Variable used to store the recall with respect to the output data given in "realOutputMatrix" and "predictedOutputMatrix".
+	for (int currentRow = 0; currentRow < n; currentRow++) {
+		currentRowTimesP = currentRow*p;
+		for (int currentOutput=0; currentOutput<p; currentOutput++) {
+			currentRowAndColumn = currentOutput + currentRowTimesP;
+			precision[currentOutput] += (realOutputMatrix[currentRowAndColumn] * predictedOutputMatrix[currentRowAndColumn]);
+			F1score[currentOutput] += predictedOutputMatrix[currentRowAndColumn];
+			recall[currentOutput] += realOutputMatrix[currentRowAndColumn];
+		}
+	}
+	
+	// We conclude the calculation of the precision and recall for every output given.
+	for (int currentOutput=0; currentOutput<p; currentOutput++) {
+		recall[currentOutput] = precision[currentOutput] / recall[currentOutput];
+		precision[currentOutput] = precision[currentOutput] / F1score[currentOutput];
+	}
+	
+	// We calculate the F1 score for every output given
+	for (int currentOutput=0; currentOutput<p; currentOutput++) {
+		F1score[currentOutput] = 2*precision[currentOutput]*recall[currentOutput] / (precision[currentOutput] + recall[currentOutput]);
+	}
+	
+	// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
+	free(precision);
+	free(recall);
 }
 

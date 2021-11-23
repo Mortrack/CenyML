@@ -3,9 +3,9 @@
 * the linear equation system for both with and without the random bias
 * value. Then all their output data will be extracted and saved into the
 * matrix "Y" (for the real data) and "Y_hat" (for the predicted data).
-* Subsequently, the evaluation metric known as the precision, will be
+* Subsequently, the evaluation metric known as the recall, will be
 * applied with respect to both of these output matrixes. Finally, a new
-* .csv file "CenyML_getPrecision_Results.csv" will be created and in it,
+* .csv file "CenyML_getRecall_Results.csv" will be created and in it,
 * the resulting values of applying the accuracy metric will be saved for
 * further comparations and validations purposes.
 */
@@ -42,7 +42,7 @@
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read two .csv files and
-* then calculate the precision metric between their output values. Finally, the
+* then calculate the recall metric between their output values. Finally, the
 * results of the applied metric will be saved in a new .csv file for further
 * comparation and validation purposes. 
 *
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "../../../../databases/classificationDBs/randLinearClassificationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the .csv file containing the real data of the system under study.
 	char csv2Directory[] = "../../../../databases/classificationDBs/linearClassificationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the .csv file containing the predicted data of the system under study.
-	char nameOfTheCsvFile[] = "CenyML_getPrecision_Results.csv"; // Name the .csv file that will store the results.
+	char nameOfTheCsvFile[] = "CenyML_getRecall_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file containing the real data of the system under study (which is declared in "csvManager.h").
 	struct csvManager csv2; // We create a csvManager structure variable to manage the desired .csv file containing the predicted data of the system under study (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
@@ -138,28 +138,28 @@ int main(int argc, char **argv) {
 	
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	// We apply the precision metric.
-	printf("Initializing CenyML precision metric ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the precision metric between "Y" and "Y_hat".
-	// Allocate the memory required for the variable "precision" (which will contain the results of the precision metric between "Y" and "Y_hat").
-	double *precision = (double *) calloc(p, sizeof(double));
-	// We apply the precision metric between "Y" and "Y_hat".
-	getPrecision(Y, Y_hat, n, p, precision);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the precision metric between "Y" and "Y_hat".
-	printf("CenyML precision metric elapsed %f seconds.\n\n", elapsedTime);
+	// We apply the recall metric.
+	printf("Initializing CenyML recall metric ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the recall metric between "Y" and "Y_hat".
+	// Allocate the memory required for the variable "recall" (which will contain the results of the recall metric between "Y" and "Y_hat").
+	double *recall = (double *) calloc(p, sizeof(double));
+	// We apply the recall metric between "Y" and "Y_hat".
+	getRecall(Y, Y_hat, n, p, recall);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the recall metric between "Y" and "Y_hat".
+	printf("CenyML recall metric elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
-	// We save the results of the applied precision metric.
+	// We save the results of the applied recall metric.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results that were obtained.
 	// Define the desired header names for the new .csv file to be create.
-    char csvHeaders[strlen("precision") + 1]; // Variable where the following code will store the .csv headers.
+    char csvHeaders[strlen("recall") + 1]; // Variable where the following code will store the .csv headers.
     csvHeaders[0] = '\0'; // Innitialize this char variable with a null value.
-	strcat(csvHeaders, "precision"); // We add the column headers into "csvHeaders".
+	strcat(csvHeaders, "recall"); // We add the column headers into "csvHeaders".
 	// Create a new .csv file and save the results obtained in it.
 	char is_nArray = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
 	int csvFile_n = p; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
-	createCsvFile(nameOfTheCsvFile, csvHeaders, precision, &csvFile_n, is_nArray, 1, isInsertId); // We create the desired .csv file.
+	createCsvFile(nameOfTheCsvFile, csvHeaders, recall, &csvFile_n, is_nArray, 1, isInsertId); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
 	free(csv2.allData);
 	free(Y);
 	free(Y_hat);
-	free(precision);
+	free(recall);
 	return (0); // end of program.
 }
 

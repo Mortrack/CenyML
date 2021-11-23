@@ -6,11 +6,11 @@
 # LAST UPDATE: N/A.
 #
 # This code is used to apply the classification evaluation metric known as the
-# precision. This is done with the two databases for linear equation systems,
+# recall. This is done with the two databases for linear equation systems,
 # that differ only because one has a random bias value and the other does not.
 # In addition, both of these databases have 1'000'000 samples each. Moreover,
-# the well known scikit-learn library will be used to calculate the precision
-# metric (https://bit.ly/32w5RqZ) and then its result will be compared with
+# the well known scikit-learn library will be used to calculate the recall
+# metric (https://bit.ly/3cGf2qv) and then its result will be compared with
 # the one obtained with the CenyML library as a means of validating the code
 # of CenyML.
 # --------------------------------------------------------------------------- #
@@ -24,7 +24,7 @@
 import pandas as pd  # version 1.3.3
 import numpy as np # version 1.21.2
 import time
-from sklearn.metrics import precision_score # version 1.0.1
+from sklearn.metrics import recall_score # version 1.0.1
 
 # -------------------------------------------- #
 # ----- Define the user variables values ----- #
@@ -45,7 +45,7 @@ columnIndexOfOutputDataInCsvFile = 2; # This variable will contain the index
 # Read the .csv file containing the results of the CenyML library.
 print("Innitializing data extraction from .csv file containing the CenyML results ...")
 startingTime = time.time()
-dataset_CenyML_getPrecisionResults = pd.read_csv('CenyML_getPrecision_Results.csv')
+dataset_CenyML_getRecallResults = pd.read_csv('CenyML_getRecall_Results.csv')
 elapsedTime = time.time() - startingTime
 print("Data extraction from .csv file with the CenyML results elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -97,14 +97,14 @@ print("Predicted output data innitialization elapsed " + format(elapsedTime) + "
 print("")
 
 
-# ------------------------------------- #
-# ----- Apply the precision metric ----- #
-# ------------------------------------- #
-print("Innitializing scikit-learn precision metric calculation ...")
+# ----------------------------------- #
+# ----- Apply the recall metric ----- #
+# ----------------------------------- #
+print("Innitializing scikit-learn recall metric calculation ...")
 startingTime = time.time()
-precision = precision_score(Y, Y_hat)
+recall = recall_score(Y, Y_hat)
 elapsedTime = time.time() - startingTime
-print("scikit-learn precision metric elapsed " + format(elapsedTime) + " seconds.")
+print("scikit-learn recall metric elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 
@@ -114,13 +114,13 @@ print("")
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The results will begin their comparation process...")
 startingTime = time.time()
-epsilon = 3.17e-7
+epsilon = 1.13e-7
 isMatch = 1
 for currentColumn in range(0, p):
-    differentiation = abs(dataset_CenyML_getPrecisionResults.iloc[0][currentColumn] - precision)
+    differentiation = abs(dataset_CenyML_getRecallResults.iloc[0][currentColumn] - recall)
     if (differentiation > epsilon):
         isMatch = 0
-        print("The absolute differentiation of the Column: " + dataset_CenyML_getPrecisionResults.columns.tolist()[currentColumn] + " and the Row: " + format(0) + " exceeded the value defined for epsilon.")
+        print("The absolute differentiation of the Column: " + dataset_CenyML_getRecallResults.columns.tolist()[currentColumn] + " and the Row: " + format(0) + " exceeded the value defined for epsilon.")
         print("The absolute differentiation obtained was: " + format(differentiation))
         break
 if (isMatch == 1):
