@@ -478,9 +478,9 @@ int main(int argc, char **argv) {
 	settings->autoPadding = true;
 	settings->title = L"";
 	settings->titleLength = wcslen(settings->title);
-	settings->xLabel = L"independent variable";
+	settings->xLabel = L"";
 	settings->xLabelLength = wcslen(settings->xLabel);
-	settings->yLabel = L"dependent variable";
+	settings->yLabel = L"";
 	settings->yLabelLength = wcslen(settings->yLabel);
 	ScatterPlotSeries *s [] = {series2, series, series3, series4, series5};
 	settings->scatterPlotSeries = s;
