@@ -131,6 +131,10 @@ int main(int argc, char **argv) {
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
 	double Y_epsilon = 1.0E-15; // This variable will contain the user desired epsilon value to be summed to any zero value and substracted to any value of the output matrix "Y" and that will be used in the ML model to be trained.
 	double threshold = 0.5; // This variable will contain the value that the user desired for the threshold to be taken into account for the ML model to be trained, where 0<threshold<1.
+	double b_ideal[3]; // This variable will be used to contain the ideal coefficient values that the model to be trained should give.
+	b_ideal[0] = 10;
+	b_ideal[1] = 0.4;
+	b_ideal[2] = 0.4;
 	
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
@@ -506,6 +510,29 @@ int main(int argc, char **argv) {
 	printf("NOTE: In regards to the .png image, the horizontal axis stands for the independent variable 1 and the vertical axis for the independent variable 2.\n");
 	printf("In addition, the color green stands for an output value of 1 and the color red for an output value of 0.\n");
 	printf("Finally, while the background color represents the predicted 1s and 0s that was made by the machine learning model that was just trained, the dots/triangles stand for the true behaviour of the system under study.\n\n");
+	
+	
+	
+	// We validate the getLogisticRegression method.
+	printf("Initializing coefficients validation of the CenyML getLogisticRegression method ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getLogisticRegression method.
+	double differentiation; // Variable used to store the error obtained for a certain value.
+	double epsilon = 1.0E-6; // Variable used to store the max error value permitted during validation process.
+	char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
+	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
+	for (int currentRow=0; currentRow<m+1; currentRow++) {
+		differentiation = fabs(b[currentRow] - b_ideal[currentRow]);
+		if (differentiation > epsilon) { // if the error surpassed the value permitted, then terminate validation process and emit message to indicate a non match.
+			isMatch = 0;
+			printf("Validation process DID NOT MATCH! and a difference of %f was obtained.\n", differentiation);
+			break;
+		}
+	}
+	if (isMatch == 1) { // If the flag "isMatch" indicates a true/high value, then emit message to indicate that the validation process matched.
+		printf("Validation process MATCHED!\n");
+	}
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to validate the getLogisticRegression method.
+	printf("The coefficients validation of the CenyML getLogisticRegression method elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!");
 	
 	// Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.

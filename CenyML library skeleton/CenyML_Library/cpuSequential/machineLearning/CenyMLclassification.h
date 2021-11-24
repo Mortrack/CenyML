@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-void getLinearLogisticClassification(double *, double *, int, int, int, char, double *);
+void getLinearLogisticClassification(double *, double *, int, int, int, double, char, double *);
 void predictLinearLogisticClassification(double *, double, double *, int, int, int, double *);
 
 #endif

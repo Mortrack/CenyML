@@ -73,6 +73,19 @@
 *				 containing the real results of the system under
 *				 study.
 *
+* @param double Y_epsilon -  This argument will contain the user defined
+*							 epsilon value that will be used to temporarly
+*							 store the sum of any "0" value with it and
+*							 substract it to any "1" value of the output
+*							 matrix ("Y"). This process is a strictly
+*							 needed mathematical operation in the calculus
+*							 of the desired error metric. If not followed,
+*							 a mathematical error will be obtained due to
+*							 the calculation of ln(0). IMPORTANT NOTE: The
+*							 results will be temporarly stored so that the
+*							 values of the output matrixes are not
+*							 modified.
+*
 * @param char isVariableOptimizer = This argument variable is not
 *									having any effect on this function
 *									at the moment, as its functionality
@@ -102,9 +115,9 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 23, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 24, 2021
 */
-void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
+void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, double Y_epsilon, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if (m < 1) {
 		printf("\nERROR: The machine learning features (independent variables) must be equal or greater than 1 for this particular algorithm.\n");
@@ -120,19 +133,28 @@ void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, 
 		printf("\nERROR: With respect to the system under study, there must only be only one output for this particular algorithm.\n");
 		exit(1);
 	}
+	// If the output values of the system under study has a value that is not within the restrictions requested for this algorithm, then emit an error message and terminate the program.
+	for (int currentRow=0; currentRow<n; currentRow++) {
+		if (Y[currentRow] < 0) {
+			printf("\nERROR: The output data from the row %d and column %d, had a value that is less than zero. Please assign the proper output values for this algorithm, considering the restriction: 0 <= y_{i,k} <= 1.\n", currentRow, p);
+			exit(1);
+		}
+		if (Y[currentRow] > 1) {
+			printf("\nERROR: The output data from the row %d and column %d, had a value that is greater than one. Please assign the proper output values for this algorithm, considering the restriction: 0 <= y_{i,k} <= 1.\n", currentRow, p);
+			exit(1);
+		}
+	}
 	
 	// --------------- PREPROCESSING OF THE OUTPUT DATA --------------- //
+	// Store the data that must be contained in the output matrix "Y_tilde".
 	double *Y_tilde = (double *) malloc(n*p*sizeof(double)); // This variable will contain the output data of the system under study ("Y") as required by the training of this algorithm.
 	for (int currentRow=0; currentRow<n; currentRow++) {
-		if (Y[currentRow] <= 0) {
-			printf("\nERROR: The output data from the row %d and column %d, had a value that is equal or less than zero. Please assign the proper output values for this algorithm, considering the restriction: 0 < y_{i,k} < 1.\n", currentRow, p);
-			exit(1);
+		if (Y[currentRow] == 1) { // Apply the epsilon differentiation that was requested in the arguments of this function.
+			Y_tilde[currentRow] = Y[currentRow] - Y_epsilon;
+		} else if (Y[currentRow] == 0) {
+			Y_tilde[currentRow] = Y[currentRow] + Y_epsilon;
 		}
-		if (Y[currentRow] >= 1) {
-			printf("\nERROR: The output data from the row %d and column %d, had a value that is equal or greater than one. Please assign the proper output values for this algorithm, considering the restriction: 0 < y_{i,k} < 1.\n", currentRow, p);
-			exit(1);
-		}
-		Y_tilde[currentRow] = log(Y[currentRow]/(1-Y[currentRow]));
+		Y_tilde[currentRow] = log(Y_tilde[currentRow]/(1-Y_tilde[currentRow])); // Store the currently modified output value.
 	}
 	
 	// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
@@ -278,6 +300,15 @@ void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, 
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
+* @param double threshold - This argument will represent the value
+*							that the implementer desires for the
+*							threshold to be taken into account
+*							during the predictions made by the
+*							machine learning model that was trained.
+*							Moreover, keep in mind the restriction
+*							"0 < threshold < 1", which must be
+*							complied.
+*
 * @param double *b - This argument will contain the pointer to a
 *					 memory allocated variable containing the
 *					 coefficient values for the desired machine
@@ -313,7 +344,7 @@ void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, 
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 23, 2021
+* CREATION DATE: NOVEMBER 24, 2021
 * LAST UPDATE: N/A
 */
 void predictLinearLogisticClassification(double *X, double threshold, double *b, int n, int m, int p, double *Y_hat) {
@@ -327,6 +358,12 @@ void predictLinearLogisticClassification(double *X, double threshold, double *b,
 		printf("\nERROR: With respect to the system under study, there must only be only one output for this particular algorithm.\n");
 		exit(1);
 	}
+	// If the specified threshold does not complied with the required restriction, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if ((threshold<=0) || (threshold>=1)) {
+		printf("\nERROR: The specified threshold does not meet the restriction: 0 < threshold < 1.\n");
+		exit(1);
+	}
+	
 	
 	// We predict all the requested input values (X) with the desired machine learning algorithm and its especified coefficient values (b).
 	int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
