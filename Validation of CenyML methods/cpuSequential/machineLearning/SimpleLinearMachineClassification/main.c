@@ -1,16 +1,16 @@
 /*
-* This program will read a .csv file containing the data of a linear logistic
-* equation system to then exctact all its data. Its input data will be
-* saved into the matrix "X" and its output data into the matrix "Y".
-* Subsequently, a linear logistic classification method will be applied to obtain
-* the best fitting coefficient values of such data. Then, some
-* evaluation metrics will be applied. Next, two new .csv files will be
-* created to save: 1) the coefficient values that were obtained and 2)
-* the results obtained with the evaluation metrics. Finally, a plot of
-* the predicted data by the obtained model with respect to the actual
-* data, will be plotted and saved into a .png file. Both the .csv files
-* and this .png file will serve for further comparations and validation
-* purposes.
+* This program will read a .csv file containing the data of a linear
+* logistic equation system to then exctact all its data. Its input data
+* will be saved into the matrix "X" and its output data into the matrix
+* "Y". Subsequently, a simple linear machine classification method will
+* be applied to obtain the best fitting coefficient values of such data.
+* Then, some evaluation metrics will be applied. Next, two new .csv
+* files will be created to save: 1) the coefficient values that were
+* obtained and 2) the results obtained with the evaluation metrics.
+* Finally, a plot of the predicted data by the obtained model with
+* respect to the actual data, will be plotted and saved into a .png file.
+* Both the .csv files and this .png file will serve for further
+* comparations and validation purposes.
 */
 
 // ------------------------------------------------- //
@@ -97,10 +97,10 @@ double *linspace(double startFrom, double endHere, int n) {
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then apply the linear logistic classification on the input and output data contained in
-* it. In addition, some evaluation metrics will be applied to evaluate the
-* model. Finally, the results will be saved in two new .csv files and in a .png
-* file for further comparation and validation purposes.
+* then apply the simple linear machine classification on the input and output
+* data contained in it. In addition, some evaluation metrics will be applied
+* to evaluate the model. Finally, the results will be saved in two new .csv
+* files and in a .png file for further comparation and validation purposes.
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -114,14 +114,14 @@ double *linspace(double startFrom, double endHere, int n) {
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 23, 2021
+* CREATION DATE: NOVEMBER 24, 2021
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "../../../../databases/classificationDBs/linearClassificationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile1[] = "CenyML_getLinearLogisticClassification_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
-	char nameOfTheCsvFile2[] = "CenyML_getLinearLogisticClassification_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
+	char nameOfTheCsvFile1[] = "CenyML_getSimpleLinearMachineClassification_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
+	char nameOfTheCsvFile2[] = "CenyML_getSimpleLinearMachineClassification_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
@@ -129,12 +129,6 @@ int main(int argc, char **argv) {
 	int p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
-	double Y_epsilon = 1.0E-15; // This variable will contain the user desired epsilon value to be summed to any zero value and substracted to any value of the output matrix "Y" and that will be used in the ML model to be trained.
-	double threshold = 0.5; // This variable will contain the value that the user desired for the threshold to be taken into account for the ML model to be trained, where 0<threshold<1.
-	double b_ideal[3]; // This variable will be used to contain the ideal coefficient values that the model to be trained should give.
-	b_ideal[0] = 10;
-	b_ideal[1] = 0.4;
-	b_ideal[2] = 0.4;
 	
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
@@ -158,11 +152,17 @@ int main(int argc, char **argv) {
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
 	printf("Initializing the output and input data with %d samples for each of the %d columns (total samples = %d) each...\n", n, m, (n*m));
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
-	// Allocate the memory required for the variable "Y", which will contain the real output data of the system under study.
+	// Allocate the memory required for the variable "Y" and "Y_tilde", which will contain the real output data of the system under study.
 	double *Y = (double *) malloc(n*p*sizeof(double));
+	double *Y_tilde = (double *) malloc(n*p*sizeof(double));
 	// Store the data that must be contained in the output matrix "Y".
 	for (int currentRow=0; currentRow<n; currentRow++) {
 		Y[currentRow] = csv1.allData[columnIndexOfOutputDataInCsvFile + currentRow*databaseColumns1];
+		if (Y[currentRow] == 0) {
+			Y_tilde[currentRow] = -1;
+		} else {
+			Y_tilde[currentRow] = 1;
+		}
 	}
 	// Allocate the memory required for the variable "X", which will contain the input data of the system under study.
 	double *X = (double *) malloc(n*m*sizeof(double));
@@ -177,14 +177,14 @@ int main(int argc, char **argv) {
 	
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Initializing CenyML linear logistic classification algorithm ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the linear logistic classification with the input data (X).
-	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the linear logistic classification algorithm.
+	printf("Initializing CenyML simple linear machine classification algorithm ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the simple linear machine classification with the input data (X).
+	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the simple linear machine classification algorithm.
 	double *b = (double *) calloc((m+1)*p, sizeof(double));
-	// We apply the linear logistic classification algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
-	getLinearLogisticClassification(X, Y,  n, m, p, Y_epsilon, 0, b);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the linear logistic classification with the input data (X).
-	printf("CenyML linear logistic classification algorithm elapsed %f seconds.\n\n", elapsedTime);
+	// We apply the simple linear machine classification algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
+	getSimpleLinearMachineClassification(X, Y_tilde, n, m, p, 0, b);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the simple linear machine classification with the input data (X).
+	printf("CenyML simple linear machine classification algorithm elapsed %f seconds.\n\n", elapsedTime);
 	
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
@@ -194,9 +194,16 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(n*p*sizeof(double));
 	// We obtain the predicted values with the machine learning model that was obtained.
-	predictLinearLogisticClassification(X, threshold, b, n, m, p, Y_hat);
+	predictSimpleLinearMachineClassification(X, b, n, m, p, Y_hat);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
 	printf("The CenyML predictions with the model that was obtained elapsed %f seconds.\n\n", elapsedTime);
+	
+	// We change the values of "-1" for "0" so that we can use the predicted values in the evaluation metric funtions.
+	for (int currentRow=0; currentRow<n; currentRow++) {
+		if (Y_hat[currentRow] == -1) {
+			Y_hat[currentRow] = 0;
+		}
+	}
 	
 	// We apply the cross entropy error metric.
 	double NLLepsilon = 1.0E-15; // This variable will contain the user desired epsilon value to be summed to any zero value and substracted to any value of the output matrixes (Y and/or Y_hat). NOTE: It will be assigned the value to match the one used in scikit-learn.
@@ -357,7 +364,7 @@ int main(int argc, char **argv) {
 	}
 	// In order to continue the plotting process, we obtain the output data that will be used to create the background of the plot to be created.
 	double *bg_Y_hat = (double *) malloc((n_ofLinearlySpacedArray*n_ofLinearlySpacedArray)*p*sizeof(double));
-	predictLinearLogisticClassification(bg_X, threshold, b, (n_ofLinearlySpacedArray*n_ofLinearlySpacedArray), m, p, bg_Y_hat);
+	predictSimpleLinearMachineClassification(bg_X, b, (n_ofLinearlySpacedArray*n_ofLinearlySpacedArray), m, p, bg_Y_hat);
 	// In order to continue the plotting process, we determine the number of 1s and 0s that were predicted for the background to be created.
 	int n_of_bg1s = 0; // This variable will be used as a counter to determine the rows length of the pointer variables "bg_X1_1s" and "bg_X2_1s" to be created.
 	int n_of_bg0s = 0; // This variable will be used as a counter to determine the rows length of the pointer variables "bg_X1_0s" and "bg_X2_0s" to be created.
@@ -508,31 +515,8 @@ int main(int argc, char **argv) {
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .png file that will store the results of the predicted and actual data.
 	printf("Innitialization of the creation of the .png file elapsed %f seconds.\n", elapsedTime);
 	printf("NOTE: In regards to the .png image, the horizontal axis stands for the independent variable 1 and the vertical axis for the independent variable 2.\n");
-	printf("In addition, the color green stands for an output value of 1 and the color red for an output value of 0.\n");
-	printf("Finally, while the background color represents the predicted 1s and 0s that was made by the machine learning model that was just trained, the dots/triangles stand for the true behaviour of the system under study.\n\n");
-	
-	
-	
-	// We validate the getLogisticRegression method.
-	printf("Initializing coefficients validation of the CenyML getLogisticRegression method ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getLogisticRegression method.
-	double differentiation; // Variable used to store the error obtained for a certain value.
-	double epsilon = 1.0E-6; // Variable used to store the max error value permitted during validation process.
-	char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
-	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
-	for (int currentRow=0; currentRow<m+1; currentRow++) {
-		differentiation = fabs(b[currentRow] - b_ideal[currentRow]);
-		if (differentiation > epsilon) { // if the error surpassed the value permitted, then terminate validation process and emit message to indicate a non match.
-			isMatch = 0;
-			printf("Validation process DID NOT MATCH! and a difference of %f was obtained.\n", differentiation);
-			break;
-		}
-	}
-	if (isMatch == 1) { // If the flag "isMatch" indicates a true/high value, then emit message to indicate that the validation process matched.
-		printf("Validation process MATCHED!\n");
-	}
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to validate the getLogisticRegression method.
-	printf("The coefficients validation of the CenyML getLogisticRegression method elapsed %f seconds.\n\n", elapsedTime);
+	printf("In addition, the color green stands for an output value of 1 and the color red for an output value of -1.\n");
+	printf("Finally, while the background color represents the predicted 1s and -1s that were made by the machine learning model that was just trained, the dots/triangles stand for the true behaviour of the system under study.\n\n");
 	printf("The program has been successfully completed!");
 	
 	// Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.

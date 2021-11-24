@@ -115,7 +115,7 @@ double *linspace(double startFrom, double endHere, int n) {
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 23, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 24, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -505,7 +505,7 @@ int main(int argc, char **argv) {
 	printf("Innitialization of the creation of the .png file elapsed %f seconds.\n", elapsedTime);
 	printf("NOTE: In regards to the .png image, the horizontal axis stands for the independent variable 1 and the vertical axis for the independent variable 2.\n");
 	printf("In addition, the color green stands for an output value of 1 and the color red for an output value of 0.\n");
-	printf("Finally, while the background color represents the predicted 1s and 0s that was made by the machine learning model that was just trained, the dots/triangles stand for the true behaviour of the system under study.\n\n");
+	printf("Finally, while the background color represents the predicted 1s and 0s that were made by the machine learning model that was just trained, the dots/triangles stand for the true behaviour of the system under study.\n\n");
 	printf("The program has been successfully completed!");
 	
 	// Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.

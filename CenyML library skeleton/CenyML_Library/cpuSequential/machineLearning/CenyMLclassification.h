@@ -23,6 +23,8 @@
 
 void getLinearLogisticClassification(double *, double *, int, int, int, double, char, double *);
 void predictLinearLogisticClassification(double *, double, double *, int, int, int, double *);
+void getSimpleLinearMachineClassification(double *, double *, int, int, int, char, double *);
+void predictSimpleLinearMachineClassification(double *, double *, int, int, int, double *);
 
 #endif
 
