@@ -332,7 +332,12 @@ void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, 
 *					 	 the predicted data of the system under study.
 *						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
 *						 CALLING THIS FUNCTION WITH A SIZE OF "n"
-*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES. The
+*						 results will be stored in the same order as
+*						 the input data given such that the first
+*						 sample will be stored in the row with index
+*						 "0" and the last sample in the row with
+*						 index "n".
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"Y_hat".
@@ -665,7 +670,12 @@ void getSimpleLinearMachineClassification(double *X, double *Y, int n, int m, in
 *					 	 the predicted data of the system under study.
 *						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
 *						 CALLING THIS FUNCTION WITH A SIZE OF "n"
-*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES. The
+*						 results will be stored in the same order as
+*						 the input data given such that the first
+*						 sample will be stored in the row with index
+*						 "0" and the last sample in the row with
+*						 index "n".
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"Y_hat".
@@ -778,6 +788,9 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 *				 containing the real results of the system under
 *				 study.
 *
+* @param int N - This argument will represent the desired order of
+*				 degree for the machine learning model to be trained.
+*
 * @param char Kernel[] - This argument will contain the string or array
 *						 of characters that will specify the Kernel
 *						 type requested by the implementer. Its
@@ -788,6 +801,22 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 *						 3) "logistic" = applies the logistic kernel.
 *						 4) "gaussian" = applies the gaussian kernel.
 *
+* @param char isInteractionTerms = This argument variable will work as a
+*						  		   flag to indicate whether the
+*								   interaction terms are desired in the
+*								   resulting model to be generated or
+*								   not.
+*						  		   Moreover, the possible valid values
+*								   for this argument variable are:
+*						  		   1) (int) 1 = The resulting model will
+*												include the interaction
+*												terms that are possible.
+*												NOTE: This functionality,
+*												is yet to be developed.
+*						  		   2) (int) 0 = The resulting model will
+*												not include interaction
+*												terms.
+*
 * @param char isVariableOptimizer = This argument variable is not
 *									having any effect on this function
 *									at the moment, as its functionality
@@ -797,9 +826,9 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 *									does not surprise the user when it
 *									gets developed in the near future.
 *
-* @param double *b - This argument will contain the pointer to a
-*					 memory allocated variable in which we will store
-*					 the identified best fitting coefficient values
+* @param double *coefficients - This argument will contain the pointer
+*					 to a memory allocated variable in which we will
+*					 store the identified best fitting coefficient values
 *					 for the desired machine learning algorithm. These
 *					 coefficients will each be stored in a different
 *					 manner, depending on the Kernel that was chosen
@@ -811,13 +840,15 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 *					 chosen so that the implementer reads its commented
 *					 documentation to learn the details of how much
 *					 memory to allocate in the argument pointer variable
-*					 "b" and to know how the data will be stored in it.
+*					 "coefficients" and to know how the data will be
+*					 stored in it.
 *					 1) Kernel="linear"  -->  trainLinearKernel()
 *					 2) Kernel="polynomial"  -->  Eee
 *					 3) Kernel="logistic"  -->  Eee
 *					 4) Kernel="gaussian"  -->  Eee
 *
-* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE "b".
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*		"coefficients".
 * 
 * @return void
 *
@@ -825,7 +856,7 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 * CREATION DATE: NOVEMBER XX, 2021
 * LAST UPDATE: N/A
 */
-void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, char Kernel[], char isVariableOptimizer, double *b) {
+void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, int N, char Kernel[], char isInteractionTerms, char isVariableOptimizer, double *coefficients) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if (m < 1) {
 		printf("\nERROR: The machine learning features (independent variables) must be equal or greater than 1 for this particular algorithm.\n");
@@ -851,9 +882,9 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, c
 	
 	// Apply the Kernel that was requested by the implementer of this function.
 	if (strcmp(Kernel, "linear") == 0) {
-		trainLinearKernel(X, Y, n, m, p, isVariableOptimizer, b); // Train the Kernel machine classifier with a linear kernel.
+		trainLinearKernel(X, Y, n, m, p, isVariableOptimizer, coefficients); // Train the Kernel machine classifier with a linear kernel.
 	} else if (strcmp(Kernel, "polynomial") == 0) {
-		// TODO: Implement static function for polynomial kernel training.
+		trainPolynomialKernel(X, Y, n, m, p, N, isInteractionTerms, isVariableOptimizer, coefficients); // Train the Kernel machine classifier with a polynomial kernel.
 	} else if (strcmp(Kernel, "logistic") == 0) {
 		// TODO: Implement static function for logistic kernel training.
 	} else if (strcmp(Kernel, "gaussian") == 0) {
@@ -875,31 +906,26 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, c
 * equation, "alpha" and "b_0" are the coefficients to be
 * identified, "K(x)" is the Kernel function which is basically a
 * transformation function of x, "alpha" is the coefficient of the
-* Kernel, "b_0" is the bias coefficient of the model and "x" is a
-* vector containing all the machine learning features. With this
-* in mind and just like in the thesis of Cesar Miranda Meza, the
-* first step to train this model is to solve the kernel function.
-* For this purpose and for this particular type of Kernel, a
-* multiple polynomial regression will be applied with respect to
-* the output of the system under study "Y". Both the
-* characteristic equation of the multiple polynomial system and
-* its best fitting coefficient values will together represent the
+* Kernel, "b_0" is the bias coefficient of the model, "x" is a
+* vector containing all the machine learning features and the
+* coefficients within "K(x)" will be representend with "Beta".
+* With this in mind and just like in the thesis of Cesar Miranda
+* Meza, the first step to train this model is to solve the kernel
+* function. For this purpose and for this particular type of
+* Kernel, a multiple linear regression will be applied with
+* respect to the output of the system under study "Y". Both the
+* characteristic equation of the multiple linear system and its
+* best fitting coefficient values will together represent the
 * Kernel function K(x). Now, for this particular Kernel machine
 * classifier, because of being a linear system, the coefficient
-* value of "alpha"=1 and "b_0"=0. Because of this, their values
-* can be ignored and the linear Kernel K(x) may and will be
-* considered as the model itself, causing "alpha" and "b_0" to be
-* ignored in the solution of this linear Kernel machine
-* classifier. Consequently, we will now consider "y_hat = K(x)"
-* instead of "y_hat = alpha.K(x) + b_0", where we will now have
-* that "K(x) = b_0 + b_1*x_1 + b_2*x_2 + ... +  + b_m*x_m". As a
-* result, when inserting all the coefficient values into this
-* model, whenever its output is greater than the value of "0", it
-* should be interpreted as the model predicting that the current
-* input values represent group 1 or the numeric value of "+1".
-* Conversely, if the model produces a value less than "0", it
-* should be interpreted as the model predicting that the current
-* input values represent group 2 or the numeric value of "-1".
+* value of "alpha"=1 and "b_0"=0. As a result, when inserting all
+* the coefficient values into this model, whenever its output is
+* greater than the value of "0", it should be interpreted as the
+* model predicting that the current input values represent group
+* 1 or the numeric value of "+1". Conversely, if the model
+* produces a value less than "0", it should be interpreted as the
+* model predicting that the current input values represent group
+* 2 or the numeric value of "-1".
 *
 * NOTE: The algorithm section that applied the matrix inverse using
 * the Gauss-Jordan method was inspired in the following source:
@@ -947,29 +973,38 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, c
 *									does not surprise the user when it
 *									gets developed in the near future.
 *
-* @param double *b - This argument will contain the pointer to a
-*					 memory allocated variable in which we will store
-*					 the identified best fitting coefficient values
+* @param double *coefficients - This argument will contain the pointer
+*					 to a memory allocated variable in which we will
+*					 store the identified best fitting coefficient values
 *					 for the desired machine learning algorithm. These
 *					 coefficients will each be stored in the same
 *					 column but under different rows where the first
-*					 coefficient (b_0) will be stored in the row with
-*					 index 0 and the last coefficient (b_m) will be
-*					 stored in the row with index "m". IT IS
+*					 coefficient (Beta_0) will be stored in the row with
+*					 index 0, the last Beta value (Beta_m) will be
+*					 stored in the row with index "m", the bias
+*					 coefficient value (b_0) will be stored in the row
+*					 with index "m+1" and the last coefficient (alpha)
+*					 will be stored in the row with index "m+2". NOTE:
+*					 For more information on how the "Beta"
+*					 coefficients will be stored, please see the
+*					 description given for the argument pointer variable
+*					 "b" of the function "getMultipleLinearRegression()"
+*					 in the "CenyMLregression.c" file. IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED AND
 *					 INNITIALIZED WITH ZEROS BEFORE CALLING THIS
-*					 FUNCTION WITH A VARIABLE SIZE OF "m+1" TIMES
+*					 FUNCTION WITH A VARIABLE SIZE OF "m+3" TIMES
 *					 "p=1" 'DOUBLE' MEMORY SPACES.
 *
-* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE "b".
-* 
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*		"coefficients".
+*
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 25, 2021
+* CREATION DATE: NOVEMBER 26, 2021
 * LAST UPDATE: N/A
 */
-static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
+static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *coefficients) {
 	// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
 	// Store the data that must be contained in the input matrix "X_tilde". In addition, we obtain the transpose of "X_tilde".
 	int currentRowTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
@@ -1081,18 +1116,448 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 	    }
 	}
 	
-	// In order to conclude obtaining the coefficients ("b"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y".
-	for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
+	// In order to conclude obtaining the coefficients ("coefficients"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y".
+	for (int currentRow=0; currentRow<mPlusOne; currentRow++) { // In this for-loop, we will store the "Beta" coefficient values of the Kernel function "K(x)".
 		currentRowTimesN = currentRow*n;
 		for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
-			b[currentRow] = b[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y[currentMultipliedElements];
+			coefficients[currentRow] = coefficients[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y[currentMultipliedElements];
 		}
 	}
+	coefficients[m+1] = 0; // We store the value of "b_0" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+	coefficients[m+2] = 1; // We store the value of "alpha" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
 	
 	// Free the Heap memory used for the locally allocated variables since they will no longer be used.
 	free(X_tilde);
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+}
+
+
+/**
+* The "trainPolynomialKernel()" is a static function that is
+* used to apply the machine learning algorithm called Kernel
+* machine classification with a polynomial Kernel. Within this
+* process, the best fitting equation with the form of "y_hat =
+* alpha.K(x) + b_0" will be identified with respect to the
+* sampled data given through the argument pointer variables "X"
+* and "Y". In that equation, "alpha" and "b_0" are the
+* coefficients to be identified, "K(x)" is the Kernel function
+* which is basically a transformation function of x, "alpha" is
+* the coefficient of the Kernel, "b_0" is the bias coefficient
+* of the model, "x" is a vector containing all the machine
+* learning features and the coefficients within "K(x)" will be
+* representend with "Beta". With this in mind and just like in
+* the thesis of Cesar Miranda Meza, the first step to train
+* this model is to solve the kernel function. For this purpose
+* and for this particular type of Kernel, a multiple polynomial
+* regression will be applied with respect to the output of the
+* system under study "Y". Both the characteristic equation of
+* the multiple polynomial system and its best fitting
+* coefficient values will together represent the Kernel
+* function K(x). Now, for this particular Kernel machine
+* classifier, because of being a polynomial system, the
+* coefficient value of "alpha"=1 and "b_0"=0. As a result, when
+* inserting all the coefficient values into this model, whenever
+* its output is greater than the value of "0", it should be
+* interpreted as the model predicting that the current input
+* values represent group 1 or the numeric value of "+1".
+* Conversely, if the model produces a value less than "0", it
+* should be interpreted as the model predicting that the current
+* input values represent group 2 or the numeric value of "-1".
+*
+* NOTE: The algorithm section that applied the matrix inverse using
+* the Gauss-Jordan method was inspired in the following source:
+* "CodeSansar. Matrix Inverse Using Gauss Jordan Method C Program.
+* November 16, 2021 (Recovery date), de CodeSansar Sitio web:
+* https://bit.ly/3CowwSy".
+*
+* 
+* @param double *X - This argument will contain the pointer to a
+*					 memory allocated input matrix, from which the
+*					 desired machine learning algorithm will be
+*					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
+*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
+*					 SPACES.
+*
+* @param double *Y - This argument will contain the pointer to a
+*					 memory allocated output matrix, representing
+*					 the real data of the system under study. This
+*					 variable will be used as a reference to apply
+*					 the desired machine learning algorithm. THIS
+*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
+*					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*
+* @param int n - This argument will represent the total number of
+*				 samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
+*
+* @param int m - This argument will represent the total number of
+*				 features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
+*
+* @param int p - This argument will represent the total number of 
+*				 outputs that exist in the the output matrix,
+*				 containing the real results of the system under
+*				 study.
+*
+* @param int N - This argument will represent the desired order of
+*				 degree for the machine learning model to be trained.
+*
+* @param char isInteractionTerms = This argument variable will work as a
+*						  		   flag to indicate whether the
+*								   interaction terms are desired in the
+*								   resulting model to be generated or
+*								   not.
+*						  		   Moreover, the possible valid values
+*								   for this argument variable are:
+*						  		   1) (int) 1 = The resulting model will
+*												include the interaction
+*												terms that are possible.
+*												NOTE: This functionality,
+*												is yet to be developed.
+*						  		   2) (int) 0 = The resulting model will
+*												not include interaction
+*												terms.
+*
+* @param char isVariableOptimizer = This argument variable is not
+*									having any effect on this function
+*									at the moment, as its functionality
+*									has not been developed. However, it
+*									is recommended to initialize it with
+*									an integer value of zero so that it
+*									does not surprise the user when it
+*									gets developed in the near future.
+*
+* @param double *coefficients - This argument will contain the pointer
+*					 to a memory allocated variable in which we will
+*					 store the identified best fitting coefficient
+*					 values for the desired machine learning algorithm.
+*					 These coefficients will each be stored in the same
+*					 column but under different rows where the first
+*					 coefficient (Beta_0) will be stored in the row with
+*					 index 0, the last Beta value (Beta_{m*N}) will be
+*					 stored in the row with index "{m*N}", the bias
+*					 coefficient value (b_0) will be stored in the row
+*					 with index "m*N+1" and the last coefficient (alpha)
+*					 will be stored in the row with index "m*N+2". NOTE:
+*					 For more information on how the "Beta" coefficients
+*					 will be stored, please see the description given
+*					 for the argument pointer variable "b" of the
+*					 function "getMultiplePolynomialRegression()" in the
+*					 "CenyMLregression.c" file. IT IS INDISPENSABLE THAT
+*					 THIS VARIABLE IS ALLOCATED AND INNITIALIZED WITH
+*					 ZEROS BEFORE CALLING THIS FUNCTION WITH A VARIABLE
+*					 SIZE OF "m*N+3" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*		"coefficients".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: NOVEMBER 26, 2021
+* LAST UPDATE: N/A
+*/
+static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int N, char isInteractionTerms, char isVariableOptimizer, double *coefficients) {
+	// Determine whether the interaction terms are desired in the resulting model to be generated or not and then excecute the corresponding code.
+	if (isInteractionTerms == 1) { // Include the interaction terms in the training process of the model to be generated.
+		printf("\nERROR: The functionality of this function, when the argument variable \"isInteractionTerms\" contains a value of 1, has not yet been developed.\n");
+		exit(1);
+		
+		
+	} else if (isInteractionTerms == 0) { // Do not inlcude the interaction terms in the training process of the model to be generated.		
+		// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
+		// Store the data that must be contained in the input matrix "X_tilde". In addition, we obtain the transpose of "X_tilde".
+		int currentRowTimesmTimesNplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+		int currentRowTimesM; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+		int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		int currentRowAndColumn2; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		int mTimesNPlusOne = m*N+1; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+		int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
+		int NplusOne = (N+1); //This variable is used to store a repetitive matheamtical operation, for performance purposes.
+		double *X_tilde = (double *) malloc(n*mTimesNPlusOne*sizeof(double)); // This variable will contain the input data of the system under study ("X") and an additional first row with values of "1".
+		double *TransposeOf_X_tilde = (double *) malloc(mTimesNPlusOne*n*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the input data from which the desired machine learning method will be calcualted.
+		int currentRow2; // This variable is used in the for-loop for the matrix transpose that will be made.
+		int currentColumn2 = 0; // This variable is used in the for-loop for the matrix transpose that will be made.
+		double increaseExponentialOfThisValue; // Variable used to store the value that wants to be raised exponentially.
+		for (int currentRow=0; currentRow<n; currentRow++) {
+			currentRow2 = 0; // We reset the counters used in the following for-loop.
+			currentRowTimesmTimesNplusOne = currentRow*mTimesNPlusOne;
+			currentRowTimesM = currentRow*m;
+			X_tilde[currentRowTimesmTimesNplusOne] = 1;
+			TransposeOf_X_tilde[currentColumn2] = X_tilde[currentRowTimesmTimesNplusOne];
+			for (int currentColumn=1; currentColumn<mPlusOne; currentColumn++) {
+				currentRowAndColumn = (currentColumn-1)*N + currentRowTimesmTimesNplusOne;
+				increaseExponentialOfThisValue = 1;
+				for (int currentExponential=1; currentExponential<NplusOne; currentExponential++) {
+					currentRowAndColumn2 = currentExponential + currentRowAndColumn;
+					increaseExponentialOfThisValue = increaseExponentialOfThisValue * X[currentColumn-1 + currentRowTimesM];
+					X_tilde[currentRowAndColumn2] = increaseExponentialOfThisValue;
+					currentRow2++;
+					TransposeOf_X_tilde[currentColumn2 + currentRow2*n] = X_tilde[currentRowAndColumn2];
+				}
+			}
+			currentColumn2++;
+		}
+		
+		// -------------------- SOLUTION OF THE MODEL -------------------- //
+		// In order to start obtaining the coefficients, we multiply the matrix "TransposeOf_X_tilde" with the matrix "X_tilde" and store the result in the matrix "matMul1".
+		int currentRowTimesN; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+		int currentColumnTimesN; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+		double *matMul1 = (double *) calloc(mTimesNPlusOne*mTimesNPlusOne, sizeof(double)); // We allocate, and initialize with zeros, the memory required for the local pointer variable that will contain the result of making a matrix multiplication between "X_tilde" and its transpose.
+		for (int currentRow=0; currentRow<mTimesNPlusOne; currentRow++) {
+			currentRowTimesmTimesNplusOne = currentRow*mTimesNPlusOne;
+			currentRowTimesN = currentRow*n;
+			for (int currentColumn=0; currentColumn<mTimesNPlusOne; currentColumn++) {
+				currentColumnTimesN = currentColumn*n;
+				currentRowAndColumn = currentColumn + currentRowTimesmTimesNplusOne;
+				for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
+					// Here we want to multiply "TransposeOf_X_tilde" with the matrix "X_tilde", but we will use "TransposeOf_X_tilde" for such multiplication since they contain the same data, for performance purposes.
+					matMul1[currentRowAndColumn] = matMul1[currentRowAndColumn] + TransposeOf_X_tilde[currentMultipliedElements + currentRowTimesN] * TransposeOf_X_tilde[currentMultipliedElements + currentColumnTimesN];
+				}
+		    }
+		}
+		
+		// In order to continue obtaining the coefficients, we innitialize the data of a unitary matrix with the same dimensions of the matrix "matMul1".
+		// NOTE: Because getting the data of the transpose of "X_tilde"
+		//		 directly from that same variable ("X_tilde"), will
+		//		 increase performance in further steps, we will store the
+		//		 matrix inverse of "matMul1" in the variable
+		//		 "TransposeOf_X_tilde", in order to maximize computational
+		//		 resources and further increase performance by not having to
+		//		 allocate more memory in the computer system.
+		for (int currentRow=0; currentRow<mTimesNPlusOne; currentRow++) { // We set all values to zero.
+			currentRowTimesmTimesNplusOne = currentRow*mTimesNPlusOne;
+			for (int currentColumn=0; currentColumn<mTimesNPlusOne; currentColumn++) {
+				TransposeOf_X_tilde[currentColumn + currentRowTimesmTimesNplusOne] = 0;
+		    }
+		}
+		for (int currentUnitaryValue=0; currentUnitaryValue<mTimesNPlusOne; currentUnitaryValue++) { // We set the corresponding 1's values to make the corresponding unitary matrix.
+			TransposeOf_X_tilde[currentUnitaryValue + currentUnitaryValue*mTimesNPlusOne] = 1;
+		}
+		
+		// In order to continue obtaining the coefficients, we calculate the matrix inverse of "matMul1" with the Gauss-Jordan approach and store its result in "TransposeOf_X_tilde".
+		int currentColumnTimesmTimesNplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+		double ratioModifier; // This variable is used to store the ratio modifier for the current row whose values will be updated due to the inverse matrix method.
+		for (int currentColumn=0; currentColumn<mTimesNPlusOne; currentColumn++) { // We apply the differentiations applied to each row according to the approach used.
+			currentColumnTimesmTimesNplusOne = currentColumn*mTimesNPlusOne;
+			currentRowAndColumn2 = currentColumn + currentColumnTimesmTimesNplusOne;
+			for (int currentRow=0; currentRow<mTimesNPlusOne; currentRow++) {
+				if (currentRow != currentColumn) {
+					currentRowTimesmTimesNplusOne = currentRow*mTimesNPlusOne;
+					ratioModifier = matMul1[currentColumn + currentRowTimesmTimesNplusOne]/matMul1[currentRowAndColumn2];
+					for (int currentModifiedElements=0; currentModifiedElements<mTimesNPlusOne; currentModifiedElements++) { // We apply the current process to the principal matrix.
+						currentRowAndColumn = currentModifiedElements + currentRowTimesmTimesNplusOne;
+						matMul1[currentRowAndColumn] = matMul1[currentRowAndColumn] - ratioModifier * matMul1[currentModifiedElements + currentColumnTimesmTimesNplusOne];
+					}
+					for (int currentModifiedElements=0; currentModifiedElements<mTimesNPlusOne; currentModifiedElements++) { // We apply the current process to the result matrix.
+						currentRowAndColumn = currentModifiedElements + currentRowTimesmTimesNplusOne;
+						TransposeOf_X_tilde[currentRowAndColumn] = TransposeOf_X_tilde[currentRowAndColumn] - ratioModifier * TransposeOf_X_tilde[currentModifiedElements + currentColumnTimesmTimesNplusOne];
+					}
+				}
+			}
+	    }
+		for (int currentRow=0; currentRow<mTimesNPlusOne; currentRow++) { // We apply the last step of the approach used in order to obtain the diagonal of 1's in the principal matrix.
+			currentRowTimesmTimesNplusOne = currentRow*mTimesNPlusOne;
+			currentRowAndColumn2 = currentRow + currentRowTimesmTimesNplusOne;
+			for (int currentColumn=0; currentColumn<mTimesNPlusOne; currentColumn++) {
+				currentRowAndColumn = currentColumn + currentRowTimesmTimesNplusOne;
+				TransposeOf_X_tilde[currentRowAndColumn] = TransposeOf_X_tilde[currentRowAndColumn] / matMul1[currentRowAndColumn2];
+			}
+	    }
+	    
+		// In order to continue obtaining the coefficients, we multiply the inverse matrix that was obtained by the transpose of the matrix "X_tilde".
+		// NOTE: Remember that we will get the data of the transpose of
+		//		 "X_tilde" directly from that same variable
+		//		 ("X_tilde") due to performance reasons and; that the
+		//		 inverse matrix that was obtained is stored in
+		//		 "TransposeOf_X_tilde".
+		double *matMul2 = (double *) calloc(mTimesNPlusOne*n, sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the result of making a matrix multiplication between the resulting inverse matrix of this process and the transpose of the matrix "X_tilde".
+		for (int currentRow=0; currentRow<mTimesNPlusOne; currentRow++) {
+			currentRowTimesN = currentRow*n;
+			currentRowTimesmTimesNplusOne = currentRow*mTimesNPlusOne;
+			for (int currentColumn=0; currentColumn<n; currentColumn++) {
+				currentRowAndColumn = currentColumn + currentRowTimesN;
+				currentColumnTimesmTimesNplusOne = currentColumn*mTimesNPlusOne;
+				for (int currentMultipliedElements=0; currentMultipliedElements<mTimesNPlusOne; currentMultipliedElements++) {
+					matMul2[currentRowAndColumn] = matMul2[currentRowAndColumn] + TransposeOf_X_tilde[currentMultipliedElements + currentRowTimesmTimesNplusOne] * X_tilde[currentMultipliedElements + currentColumnTimesmTimesNplusOne];
+				}
+		    }
+		}
+		
+		// In order to conclude obtaining the coefficients ("coefficients"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y".
+		for (int currentRow=0; currentRow<mTimesNPlusOne; currentRow++) { // In this for-loop, we will store the "Beta" coefficient values of the Kernel function "K(x)".
+			currentRowTimesN = currentRow*n;
+			for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
+				coefficients[currentRow] = coefficients[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y[currentMultipliedElements];
+			}
+		}
+		coefficients[m+1] = 0; // We store the value of "b_0" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+		coefficients[m+2] = 1; // We store the value of "alpha" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+		
+		// Free the Heap memory used for the locally allocated variables since they will no longer be used.
+		free(X_tilde);
+		free(TransposeOf_X_tilde);
+		free(matMul1);
+		free(matMul2);
+		
+		
+	} else { // The argument variable "isInteractionTerms" has been assigned an invalid value. Therefore, inform the user about this and terminate the program.
+		printf("\nERROR: The argument variable \"isInteractionTerms\" is meant to store only a binary value that equals either 1 or 0.\n");
+		exit(1);
+	}
+}
+
+
+/**
+* The "predictKernelMachineClassification()" function is used to
+* make the predictions of the requested input values (X) by applying
+* the Kernel machine classification model with the specified
+* coefficient values. The predicted values will be stored in the
+* argument pointer variable "Y_hat".
+* 
+* @param double *X - This argument will contain the pointer to a
+*					 memory allocated input matrix, from which the
+*					 desired machine learning predictions will be
+*					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
+*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
+*					 SPACES.
+*
+* @param double *coefficients - This argument will contain the
+*					 pointer to a memory allocated variable
+*					 containing the coefficient values for the
+*					 desired machine learning algorithm and that will
+*					 be used to make the specified predictions. IT IS
+*					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
+*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 WITH A VARIABLE SIZE OF "m+1" TIMES "p=1"
+*					 'DOUBLE' MEMORY SPACES.
+*
+* @param int n - This argument will represent the total number of
+*				 samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
+*
+* @param int m - This argument will represent the total number of
+*				 features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
+*
+* @param int p - This argument will represent the total number of 
+*				 outputs that exist in the the output matrix,
+*				 containing the real results of the system under
+*				 study.
+*
+* @param double *Y_hat - This argument will contain the pointer to a
+*					 	 memory allocated output matrix, representing
+*					 	 the predicted data of the system under study.
+*						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
+*						 CALLING THIS FUNCTION WITH A SIZE OF "n"
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES. The
+*						 results will be stored in the same order as
+*						 the input data given such that the first
+*						 sample will be stored in the row with index
+*						 "0" and the last sample in the row with
+*						 index "n".
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*		"Y_hat".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: NOVEMBER XX, 2021
+* LAST UPDATE: N/A
+*/
+void predictKernelMachineClassification(double *X, int N, char Kernel[], char isInteractionTerms, double *coefficients, int n, int m, int p, double *Y_hat) {
+	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (m < 1) {
+		printf("\nERROR: The machine learning features (independent variables) must be equal or greater than 1 for this particular algorithm.\n");
+		exit(1);
+	}
+	// If the output of the system under study is different than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (p != 1) {
+		printf("\nERROR: With respect to the system under study, there must only be only one output for this particular algorithm.\n");
+		exit(1);
+	}
+	
+	// We predict all the requested input values (X) with the desired machine learning algorithm; Kernel and; coefficient values ("Beta_0", "Beta_1", ..., "Beta_m", "b_0" and "alpha").
+	// ------------------------ LINEAR KERNEL ------------------------ //
+	if (strcmp(Kernel, "linear") == 0) {
+		// NOTE: For performance purposes, the coefficient values of "alpha" and "b_0" from the main equation "y_hat = alpha.K(x) + b_0" will be ignored for this particular Kernel since they will have no effect on the result.
+		int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
+		int currentRowTimesM; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+		for (int currentRow=0; currentRow<n; currentRow++) {
+			Y_hat[currentRow] = [0];
+			currentRowTimesM = currentRow*m;
+			for (int currentColumn=1; currentColumn<mPlusOne; currentColumn++) {
+				Y_hat[currentRow] = Y_hat[currentRow] + coefficients[currentColumn]*X[currentColumn-1 + currentRowTimesM];
+			}
+			if (Y_hat[currentRow] > 0) {
+				Y_hat[currentRow] = 1;
+			} else {
+				Y_hat[currentRow] = -1;
+			}
+		}
+	
+	// ---------------------- POLYNOMIAL KERNEL ---------------------- //	
+	} else if (strcmp(Kernel, "polynomial") == 0) {
+		// Determine whether the interaction terms are available in the model to be used or not and then excecute the corresponding code.
+		if (isInteractionTerms == 1) { // The interaction terms are available in the current model.
+			printf("\nERROR: The functionality of this function, when the argument variable \"isInteractionTerms\" contains a value of 1, has not yet been developed.\n");
+			exit(1);
+		} else if (isInteractionTerms == 0) { // The interaction terms are not available in the current model.			
+			// NOTE: For performance purposes, the coefficient values of "alpha" and "b_0" from the main equation "y_hat = alpha.K(x) + b_0" will be ignored for this particular Kernel since they will have no effect on the result.
+			// We predict all the requested input values (X) with the desired machine learning algorithm and its especified coefficient values (b).
+			int mTimesNPlusOne = m*N+1; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+			int currentRowTimesmTimesNplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+			int currentRowTimesM; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+			int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
+			int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+			double increaseExponentialOfThisValue; // Variable used to store the value that wants to be raised exponentially.
+			int currentRowAndColumn2; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+			int currentColumnMinusOne; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+			int currentColumnMinusOneTimesN; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+			for (int currentRow=0; currentRow<n; currentRow++) {
+				currentRowTimesmTimesNplusOne = currentRow*mTimesNPlusOne;
+				currentRowTimesM = currentRow*m;
+				Y_hat[currentRow] = b[0];
+				for (int currentColumn=1; currentColumn<mPlusOne; currentColumn++) {
+					currentColumnMinusOne = currentColumn-1;
+					currentColumnMinusOneTimesN = currentColumnMinusOne*N;
+					currentRowAndColumn = currentColumnMinusOneTimesN + currentRowTimesmTimesNplusOne;
+					increaseExponentialOfThisValue = 1;
+					for (int currentExponential=1; currentExponential<(N+1); currentExponential++) {
+						currentRowAndColumn2 = currentExponential + currentRowAndColumn;
+						increaseExponentialOfThisValue = increaseExponentialOfThisValue * X[currentColumnMinusOne + currentRowTimesM];
+						Y_hat[currentRow] = Y_hat[currentRow] + b[currentExponential + currentColumnMinusOneTimesN]*increaseExponentialOfThisValue;
+					}
+				}
+				if (Y_hat[currentRow] > 0) {
+					Y_hat[currentRow] = 1;
+				} else {
+					Y_hat[currentRow] = -1;
+				}
+			}
+		} else { // The argument variable "isInteractionTerms" has been assigned an invalid value. Therefore, inform the user about this and terminate the program.
+			printf("\nERROR: The argument variable \"isInteractionTerms\" is meant to store only a binary value that equals either 1 or 0.\n");
+			exit(1);
+		}
+	
+	// ----------------------- LOGISTIC KERNEL ----------------------- //
+	} else if (strcmp(Kernel, "logistic") == 0) {
+		// TODO: Implement the code for the logistic kernel.
+	
+	// ----------------------- GAUSSIAN KERNEL ----------------------- //
+	} else if (strcmp(Kernel, "gaussian") == 0) {
+		// TODO: Implement the code for the gaussian kernel.
+	
+	// ------------------- INVALID REQUESTED KERNEL ------------------ //
+	} else {
+		printf("\nERROR: The requested Kernel has not yet been implemented in the CenyML library. Please assign a valid one.\n");
+		exit(1);
+	}
 }
 

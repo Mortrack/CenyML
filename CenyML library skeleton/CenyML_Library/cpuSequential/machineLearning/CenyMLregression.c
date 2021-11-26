@@ -155,7 +155,12 @@ void getSimpleLinearRegression(double *X, double *Y, int n, int m, int p, double
 *					 	 the predicted data of the system under study.
 *						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
 *						 CALLING THIS FUNCTION WITH A SIZE OF "n"
-*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES. The
+*						 results will be stored in the same order as
+*						 the input data given such that the first
+*						 sample will be stored in the row with index
+*						 "0" and the last sample in the row with
+*						 index "n".
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"Y_hat".
@@ -449,7 +454,12 @@ void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char
 *					 	 the predicted data of the system under study.
 *						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
 *						 CALLING THIS FUNCTION WITH A SIZE OF "n"
-*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES. The
+*						 results will be stored in the same order as
+*						 the input data given such that the first
+*						 sample will be stored in the row with index
+*						 "0" and the last sample in the row with
+*						 index "n".
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"Y_hat".
@@ -751,7 +761,12 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 *					 	 the predicted data of the system under study.
 *						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
 *						 CALLING THIS FUNCTION WITH A SIZE OF "n"
-*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES. The
+*						 results will be stored in the same order as
+*						 the input data given such that the first
+*						 sample will be stored in the row with index
+*						 "0" and the last sample in the row with
+*						 index "n".
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"Y_hat".
@@ -1113,7 +1128,12 @@ void getMultiplePolynomialRegression(double *X, double *Y, int n, int m, int p, 
 *					 	 the predicted data of the system under study.
 *						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
 *						 CALLING THIS FUNCTION WITH A SIZE OF "n"
-*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES. The
+*						 results will be stored in the same order as
+*						 the input data given such that the first
+*						 sample will be stored in the row with index
+*						 "0" and the last sample in the row with
+*						 index "n".
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"Y_hat".
@@ -1457,7 +1477,12 @@ void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVar
 *					 	 the predicted data of the system under study.
 *						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
 *						 CALLING THIS FUNCTION WITH A SIZE OF "n"
-*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES. The
+*						 results will be stored in the same order as
+*						 the input data given such that the first
+*						 sample will be stored in the row with index
+*						 "0" and the last sample in the row with
+*						 index "n".
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"Y_hat".
@@ -1905,7 +1930,12 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isFor
 *					 	 the predicted data of the system under study.
 *						 THIS VARIABLE SHOULD BE ALLOCATED BEFORE
 *						 CALLING THIS FUNCTION WITH A SIZE OF "n"
-*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*						 TIMES "p=1" 'DOUBLE' MEMORY SPACES. The
+*						 results will be stored in the same order as
+*						 the input data given such that the first
+*						 sample will be stored in the row with index
+*						 "0" and the last sample in the row with
+*						 index "n".
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"Y_hat".
