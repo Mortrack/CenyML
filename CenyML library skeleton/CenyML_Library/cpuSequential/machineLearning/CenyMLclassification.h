@@ -25,10 +25,12 @@ void getLinearLogisticClassification(double *, double *, int, int, int, double, 
 void predictLinearLogisticClassification(double *, double, double *, int, int, int, double *);
 void getSimpleLinearMachineClassification(double *, double *, int, int, int, char, double *);
 void predictSimpleLinearMachineClassification(double *, double *, int, int, int, double *);
-void getKernelMachineClassification(double *, double *, int, int, int, int, char[], char, char, double *);
+void getKernelMachineClassification(double *, double *, int, int, int, int, double, char[], char, char, char, double *);
 static void trainLinearKernel(double *, double *, int, int, int, char, double *);
-static void trainPolynomialKernel(double *, double *, int int, int, int, char, char, double *);
-void predictKernelMachineClassification(double *, int, char[], char, double *, int, int, int, double *);
+static void trainPolynomialKernel(double *, double *, int, int, int, int, char, char, double *);
+static void trainLogisticKernel(double *, double *, int, int, int, char, double *);
+static void trainGaussianKernel(double *, double *, int, int, int, double, char, char, double *);
+void predictKernelMachineClassification(double *, int, char[], char, char, double *, int, int, int, double *);
 
 #endif
 

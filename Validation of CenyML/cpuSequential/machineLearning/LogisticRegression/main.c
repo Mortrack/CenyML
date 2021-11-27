@@ -70,7 +70,7 @@
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../databases/regressionDBs/logisticEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
+	char csv1Directory[] = "../../../../databases/regression/logisticEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile1[] = "CenyML_getLogisticRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
 	char nameOfTheCsvFile2[] = "CenyML_getLogisticRegression_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").

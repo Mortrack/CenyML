@@ -63,8 +63,8 @@
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../databases/classificationDBs/randLinearClassificationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the .csv file containing the real data of the system under study.
-	char csv2Directory[] = "../../../../databases/classificationDBs/linearClassificationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the .csv file containing the predicted data of the system under study.
+	char csv1Directory[] = "../../../../databases/classification/randLinearEquationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the .csv file containing the real data of the system under study.
+	char csv2Directory[] = "../../../../databases/classification/linearEquationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the .csv file containing the predicted data of the system under study..
 	char nameOfTheCsvFile[] = "CenyML_getConfusionMatrix_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file containing the real data of the system under study (which is declared in "csvManager.h").
 	struct csvManager csv2; // We create a csvManager structure variable to manage the desired .csv file containing the predicted data of the system under study (which is declared in "csvManager.h").

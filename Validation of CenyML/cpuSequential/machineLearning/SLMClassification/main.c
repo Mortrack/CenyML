@@ -115,11 +115,11 @@ double *linspace(double startFrom, double endHere, int n) {
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 24, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: November 26, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../databases/classificationDBs/linearClassificationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
+	char csv1Directory[] = "../../../../databases/classification/linearEquationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile1[] = "CenyML_getSimpleLinearMachineClassification_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
 	char nameOfTheCsvFile2[] = "CenyML_getSimpleLinearMachineClassification_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
@@ -523,6 +523,7 @@ int main(int argc, char **argv) {
 	free(csv1.rowsAndColumnsDimensions);
 	free(csv1.allData);
 	free(Y);
+	free(Y_tilde);
 	free(X);
 	free(b);
 	free(Y_hat);

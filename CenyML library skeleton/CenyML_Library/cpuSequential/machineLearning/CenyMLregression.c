@@ -1274,7 +1274,7 @@ void predictMultiplePolynomialRegression(double *X, int N, char isInteractionTer
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 19, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 26, 2021
 */
 void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -1293,9 +1293,19 @@ void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVar
 		exit(1);
 	}
 	
-	// --------------- PREPROCESSING OF THE OUTPUT DATA --------------- //
+	
+	// Store the data that must be contained in the input matrix "X_tilde". In addition, we obtain the transpose of "X_tilde".
+	int currentRowTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+	int currentRowTimesM; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+	int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
 	double *Y_tilde = (double *) malloc(n*p*sizeof(double)); // This variable will contain the output data of the system under study ("Y") as required by the training of this algorithm.
+	double *X_tilde = (double *) malloc(n*mPlusOne*sizeof(double)); // This variable will contain the input data of the system under study ("X") and an additional first row with values of "1".
+	double *TransposeOf_X_tilde = (double *) malloc(mPlusOne*n*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the input data from which the desired machine learning method will be calcualted.
+	int currentRow2; // This variable is used in the for-loop for the matrix transpose that will be made.
+	int currentColumn2 = 0; // This variable is used in the for-loop for the matrix transpose that will be made.
 	for (int currentRow=0; currentRow<n; currentRow++) {
+		// --------------- PREPROCESSING OF THE OUTPUT DATA --------------- //
 		if (Y[currentRow] <= 0) {
 			printf("\nERROR: The output data from the row %d and column %d, had a value that is equal or less than zero. Please assign the proper output values for this algorithm, considering the restriction: 0 < y_{i,k} < 1.\n", currentRow, p);
 			exit(1);
@@ -1305,19 +1315,8 @@ void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVar
 			exit(1);
 		}
 		Y_tilde[currentRow] = log(Y[currentRow]/(1-Y[currentRow]));
-	}
-	
-	// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
-	// Store the data that must be contained in the input matrix "X_tilde". In addition, we obtain the transpose of "X_tilde".
-	int currentRowTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
-	int currentRowTimesM; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
-	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
-	int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
-	double *X_tilde = (double *) malloc(n*mPlusOne*sizeof(double)); // This variable will contain the input data of the system under study ("X") and an additional first row with values of "1".
-	double *TransposeOf_X_tilde = (double *) malloc(mPlusOne*n*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the input data from which the desired machine learning method will be calcualted.
-	int currentRow2; // This variable is used in the for-loop for the matrix transpose that will be made.
-	int currentColumn2 = 0; // This variable is used in the for-loop for the matrix transpose that will be made.
-	for (int currentRow=0; currentRow<n; currentRow++) {
+		
+		// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
 		currentRow2 = 0; // We reset the counters used in the following for-loop.
 		currentRowTimesMplusOne = currentRow*mPlusOne;
 		currentRowTimesM = currentRow*m;
@@ -1603,8 +1602,8 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 *							On the other hand, have in consideration
 *							that because the solution of the multiple
 *							polynomial equation can sometimes give a non
-*							perfect square binomial (when
-*							"isForceGaussianCurve" = 0), you may not get
+*							perfect square binomial, when
+*							"isForceGaussianCurve" = 0, you may not get
 *							a true gaussian form under such circumstance.
 *							Therefore, by setting "isForceGaussianCurve"
 *							= 1, you will force the solution to always
@@ -1648,8 +1647,8 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 *					 row (row index 0) will contain the mean and variance
 *					 for the first machine learning feature and the last row
 *					 (row index "m") will contain the mean and variance for
-*					 the "m"-th machine learning feature. Finally, if
-*					 "isForceGaussianCurve" = 1. then the true size to be
+*					 the "m"-th machine learning feature. Finally, note that
+*					 if "isForceGaussianCurve" = 1, then the true size to be
 *					 taken into account of the argument pointer variable "b"
 *					 will be from "m*2+1" to "m*2". This means that the last
 *					 index with respect to the entirely allocated memory in
@@ -1662,7 +1661,7 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 21, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 26, 2021
 */
 void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isForceGaussianCurve, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -1680,6 +1679,7 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isFor
 		printf("\nERROR: With respect to the system under study, there must only be only one output for this particular algorithm.\n");
 		exit(1);
 	}
+	// If the argument flag variable "isForceGaussianCurve" is different than the value of "1" and "0", then emit an error message and terminate the program. Otherwise, continue with the program.
 	if (isForceGaussianCurve != 1) {
 		if (isForceGaussianCurve != 0) {
 			printf("\nERROR: Please assign a valid value for the flag \"isForceGaussianCurve\", which may be 1 or 0.\n");
@@ -1687,21 +1687,7 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isFor
 		}
 	}
 	
-	// --------------- PREPROCESSING OF THE OUTPUT DATA --------------- //
-	double *Y_tilde = (double *) malloc(n*p*sizeof(double)); // This variable will contain the output data of the system under study ("Y") as required by the training of this algorithm.
-	for (int currentRow=0; currentRow<n; currentRow++) {
-		if (Y[currentRow] <= 0) {
-			printf("\nERROR: The output data from the row %d and column %d, had a value that is equal or less than zero. Please assign the proper output values for this algorithm, considering the restriction: 0 < y_{i,k} <= 1.\n", currentRow, p);
-			exit(1);
-		}
-		if (Y[currentRow] > 1) {
-			printf("\nERROR: The output data from the row %d and column %d, had a value that is greater than one. Please assign the proper output values for this algorithm, considering the restriction: 0 < y_{i,k} <= 1.\n", currentRow, p);
-			exit(1);
-		}
-		Y_tilde[currentRow] = log(Y[currentRow]);
-	}
 	
-	// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
 	// Store the data that must be contained in the input matrix "X_tilde". In addition, we obtain the transpose of "X_tilde".
 	int N = 2; // This variable is used to store the desired order of degree for the machine learning model to be trained.
 	int currentRowTimesmTimesNplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
@@ -1711,12 +1697,25 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isFor
 	int mTimesNPlusOne = m*N+1; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
 	int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
 	int NplusOne = (N+1); //This variable is used to store a repetitive matheamtical operation, for performance purposes.
+	double *Y_tilde = (double *) malloc(n*p*sizeof(double)); // This variable will contain the output data of the system under study ("Y") as required by the training of this algorithm.
 	double *X_tilde = (double *) malloc(n*mTimesNPlusOne*sizeof(double)); // This variable will contain the input data of the system under study ("X") and an additional first row with values of "1".
 	double *TransposeOf_X_tilde = (double *) malloc(mTimesNPlusOne*n*sizeof(double)); // We allocate the memory required for the local pointer variable that will contain the input data from which the desired machine learning method will be calcualted.
 	int currentRow2; // This variable is used in the for-loop for the matrix transpose that will be made.
 	int currentColumn2 = 0; // This variable is used in the for-loop for the matrix transpose that will be made.
 	double increaseExponentialOfThisValue; // Variable used to store the value that wants to be raised exponentially.
 	for (int currentRow=0; currentRow<n; currentRow++) {
+		// --------------- PREPROCESSING OF THE OUTPUT DATA --------------- //
+		if (Y[currentRow] <= 0) {
+			printf("\nERROR: The output data from the row %d and column %d, had a value that is equal or less than zero. Please assign the proper output values for this algorithm, considering the restriction: 0 < y_{i,k} <= 1.\n", currentRow, p);
+			exit(1);
+		}
+		if (Y[currentRow] > 1) {
+			printf("\nERROR: The output data from the row %d and column %d, had a value that is greater than one. Please assign the proper output values for this algorithm, considering the restriction: 0 < y_{i,k} <= 1.\n", currentRow, p);
+			exit(1);
+		}
+		Y_tilde[currentRow] = log(Y[currentRow]);
+		
+		// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
 		currentRow2 = 0; // We reset the counters used in the following for-loop.
 		currentRowTimesmTimesNplusOne = currentRow*mTimesNPlusOne;
 		currentRowTimesM = currentRow*m;

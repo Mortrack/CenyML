@@ -114,17 +114,18 @@ double *linspace(double startFrom, double endHere, int n) {
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 24, 2021
+* CREATION DATE: NOVEMBER 27, 2021
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../databases/classificationDBs/linearClassificationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile1[] = "CenyML_getSimpleLinearMachineClassification_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
-	char nameOfTheCsvFile2[] = "CenyML_getSimpleLinearMachineClassification_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
+	char csv1Directory[] = "../../../../databases/classification/linearEquationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
+	char nameOfTheCsvFile1[] = "CenyML_trainLogisticKernel_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
+	char nameOfTheCsvFile2[] = "CenyML_trainLogisticKernel_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
+	char Kernel[] = "logistic"; // This variable will contain the desired Kernel function that wants to be used. The available options are: "linear", "polynomial", "logistic" and "gaussian".
 	int m = 2; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	int p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
@@ -177,14 +178,14 @@ int main(int argc, char **argv) {
 	
 	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Initializing CenyML simple linear machine classification algorithm ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the simple linear machine classification with the input data (X).
-	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the simple linear machine classification algorithm.
-	double *b = (double *) calloc((m+1)*p, sizeof(double));
-	// We apply the simple linear machine classification algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "b".
-	getSimpleLinearMachineClassification(X, Y_tilde, n, m, p, 0, b);
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the simple linear machine classification with the input data (X).
-	printf("CenyML simple linear machine classification algorithm elapsed %f seconds.\n\n", elapsedTime);
+	printf("Initializing CenyML logistic Kernel machine classification algorithm ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the simple logistic Kernel machine classification with the input data (X).
+	// Allocate the memory required for the variable "coefficients", which will contain the identified best fitting coefficient values that will result from the simple logistic Kernel machine classification algorithm.
+	double *coefficients = (double *) calloc((m+3)*p, sizeof(double));
+	// We apply the simple logistic Kernel machine classification algorithm with respect to the input matrix "X" and the result is stored in the memory location of the pointer "coefficients".
+	getKernelMachineClassification(X, Y_tilde, n, m, p, 0, 0, Kernel, 0, 0, 0, coefficients);
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the simple logistic Kernel machine classification with the input data (X).
+	printf("CenyML simple logistic Kernel machine classification algorithm elapsed %f seconds.\n\n", elapsedTime);
 	
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
@@ -194,7 +195,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(n*p*sizeof(double));
 	// We obtain the predicted values with the machine learning model that was obtained.
-	predictSimpleLinearMachineClassification(X, b, n, m, p, Y_hat);
+	predictKernelMachineClassification(X, 0, Kernel, 0, 0, coefficients, n, m, p, Y_hat);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
 	printf("The CenyML predictions with the model that was obtained elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -292,8 +293,8 @@ int main(int argc, char **argv) {
 	// Create a new .csv file and save the results obtained in it.
 	char is_nArray1 = 0; // Indicate through this flag variable that the variable that indicates the samples (n) is not an array because it has the same amount of samples per columns.
 	char isInsertId1 = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	int csvFile_n1 = m+1; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
-	createCsvFile(nameOfTheCsvFile1, csvHeaders1, b, &csvFile_n1, is_nArray1, p, isInsertId1); // We create the desired .csv file.
+	int csvFile_n1 = m+3; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
+	createCsvFile(nameOfTheCsvFile1, csvHeaders1, coefficients, &csvFile_n1, is_nArray1, p, isInsertId1); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the coefficients that were obtained, elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -364,7 +365,7 @@ int main(int argc, char **argv) {
 	}
 	// In order to continue the plotting process, we obtain the output data that will be used to create the background of the plot to be created.
 	double *bg_Y_hat = (double *) malloc((n_ofLinearlySpacedArray*n_ofLinearlySpacedArray)*p*sizeof(double));
-	predictSimpleLinearMachineClassification(bg_X, b, (n_ofLinearlySpacedArray*n_ofLinearlySpacedArray), m, p, bg_Y_hat);
+	predictKernelMachineClassification(bg_X, 0, Kernel, 0, 0, coefficients, (n_ofLinearlySpacedArray*n_ofLinearlySpacedArray), m, p, bg_Y_hat);
 	// In order to continue the plotting process, we determine the number of 1s and 0s that were predicted for the background to be created.
 	int n_of_bg1s = 0; // This variable will be used as a counter to determine the rows length of the pointer variables "bg_X1_1s" and "bg_X2_1s" to be created.
 	int n_of_bg0s = 0; // This variable will be used as a counter to determine the rows length of the pointer variables "bg_X1_0s" and "bg_X2_0s" to be created.
@@ -503,7 +504,7 @@ int main(int argc, char **argv) {
     if(success){
         size_t length;
         double *pngdata = ConvertToPNG(&length, imageReference->image);
-        WriteToFile(pngdata, length, "plotOfMachineLearningModel (CenyML).png");
+        WriteToFile(pngdata, length, "main_logisticKernel (CenyML).png");
         DeleteImage(imageReference->image);
 	}else{
 	    fprintf(stderr, "Error: ");
@@ -523,8 +524,9 @@ int main(int argc, char **argv) {
 	free(csv1.rowsAndColumnsDimensions);
 	free(csv1.allData);
 	free(Y);
+	free(Y_tilde);
 	free(X);
-	free(b);
+	free(coefficients);
 	free(Y_hat);
 	free(NLL);
 	free(confusionMatrix);

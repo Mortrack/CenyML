@@ -416,7 +416,7 @@ void getAccuracy(double *realOutputMatrix, double *predictedOutputMatrix, int n,
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 23, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 26, 2021
 */
 void getPrecision(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *precision) {
 	// In order to calculate the precision, we temporarly store the sum of the product of "realOutputMatrix" and "predictedOutputMatrix" for each available sample in the variable "precision". In addition, we also calculate the sum of the "predictedOutputMatrix".
@@ -434,6 +434,9 @@ void getPrecision(double *realOutputMatrix, double *predictedOutputMatrix, int n
 	
 	// We calculate the precision for every output given.
 	for (int currentOutput=0; currentOutput<p; currentOutput++) {
+		if (sumOfPredictedOutputMatrix[currentOutput] == 0) {
+			printf("ERROR: The total amount of true positives and false positives from the output column index %d equals zero. Therefore, the precision cannot be calculated because it gives a mathematical indetermination.\n", currentOutput);
+		}
 		precision[currentOutput] = precision[currentOutput] / sumOfPredictedOutputMatrix[currentOutput];
 	}
 	
@@ -511,7 +514,7 @@ void getPrecision(double *realOutputMatrix, double *predictedOutputMatrix, int n
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 23, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 26, 2021
 */
 void getRecall(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *recall) {
 	// In order to calculate the recall, we temporarly store the sum of the product of "realOutputMatrix" and "predictedOutputMatrix" for each available sample in the variable "recall". In addition, we also calculate the sum of the "realOutputMatrix".
@@ -529,6 +532,9 @@ void getRecall(double *realOutputMatrix, double *predictedOutputMatrix, int n, i
 	
 	// We calculate the recall for every output given.
 	for (int currentOutput=0; currentOutput<p; currentOutput++) {
+		if (sumOfRealOutputMatrix[currentOutput] == 0) {
+			printf("ERROR: The total amount of true positives and false negatives from the output column index %d equals zero. Therefore, the recall cannot be calculated because it gives a mathematical indetermination.\n", currentOutput);
+		}
 		recall[currentOutput] = recall[currentOutput] / sumOfRealOutputMatrix[currentOutput];
 	}
 	
@@ -628,7 +634,13 @@ void getF1score(double *realOutputMatrix, double *predictedOutputMatrix, int n, 
 	
 	// We conclude the calculation of the precision and recall for every output given.
 	for (int currentOutput=0; currentOutput<p; currentOutput++) {
+		if (recall[currentOutput] == 0) {
+			printf("ERROR: The total amount of true positives and false negatives from the output column index %d equals zero. Therefore, the F1 score cannot be calculated because the recall gives a mathematical indetermination.\n", currentOutput);
+		}
 		recall[currentOutput] = precision[currentOutput] / recall[currentOutput];
+		if (F1score[currentOutput] == 0) {
+			printf("ERROR: The total amount of true positives and false positives from the output column index %d equals zero. Therefore, the F1 score cannot be calculated because the precision gives a mathematical indetermination.\n", currentOutput);
+		}
 		precision[currentOutput] = precision[currentOutput] / F1score[currentOutput];
 	}
 	

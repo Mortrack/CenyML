@@ -67,7 +67,7 @@
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../databases/regressionDBs/randMultipleLinearSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the .csv file containing the real data of the system under study.
+	char csv1Directory[] = "../../../../databases/regression/randMultipleLinearSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the .csv file containing the real data of the system under study.
 	char csv2Directory[] = "adjustedRsquared_results.csv"; // Directory of the .csv file containing the results obtained in the comparative library used in Python.
 	char csv3Directory[] = "adjustedRsquared_predictedData.csv"; // Directory of the .csv file containing the predicted data of the system under study.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file containing the real data of the system under study (which is declared in "csvManager.h").
