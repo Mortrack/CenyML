@@ -3,6 +3,7 @@
   
 ## What are these files for
 The files located in this directory path are all used for the validation of the method of interest that was developed in the CenyML library. The following describes the purpose of each program contained in this directory:
+
     - **main_linearKernel.c** creates a linear Kernel machine classification model with the CenyML library.
     - **main_polynomialKernel.c** creates a polynomial Kernel machine classification model with the CenyML library.
     - **main_logisticKernel.c** creates a logistic Kernel machine classification model with the CenyML library.
