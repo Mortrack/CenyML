@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
 # COMPLETITION DATE: November 24, 2021.
-# LAST UPDATE: N/A.
+# LAST UPDATE: November 27, 2021.
 #
 # This code is used to apply the machine learning method known as the linear
 # support vector machine classification. This is done with the database used
@@ -57,7 +57,7 @@ columnIndexOfInputDataInCsvFile = 3; # This variable will contain the index
 # Read the .csv file containing the data to be trained with.
 print("Innitializing data extraction from .csv file containing the data to train with ...")
 startingTime = time.time()
-dataset_lES100S100SPAPS = pd.read_csv("../../../../databases/classificationDBs/linearClassificationSystem/100systems_100samplesPerAxisPerSys.csv")
+dataset_lES100S100SPAPS = pd.read_csv("../../../../databases/classification/linearEquationSystem/100systems_100samplesPerAxisPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_lES100S100SPAPS)
 csvColumns = len(dataset_lES100S100SPAPS.iloc[0])
@@ -90,7 +90,7 @@ print("")
 # -------------------------- #
 print("Innitializing model training with the scikit-learn library ...")
 startingTime = time.time()
-classifier = SVC(kernel='linear', random_state=0)
+classifier = SVC(kernel='sigmoid', random_state=0)
 classifier.fit(X, Y_ravel)
 elapsedTime = time.time() - startingTime
 print("Model training with the scikit-learn library elapsed " + format(elapsedTime) + " seconds.")

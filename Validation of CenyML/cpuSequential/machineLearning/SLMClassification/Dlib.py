@@ -3,15 +3,15 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
 # COMPLETITION DATE: November 24, 2021.
-# LAST UPDATE: N/A.
+# LAST UPDATE: November 27, 2021.
 #
 # This code is used to apply the machine learning method known as the linear
 # support vector machine classification. This is done with the database used
 # for linear equation systems. In addition, this database has 1'000'000
-# samples. Moreover, the well known scikit-learn library will be used for such
-# machine learning algorithm (https://bit.ly/3oVImz6). Then, some metrics will
-# be obtained, along with a plot to use these as a comparative evaluation of
-# the results obtained in the CenyML library.
+# samples. Moreover, the well known Dlib library will be used for such machine
+# learning algorithm (http://dlib.net/). Then, some metrics will be obtained,
+# along with a plot to use these as a comparative evaluation of the results
+# obtained in the CenyML library.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # Python version 3.9.7

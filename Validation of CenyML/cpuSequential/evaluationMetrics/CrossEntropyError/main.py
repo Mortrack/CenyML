@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
 # COMPLETITION DATE: November 22, 2021.
-# LAST UPDATE: November 23, 2021.
+# LAST UPDATE: November 27, 2021.
 #
 # This code is used to apply the classification evaluation metric known as the
 # cross entropy error. This is done with the two databases for linear
@@ -53,7 +53,7 @@ print("")
 # Read the .csv file containing the real output data.
 print("Innitializing data extraction from .csv file containing the real output data ...")
 startingTime = time.time()
-dataset_rLES1000S1000SPS = pd.read_csv("../../../../databases/classificationDBs/randLinearClassificationSystem/100systems_100samplesPerAxisPerSys.csv")
+dataset_rLES1000S1000SPS = pd.read_csv("../../../../databases/classification/randLinearEquationSystem/100systems_100samplesPerAxisPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_rLES1000S1000SPS)
 csvColumns = len(dataset_rLES1000S1000SPS.iloc[0])
@@ -63,7 +63,7 @@ print("")
 # Read the .csv file containing the predicted output data.
 print("Innitializing data extraction from .csv file containing the predicted output data ...")
 startingTime = time.time()
-dataset_lES1000S1000SPS = pd.read_csv("../../../../databases/classificationDBs/linearClassificationSystem/100systems_100samplesPerAxisPerSys.csv")
+dataset_lES1000S1000SPS = pd.read_csv("../../../../databases/classification/linearEquationSystem/100systems_100samplesPerAxisPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_lES1000S1000SPS)
 csvColumns = len(dataset_lES1000S1000SPS.iloc[0])

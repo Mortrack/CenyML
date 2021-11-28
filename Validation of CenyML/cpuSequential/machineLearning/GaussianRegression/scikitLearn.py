@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
 # COMPLETITION DATE: November 22, 2021.
-# LAST UPDATE: N/A
+# LAST UPDATE: November 27, 2021.
 #
 # This code is used to apply the machine learning method known as the gaussian
 # regression. This is done with the database used for gaussian equation

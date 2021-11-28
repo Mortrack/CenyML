@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
 # COMPLETITION DATE: November 08, 2021.
-# LAST UPDATE: N/A
+# LAST UPDATE: November 27, 2021.
 #
 # This code is used to obtain the transformation produced by applying the L2
 # normalization method in the database "100systems_100samplesPerAxisPerSys",

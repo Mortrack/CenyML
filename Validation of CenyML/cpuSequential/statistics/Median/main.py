@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: Cesar Miranda Meza
 # COMPLETITION DATE: October 11, 2021.
-# LAST UPDATE: November 08, 2021
+# LAST UPDATE: November 27, 2021.
 #
 # This code is used for obtain the median of each of the columns contained in the
 # database "multiplePolynomialEquationSystem_100systems_100samplesPerAxisPerSys",

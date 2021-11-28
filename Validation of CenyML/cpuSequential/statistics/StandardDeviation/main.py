@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: Cesar Miranda Meza
 # COMPLETITION DATE: October 17, 2021.
-# LAST UPDATE: November 08, 2021
+# LAST UPDATE: November 27, 2021.
 #
 # This code is used for obtain the standard deviation of each of the columns
 # contained in the database

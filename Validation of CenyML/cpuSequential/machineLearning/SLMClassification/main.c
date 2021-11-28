@@ -72,7 +72,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 23, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 27, 2021
 */
 double *linspace(double startFrom, double endHere, int n) {
 	// We allocate the required memory to create the pointer variable "vector" in which we will make a linearly spaced array.

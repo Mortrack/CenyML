@@ -1,9 +1,9 @@
 /*
 * This program will read a .csv file containing the data of a linear
-* logistic equation system to then exctact all its data. Its input data
-* will be saved into the matrix "X" and its output data into the matrix
-* "Y". Subsequently, a simple linear machine classification method will
-* be applied to obtain the best fitting coefficient values of such data.
+* equation system to then exctact all its data. Its input data will be
+* saved into the matrix "X" and its output data into the matrix "Y".
+* Subsequently, a linear Kernel machine classification method will be
+* applied to obtain the best fitting coefficient values of such data.
 * Then, some evaluation metrics will be applied. Next, two new .csv
 * files will be created to save: 1) the coefficient values that were
 * obtained and 2) the results obtained with the evaluation metrics.
@@ -97,7 +97,7 @@ double *linspace(double startFrom, double endHere, int n) {
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then apply the simple linear machine classification on the input and output
+* then apply the linear Kernel machine classification on the input and output
 * data contained in it. In addition, some evaluation metrics will be applied
 * to evaluate the model. Finally, the results will be saved in two new .csv
 * files and in a .png file for further comparation and validation purposes.
@@ -119,7 +119,7 @@ double *linspace(double startFrom, double endHere, int n) {
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../databases/classification/linearEquationSystem/100systems_100samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
+	char csv1Directory[] = "../../../../databases/classification/linearEquationSystem/100systems_10samplesPerAxisPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile1[] = "CenyML_trainLinearKernel_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
 	char nameOfTheCsvFile2[] = "CenyML_trainLinearKernel_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").

@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
 # COMPLETITION DATE: November 13, 2021.
-# LAST UPDATE: November 17, 2021.
+# LAST UPDATE: November 27, 2021.
 #
 # This code is used to apply the machine learning method known as the simple
 # linear regression. This is done with the database used for linear equation
