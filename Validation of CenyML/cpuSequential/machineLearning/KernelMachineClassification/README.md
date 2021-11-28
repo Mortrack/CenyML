@@ -4,15 +4,15 @@
 ## What are these files for
 The files located in this directory path are all used for the validation of the method of interest that was developed in the CenyML library. The following describes the purpose of each program contained in this directory:
 
-    - **main_linearKernel.c** creates a linear Kernel machine classification model with the CenyML library.
-    - **main_polynomialKernel.c** creates a polynomial Kernel machine classification model with the CenyML library.
-    - **main_logisticKernel.c** creates a logistic Kernel machine classification model with the CenyML library.
-    - **main_gaussianKernel.c** creates a gaussian Kernel machine classification model with the CenyML library.
-    - **polynomialKSVM_scikitLearn.py** creates a polynomial Kernel support vector machine model with the scikit-learn library.
-    - **sigmoidKSVM_scikitLearn.py** creates a sigmoid Kernel support vector machine model with the scikit-learn library.
-    - **radialBasisFunctionKSVM_scikitLearn.py** creates a radial basis function Kernel support vector machine model with the scikit-learn library.
-    - **radialBasisFunctionKSVM_Dlib.py** creates a radial basis function Kernel support vector machine model with the Python API provided with the Dlib library.
-    - **/DlibCplusplus/radialBasisFunctionKSVM/main.cpp** creates a radial basis function Kernel support vector machine model with the Dlib library in C++.
+- **main_linearKernel.c** creates a linear Kernel machine classification model with the CenyML library.
+- **main_polynomialKernel.c** creates a polynomial Kernel machine classification model with the CenyML library.
+- **main_logisticKernel.c** creates a logistic Kernel machine classification model with the CenyML library.
+- **main_gaussianKernel.c** creates a gaussian Kernel machine classification model with the CenyML library.
+- **polynomialKSVM_scikitLearn.py** creates a polynomial Kernel support vector machine model with the scikit-learn library.
+- **sigmoidKSVM_scikitLearn.py** creates a sigmoid Kernel support vector machine model with the scikit-learn library.
+- **radialBasisFunctionKSVM_scikitLearn.py** creates a radial basis function Kernel support vector machine model with the scikit-learn library.
+- **radialBasisFunctionKSVM_Dlib.py** creates a radial basis function Kernel support vector machine model with the Python API provided with the Dlib library.
+- **/DlibCplusplus/radialBasisFunctionKSVM/main.cpp** creates a radial basis function Kernel support vector machine model with the Dlib library in C++.
 
 It is important to note that no library was found that contained the Kernel machine classification algorithm as done in the CenyML library. However, because it was partly inspired by the Kernel SVM classifier, I decided to compare their performance. Also, it should be noted that after excecuting all these programs, either by console or outputted .png/.csv files, it is expected to have obtained some evaluation metrics and excecution times of all the processes performed in order to compare them. In addition, this data should also help to determine if the CenyML results were consistent or not.
 
