@@ -59,7 +59,7 @@ columnIndexOfInputDataInCsvFile = 3; # This variable will contain the index
 # Read the .csv file containing the data to be trained with.
 print("Innitializing data extraction from .csv file containing the data to train with ...")
 startingTime = time.time()
-dataset_lES100S100SPAPS = pd.read_csv("../../../../databases/classificationDBs/linearClassificationSystem/100systems_100samplesPerAxisPerSys.csv")
+dataset_lES100S100SPAPS = pd.read_csv("../../../../databases/classification/linearEquationSystem/100systems_100samplesPerAxisPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_lES100S100SPAPS)
 csvColumns = len(dataset_lES100S100SPAPS.iloc[0])
@@ -109,6 +109,13 @@ startingTime = time.time()
 #  svm = dlib.svm_c_trainer_radial_basis()
 svm = dlib.svm_c_trainer_linear()
 svm.be_verbose()
+# NOTE: If you do not define a specific value for "C" with "set_c()", then it
+#       seems to me like Dilb assigns a default value for it, which may not
+#       always produce satisfactory results. Unlike its Kernel SVM function,
+#       which operates iteratively to find the best possible solution when no
+#       "C" value is assigned, here this does not happen and therefore, I
+#       recommend to assign several values to "C" until you get the best
+#       possible results.
 svm.set_c(1000)
 # Now train the model.  The return value is the trained model capable of making predictions.
 classifier = svm.train(X_Dlib, Y_Dlib)

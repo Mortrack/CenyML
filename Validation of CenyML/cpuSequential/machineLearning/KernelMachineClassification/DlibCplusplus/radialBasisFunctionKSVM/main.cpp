@@ -1,8 +1,8 @@
 /*
-* This program will read a .csv file containing the data of a linear
+* This program will read a .csv file containing the data of a polynomial
 * classification equation system to then exctact all its data. Its input
 * data will be saved into the matrix "X" and its output data into the
-* matrix "Y". Subsequently, a linear support vector machine
+* matrix "Y". Subsequently, a RBF Kernel support vector machine
 * classification method will be applied to obtain the best fitting
 * model for such data. Then, some evaluation metrics will be applied.
 * Next, a new .csv file will be created to save the results obtained
@@ -19,15 +19,13 @@
 * NOTE: I compiled on Linux From Command Line (see the makefile that is located under the same directory as this file).
 *
 * DOCUMENTATION TO LEARN ABOUT THE C FORMULATION OF A SUPPORT VECTOR MACHINE AS PROVIDED BY THE DLIB LIBRARY:
-* https://bit.ly/3cOzky8
+* https://bit.ly/3xwDrYY
 */
 
 // ------------------------------------------------- //
 // ----- DEFINE THE LIBRARIES THAT WE WILL USE ----- //
 // ------------------------------------------------- //
 #include <iostream>
-#include <ctime>
-#include <vector>
 #include <dlib/svm.h> // Dlib library version 19.22
 #include <stdio.h>
 #include <stdlib.h>
@@ -111,7 +109,7 @@ double *linspace(double startFrom, double endHere, int n) {
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then apply the linear support vector machine classification on the input
+* then apply the RBF Kernel support vector machine classification on the input
 * and output data contained in it. In addition, some evaluation metrics will
 * be applied to evaluate the model. Finally, the results will be saved in a
 * new .csv file and in a .png file for further comparation and validation
@@ -120,13 +118,13 @@ double *linspace(double startFrom, double endHere, int n) {
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: NOVEMBER 25, 2021
+* CREATION DATE: NOVEMBER 27, 2021
 * LAST UPDATE: N/A
 */
 int main() {
     // --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "database.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile2[] = "Dlib_linearSVM_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
+	char nameOfTheCsvFile2[] = "Dlib_rbfSVM_evalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
@@ -134,15 +132,12 @@ int main() {
 	int p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
-    typedef std::map<unsigned long,double> sample_type; // DLIB COMMENT: In this example program we will be dealing with feature vectors that are sparse.
-    typedef sparse_linear_kernel<sample_type> kernel_type; // DLIB COMMENT: This is a typedef for the type of kernel we are going to use in this example. 
-    svm_c_linear_trainer<kernel_type> linear_trainer; // DLIB COMMENT: Lets use the svm trainer specially optimized for the linear_kernel and sparse_linear_kernel.
-    // DLIB COMMENT: This trainer solves the "C" formulation of the SVM.  See the documentation for details.
-    linear_trainer.set_c(1000); // Define the "C" desired value inside the argument of "linear_trainer.set_c()".
-    std::vector<sample_type> samples; // This will be used to store the samples to be managed by the machine learning models of the Dlib library.
-    std::vector<double> labels; //  This will be used to store the outputs for each of the samples managed by the machine learning models of the Dlib library.
-    sample_type sample; // DLIB COMMENT: make an instance of a sample vector so we can use it below.
-	
+	typedef matrix<double, 2, 1> sample_type; // DLIB COMMENT: This typedef declares a matrix with 2 rows and 1 column, where the rows represent the number of ML feautres and columns represents the current sample.
+	typedef radial_basis_kernel<sample_type> kernel_type; // DLIB COMMENT: This is a typedef for the type of kernel we are going to use in this example. 
+	std::vector<sample_type> samples; // This will be used to store the samples to be managed by the machine learning models of the Dlib library.
+	std::vector<double> labels; //  This will be used to store the outputs for each of the samples managed by the machine learning models of the Dlib library.
+	double gamma = 0.01; // We define the desired value for the hyperparameter "gamma".
+    	
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
 	printf("Initializing data extraction from .csv file containing the data to be used ...\n");
@@ -186,28 +181,39 @@ int main() {
 			X[currentColumn + currentRow*m] = csv1.allData[columnIndexOfInputDataInCsvFile + currentColumn + currentRow*databaseColumns1];
 		}
 	}
-    // DLIB COMMENT: Pass the input data of the system under study to the Dlib svm trainer.
-    //NOTE: In the Dlib library, it seems to me that all samples must be passed row per row, unlike most other libraries in which you can pass the entire matrix of rows and columns at once.
+	// DLIB COMMENT: Pass the input data of the system under study to the Dlib svm trainer.
+	//NOTE: In the Dlib library, it seems to me that all samples must be passed row per row, unlike most other libraries in which you can pass the entire matrix of rows and columns at once.
 	for (int currentRow=0; currentRow<n; currentRow++) {
-		sample.clear(); // DLIB COMMENT: We clear the current data stored in the instance "sample".
-		for (int currentColumn=0; currentColumn<m; currentColumn++) {
-			sample[currentColumn] = X[currentColumn + currentRow*m]; // We pass the current row of data from the input matrix "X" to the instance "sample".
-		}
-		samples.push_back(sample); // DLIB COMMENT: Save the current sample of the input matrix "X" so we can let the svm_c_linear_trainer learn from them below.
-		labels.push_back(Y_tilde[currentRow]); // DLIB COMMENT: Save the output of the current sample of the input matrix "X" so we can let the svm_c_linear_trainer learn from them below.
+		// IMPORTANT WARNING NOTE: I figured out that for some reason of
+		// how the Dlib library has been programmed with respect to what
+		// they call their "sample_type" object, it prevents me from
+		// creating an instance with it (e.g. the one i crated as
+		// "DlibCurrentSample") and use it inside a for-loop to
+		// automatize the coulumns extraction from the input matrix "X".
+		// Becaused of that, i had to remove such for-loop and do it
+		// mannualy like how the Dlib example file "smv_c_ex.cpp" does
+		// it.
+		sample_type DlibCurrentSample;
+		DlibCurrentSample(0) = X[currentRow*m];
+		DlibCurrentSample(1) = X[1 + currentRow*m]; // We pass the current row of data from the input matrix "X" to the instance "DlibCurrentSample".
+		samples.push_back(DlibCurrentSample); // DLIB COMMENT: Save the current sample of the input matrix "X" so we can let the ML trainer learn from them below.
+		labels.push_back(Y_tilde[currentRow]); // DLIB COMMENT: Save the output of the current sample of the input matrix "X" so we can let the ML trainer learn from them below.
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to innitialize the input data to be used.
 	printf("Output and input data innitialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	
-	
 	// ------------------------- DATA MODELING ----------------------- //
-	printf("Initializing Dlib linear support vector machine classification algorithm ...\n");
-	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the simple linear machine classification with the input data (X).	
-	decision_function<kernel_type> linearSVM_model = linear_trainer.train(samples, labels); // We train the linear SVM model.
-	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the simple linear machine classification with the input data (X).
-	printf("Dlib linear support vector machine classification algorithm elapsed %f seconds.\n\n", elapsedTime);
-	
+	printf("Initializing Dlib RBF Kernel support vector machine classification algorithm ...\n");
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the simple RBF Kernel machine classification with the input data (X).	
+	svm_c_trainer<kernel_type> trainer; // DLIB COMMENT: Here we make an instance of the svm_c_trainer object that uses our kernel type.     	
+	// NOTE: If the function "trainer.set_kernel(kernel_type(gamma))" is not
+	//	 	 used, then the Dlib library solves the model iteratively to
+	//	 	 automatically find the best gamma value.
+	trainer.set_kernel(kernel_type(gamma)); // Define the "gamma" hyperparameter.
+    decision_function<kernel_type> KSVM_model = trainer.train(samples, labels); // We train the desired Kernel SVM model.
+	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the simple RBF Kernel machine classification with the input data (X).
+	printf("Dlib RBF Kernel support vector machine classification algorithm elapsed %f seconds.\n\n", elapsedTime);
 	
 	
 	// ----------- PREDICTIONS AND EVALUATIONS OF THE MODEL --------- //
@@ -218,12 +224,19 @@ int main() {
 	double *Y_hat = (double *) malloc(n*p*sizeof(double));
 	// Pass the input data of the system under study to the trained model to make their corresponding predictions and store them.
     //NOTE: In the Dlib library, all samples must be passed row per row, unlike most other libraries in which you can pass the entire matrix of rows and columns at once.
+	sample_type sample; // We create and instance of the object "sample_type" to extract all the predicted data from the model that has just been trained.
 	for (int currentRow=0; currentRow<n; currentRow++) {
-		sample.clear(); // We clear the current data stored in the instance "sample".
-		for (int currentColumn=0; currentColumn<m; currentColumn++) {
-			sample[currentColumn] = X[currentColumn + currentRow*m]; // We pass the current row of data from the input matrix "X" to the instance "sample".
-		}
-		if (linearSVM_model(sample) > 0) {
+		// IMPORTANT WARNING NOTE: I figured out that for some reason of
+		// how the Dlib library has been programmed with respect to what
+		// they call their "sample_type" object, it prevents me from
+		// creating an instance with it (e.g. the one i crated as
+		// "sample") and use it inside a for-loop to automatize the
+		// coulumns extraction from the input matrix "X". Becaused of
+		// that, i had to remove such for-loop and do it mannualy like
+		// how the Dlib example file "smv_c_ex.cpp" does it.
+		sample(0) = X[currentRow*m];
+		sample(1) = X[1 + currentRow*m]; // We pass the current row of data from the input matrix "X" to the instance "DlibCurrentSample".
+		if (KSVM_model(sample) > 0) {
 			Y_hat[currentRow] = 1;
 		} else {
 			Y_hat[currentRow] = 0; // Instead of storing a "-1" value, we will store a "0" instead so that we can use the predicted values in the CenyML evaluation metric funtions.
@@ -381,11 +394,17 @@ int main() {
 	// Pass the input data of the system under study to the trained model to make their corresponding predictions and store them.
     //NOTE: In the Dlib library, all samples must be passed row per row, unlike most other libraries in which you can pass the entire matrix of rows and columns at once.
 	for (int currentRow=0; currentRow<(n_ofLinearlySpacedArray*n_ofLinearlySpacedArray); currentRow++) {
-		sample.clear(); // We clear the current data stored in the instance "sample".
-		for (int currentColumn=0; currentColumn<m; currentColumn++) {
-			sample[currentColumn] = bg_X[currentColumn + currentRow*m]; // We pass the current row of data from the input matrix "X" to the instance "sample".
-		}
-		if (linearSVM_model(sample) > 0) {
+		// IMPORTANT WARNING NOTE: I figured out that for some reason of
+		// how the Dlib library has been programmed with respect to what
+		// they call their "sample_type" object, it prevents me from
+		// creating an instance with it (e.g. the one i crated as
+		// "sample") and use it inside a for-loop to automatize the
+		// coulumns extraction from the input matrix "X". Becaused of
+		// that, i had to remove such for-loop and do it mannualy like
+		// how the Dlib example file "smv_c_ex.cpp" does it.
+		sample(0) = bg_X[currentRow*m];
+		sample(1) = bg_X[1 + currentRow*m]; // We pass the current row of data from the input matrix "X" to the instance "DlibCurrentSample".
+		if (KSVM_model(sample) > 0) {
 			bg_Y_hat[currentRow] = 1;
 		} else {
 			bg_Y_hat[currentRow] = -1;

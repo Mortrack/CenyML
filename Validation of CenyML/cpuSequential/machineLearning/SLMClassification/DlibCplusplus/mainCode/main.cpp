@@ -19,7 +19,7 @@
 * NOTE: I compiled on Linux From Command Line (see the makefile that is located under the same directory as this file).
 *
 * DOCUMENTATION TO LEARN ABOUT THE C FORMULATION OF A SUPPORT VECTOR MACHINE AS PROVIDED BY THE DLIB LIBRARY:
-* https://bit.ly/3cOzky8
+* https://bit.ly/3xwDrYY
 */
 
 // ------------------------------------------------- //
@@ -138,6 +138,13 @@ int main() {
     typedef sparse_linear_kernel<sample_type> kernel_type; // DLIB COMMENT: This is a typedef for the type of kernel we are going to use in this example. 
     svm_c_linear_trainer<kernel_type> linear_trainer; // DLIB COMMENT: Lets use the svm trainer specially optimized for the linear_kernel and sparse_linear_kernel.
     // DLIB COMMENT: This trainer solves the "C" formulation of the SVM.  See the documentation for details.
+    // NOTE: If you do not define a specific value for "C" with "set_c()", then it
+	//       seems to me like Dilb assigns a default value for it, which may not
+	//       always produce satisfactory results. Unlike its Kernel SVM function,
+	//       which operates iteratively to find the best possible solution when no
+	//       "C" value is assigned, here this does not happen and therefore, I
+	//       recommend to assign several values to "C" until you get the best
+	//       possible results.
     linear_trainer.set_c(1000); // Define the "C" desired value inside the argument of "linear_trainer.set_c()".
     std::vector<sample_type> samples; // This will be used to store the samples to be managed by the machine learning models of the Dlib library.
     std::vector<double> labels; //  This will be used to store the outputs for each of the samples managed by the machine learning models of the Dlib library.

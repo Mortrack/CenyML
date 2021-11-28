@@ -109,7 +109,7 @@ startingTime = time.time()
 #  svm = dlib.svm_c_trainer_linear()
 svm = dlib.svm_c_trainer_radial_basis()
 # svm.be_verbose() # Use this line of code only if you use the linear Kernel.
-svm.set_c(1)
+svm.gamma = 0.01 # We define a specific hyperparamenter value (gamma).
 # Now train the model.  The return value is the trained model capable of making predictions.
 classifier = svm.train(X_Dlib, Y_Dlib)
 elapsedTime = time.time() - startingTime

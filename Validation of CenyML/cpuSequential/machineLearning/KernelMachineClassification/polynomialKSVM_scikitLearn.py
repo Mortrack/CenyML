@@ -90,6 +90,8 @@ print("")
 # -------------------------- #
 print("Innitializing Polynomial Kernel SVM model training with the scikit-learn library ...")
 startingTime = time.time()
+# NOTE: If you do not define a specific value for the argument variable "C",
+#       then scikit-learn will iterate until it finds the best fitting model.
 classifier = SVC(kernel='poly', degree=2, random_state=0)
 classifier.fit(X, Y_ravel)
 elapsedTime = time.time() - startingTime
