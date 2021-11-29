@@ -19,24 +19,29 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <math.h>
 
 struct singleNeuronDnnStruct {
    double *X;
+   double *w_first;
    double *Y;
    int n;
    int m;
    int p;
-   double *w_first;
+   char isInitial_w;
+   char isClassification;
+   double threshold;
+   int desiredValueForGroup1;
+   int desiredValueForGroup2;
    int activationFunctionToBeUsed;
    double learningRate;
-   int maxEpochs;
    double stopAboveThisAccuracy;
-   char isInitial_w;
-   int isClassification;
-   double threshold;
+   int maxEpochs;
    char isReportLearningProgress;
    int reportEachSpecifiedEpochs;
+   double *w_best;
+   double bestAccuracy;
    double *w_new;
 };
 
@@ -46,7 +51,7 @@ static void getDerivateReluActivation(double *, double *, double *, struct singl
 static void getTanhActivation(double *, double *, struct singleNeuronDnnStruct *);
 static void getDerivateTanhActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
 static void getLogisticActivation(double *, double *, struct singleNeuronDnnStruct *);
-static void getLogisticActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+static void getDerivateLogisticActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
 static void getRaiseToTheFirstPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
 static void getDerivateRaiseToTheFirstPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
 static void getSquareRootActivation(double *, double *, struct singleNeuronDnnStruct *);
@@ -65,8 +70,8 @@ static void getFirstOrderDegreeExponentialActivation(double *, double *, struct 
 static void getDerivateFirstOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
 static void getSecondOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
 static void getDerivateSecondOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
-static void getAdjustedCoefficientOfDetermination(double *, double *, int, int, int, int, double *);
-static void getAccuracy(double *, double *, int, int, double *);
+static void getNeuronAdjustedCoefficientOfDetermination(double *, double *, int, int, int, int, double *);
+static void getNeuronAccuracy(double *, double *, int, int, double *);
 void predictSingleNeuronDNN(struct singleNeuronDnnStruct *, double *);
 
 #endif

@@ -20,18 +20,21 @@
 
 /**
 * The "getSimpleLinearRegression()" function is used to apply the
-* machine learning algorithm called simple linear regression. Within
-* this process, the best fitting equation with the form of "y_hat =
-* b_0 + b_1*x" will be identified with respect to the sampled data
-* given through the argument pointer variables "X" and "Y". As a
-* result, the identified coefficient values will be stored in the
-* argument pointer variable "b".
+* machine learning algorithm called simple linear regression as
+* formulated in the master thesis of Cesar Miranda Meza called
+* "Machine learning to support applications with embedded systems
+* and parallel computing". Within this process, the best fitting
+* equation with the form of "y_hat = b_0 + b_1*x" will be
+* identified with respect to the sampled data given through the
+* argument pointer variables "X" and "Y". As a result, the
+* identified coefficient values will be stored in the argument
+* pointer variable "b".
 * 
 * @param double *X - This argument will contain the pointer to a
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m=1" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -40,7 +43,7 @@
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -76,7 +79,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 13, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 void getSimpleLinearRegression(double *X, double *Y, int n, int m, int p, double *b) {
 	// If the machine learning features exceed the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -124,7 +127,7 @@ void getSimpleLinearRegression(double *X, double *Y, int n, int m, int p, double
 *					 memory allocated input matrix, from which the
 *					 desired machine learning predictions will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m=1" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -133,7 +136,7 @@ void getSimpleLinearRegression(double *X, double *Y, int n, int m, int p, double
 *					 coefficient values for the desired machine
 *					 learning algorithm and that will be used to make
 *					 the specified predictions. IT IS INDISPENSABLE
-*					 THAT THIS VARIABLE IS ALLOCATED AND INNITIALIZED
+*					 THAT THIS VARIABLE IS ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 *					 SIZE OF "m+1=2" 'DOUBLE' MEMORY SPACES.
 *
@@ -192,13 +195,15 @@ void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, do
 
 /**
 * The "getMultipleLinearRegression()" function is used to apply the
-* machine learning algorithm called multiple linear regression.
-* Within this process, the best fitting equation with the form of
-* "y_hat = b_0 + b_1*x_1 + b_2*x_2 + ... +  + b_m*x_m" will be
-* identified with respect to the sampled data given through the
-* argument pointer variables "X" and "Y". As a result, the
-* identified coefficient values will be stored in the argument
-* pointer variable "b".
+* machine learning algorithm called multiple linear regression as
+* formulated in the master thesis of Cesar Miranda Meza called
+* "Machine learning to support applications with embedded systems
+* and parallel computing". Within this process, the best fitting
+* equation with the form of "y_hat = b_0 + b_1*x_1 + b_2*x_2
+* + ... +  + b_m*x_m" will be identified with respect to the
+* sampled data given through the argument pointer variables "X" and
+* "Y". As a result, the identified coefficient values will be stored
+* in the argument pointer variable "b".
 *
 * NOTE: The algorithm section that applied the matrix inverse using
 * the Gauss-Jordan method was inspired in the following source:
@@ -211,7 +216,7 @@ void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, do
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -220,7 +225,7 @@ void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, do
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -256,7 +261,7 @@ void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, do
 *					 index 0 and the last coefficient (b_m) will be
 *					 stored in the row with index "m". IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
-*					 AND INNITIALIZED WITH ZEROS BEFORE CALLING THIS
+*					 AND INITIALIZED WITH ZEROS BEFORE CALLING THIS
 *					 FUNCTION WITH A VARIABLE SIZE OF "m+1" TIMES "p=1"
 *					 'DOUBLE' MEMORY SPACES.
 *
@@ -266,7 +271,7 @@ void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, do
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 17, 2021
-* LAST UPDATE: NOVEMBER 18, 2021
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -423,7 +428,7 @@ void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char
 *					 memory allocated input matrix, from which the
 *					 desired machine learning predictions will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -432,7 +437,7 @@ void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char
 *					 coefficient values for the desired machine
 *					 learning algorithm and that will be used to make
 *					 the specified predictions. IT IS INDISPENSABLE
-*					 THAT THIS VARIABLE IS ALLOCATED AND INNITIALIZED
+*					 THAT THIS VARIABLE IS ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 *					 SIZE OF "m+1" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -497,13 +502,15 @@ void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, 
 
 /**
 * The "getPolynomialRegression()" function is used to apply the
-* machine learning algorithm called polynomial regression. Within
-* this process, the best fitting equation with the form of "y_hat =
-* b_0 + b_1*x + b_2*x^2 + b_3*x^3 + ... +  + b_N*x^N" will be
-* identified with respect to the sampled data given through the
-* argument pointer variables "X" and "Y". As a result, the
-* identified coefficient values will be stored in the argument
-* pointer variable "b".
+* machine learning algorithm called polynomial regression as
+* formulated in the master thesis of Cesar Miranda Meza called
+* "Machine learning to support applications with embedded systems
+* and parallel computing". Within this process, the best fitting
+* equation with the form of "y_hat = b_0 + b_1*x + b_2*x^2 +
+* b_3*x^3 + ... +  + b_N*x^N" will be identified with respect to
+* the sampled data given through the argument pointer variables
+* "X" and "Y". As a result, the identified coefficient values
+* will be stored in the argument pointer variable "b".
 *
 * NOTE: The algorithm section that applied the matrix inverse using
 * the Gauss-Jordan method was inspired in the following source:
@@ -516,7 +523,7 @@ void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, 
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m=1" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -525,7 +532,7 @@ void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, 
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -564,7 +571,7 @@ void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, 
 *					 index 0 and the last coefficient (b_N) will be
 *					 stored in the row with index "N". IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
-*					 AND INNITIALIZED WITH ZEROS BEFORE CALLING THIS
+*					 AND INITIALIZED WITH ZEROS BEFORE CALLING THIS
 *					 FUNCTION WITH A VARIABLE SIZE OF "N+1" TIMES "p=1"
 *					 'DOUBLE' MEMORY SPACES.
 *
@@ -574,7 +581,7 @@ void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, 
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 18, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -727,7 +734,7 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 *					 memory allocated input matrix, from which the
 *					 desired machine learning predictions will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m=1" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -739,7 +746,7 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 *					 coefficient values for the desired machine
 *					 learning algorithm and that will be used to make
 *					 the specified predictions. IT IS INDISPENSABLE
-*					 THAT THIS VARIABLE IS ALLOCATED AND INNITIALIZED
+*					 THAT THIS VARIABLE IS ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 *					 SIZE OF "N+1" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -806,12 +813,15 @@ void predictPolynomialRegression(double *X, int N, double *b, int n, int m, int 
 /**
 * The "getMultiplePolynomialRegression()" function is used to apply
 * the machine learning algorithm called multiple polynomial
-* regression. Within this process, for the case of not having
-* included the interaction terms, the best fitting equation with the
-* form of "y_hat = b_{0} + b_{1}*x_{1} + b_{2}*x_{1}^{2} + ...
-* + b_{N}*x_{1}^{N} + b_{N+1}*x_{2} + b_{N+2}*x_{2}^{2} + ... +
-* b_{2*N}*x_{2}^{N} + ... + b_{2*N+1}*x_{m} + b_{2*N+2}*x_{m}^{2} +
-* ... + b_{m*N}*x_{m}^{N}" will be identified with respect to the
+* regression as formulated in the master thesis of Cesar Miranda
+* Meza called "Machine learning to support applications with
+* embedded systems and parallel computing". Within this process,
+* for the case of not having included the interaction terms, the
+* best fitting equation with the form of "y_hat = b_{0}
+* + b_{1}*x_{1} + b_{2}*x_{1}^{2} + ... + b_{N}*x_{1}^{N}
+* + b_{N+1}*x_{2} + b_{N+2}*x_{2}^{2} + ... + b_{2*N}*x_{2}^{N}
+* + ... + b_{2*N+1}*x_{m} + b_{2*N+2}*x_{m}^{2}
+* + ... + b_{m*N}*x_{m}^{N}" will be identified with respect to the
 * sampled data given through the argument pointer variables "X" and
 * "Y". As a result, the identified coefficient values will be stored
 * in the argument pointer variable "b".
@@ -827,7 +837,7 @@ void predictPolynomialRegression(double *X, int N, double *b, int n, int m, int 
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -836,7 +846,7 @@ void predictPolynomialRegression(double *X, int N, double *b, int n, int m, int 
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -891,7 +901,7 @@ void predictPolynomialRegression(double *X, int N, double *b, int n, int m, int 
 *					 index 0 and the last coefficient (b_{m*N}) will be
 *					 stored in the row with index "m*N". IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
-*					 AND INNITIALIZED WITH ZEROS BEFORE CALLING THIS
+*					 AND INITIALIZED WITH ZEROS BEFORE CALLING THIS
 *					 FUNCTION WITH A VARIABLE SIZE OF "m*N+1" TIMES "p=1"
 *					 'DOUBLE' MEMORY SPACES.
 *
@@ -901,7 +911,7 @@ void predictPolynomialRegression(double *X, int N, double *b, int n, int m, int 
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 18, 2021
-* LAST UPDATE: NOVEMBER 19, 2021
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 void getMultiplePolynomialRegression(double *X, double *Y, int n, int m, int p, int N, char isInteractionTerms, char isVariableOptimizer, double *b) {
 	// Determine whether the interaction terms are desired in the resulting model to be generated or not and then excecute the corresponding code.
@@ -1079,7 +1089,7 @@ void getMultiplePolynomialRegression(double *X, double *Y, int n, int m, int p, 
 *					 memory allocated input matrix, from which the
 *					 desired machine learning predictions will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -1106,7 +1116,7 @@ void getMultiplePolynomialRegression(double *X, double *Y, int n, int m, int p, 
 *					 coefficient values for the desired machine
 *					 learning algorithm and that will be used to make
 *					 the specified predictions. IT IS INDISPENSABLE
-*					 THAT THIS VARIABLE IS ALLOCATED AND INNITIALIZED
+*					 THAT THIS VARIABLE IS ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 *					 SIZE OF "m*N+1" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -1200,13 +1210,16 @@ void predictMultiplePolynomialRegression(double *X, int N, char isInteractionTer
 
 /**
 * The "getLogisticRegression()" function is used to apply the
-* machine learning algorithm called logistic regression. Within
-* this process, the best fitting equation with the form of "y_hat
-* = 1 / (1+e^{-(b_{0} + b_{1}x_{1} + b_{2}x_{2} + ... +
-* b_{m}x_{m})})" will be identified with respect to the sampled
-* data given through the argument pointer variables "X" and "Y".
-* As a result, the identified coefficient values will be stored
-* in the argument pointer variable "b".
+* machine learning algorithm called logistic regression as
+* formulated in the master thesis of Cesar Miranda Meza called
+* "Machine learning to support applications with embedded systems
+* and parallel computing". Within this process, the best fitting
+* equation with the form of "y_hat = 1 / (1+e^{-(b_{0}
+* + b_{1}x_{1} + b_{2}x_{2} + ... + b_{m}x_{m})})" will be
+* identified with respect to the sampled data given through the
+* argument pointer variables "X" and "Y". As a result, the
+* identified coefficient values will be stored in the argument
+* pointer variable "b".
 *
 * NOTE: The algorithm section that applied the matrix inverse using
 * the Gauss-Jordan method was inspired in the following source:
@@ -1219,7 +1232,7 @@ void predictMultiplePolynomialRegression(double *X, int N, char isInteractionTer
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -1228,7 +1241,7 @@ void predictMultiplePolynomialRegression(double *X, int N, char isInteractionTer
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -1264,7 +1277,7 @@ void predictMultiplePolynomialRegression(double *X, int N, char isInteractionTer
 *					 index 0 and the last coefficient (b_m) will be
 *					 stored in the row with index "m". IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
-*					 AND INNITIALIZED WITH ZEROS BEFORE CALLING THIS
+*					 AND INITIALIZED WITH ZEROS BEFORE CALLING THIS
 *					 FUNCTION WITH A VARIABLE SIZE OF "m+1" TIMES "p=1"
 *					 'DOUBLE' MEMORY SPACES.
 *
@@ -1274,7 +1287,7 @@ void predictMultiplePolynomialRegression(double *X, int N, char isInteractionTer
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 19, 2021
-* LAST UPDATE: NOVEMBER 26, 2021
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -1445,7 +1458,7 @@ void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVar
 *					 memory allocated input matrix, from which the
 *					 desired machine learning predictions will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -1454,7 +1467,7 @@ void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVar
 *					 coefficient values for the desired machine
 *					 learning algorithm and that will be used to make
 *					 the specified predictions. IT IS INDISPENSABLE
-*					 THAT THIS VARIABLE IS ALLOCATED AND INNITIALIZED
+*					 THAT THIS VARIABLE IS ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 *					 SIZE OF "m+1" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -1520,9 +1533,11 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 
 /**
 * The "getGaussianRegression()" function is used to apply the
-* machine learning algorithm called gaussian regression. Within
-* this process, the equation with the form of "y_hat =
-* exp(-( ((x_{1}-mean_{1})^2)/2*variance_{1} +
+* machine learning algorithm called gaussian regression as
+* formulated in the master thesis of Cesar Miranda Meza called
+* "Machine learning to support applications with embedded systems
+* and parallel computing". Within this process, the equation with
+* the form of "y_hat = exp(-( ((x_{1}-mean_{1})^2)/2*variance_{1} +
 * ((x_{2}-mean_{2})^2)/2*variance_{2} + ... +
 * ((x_{m}-mean_{m})^2)/2*variance_{m} ))" will correspond to
 * when the gaussian curve is forced. On the other hand, the
@@ -1548,7 +1563,7 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -1557,7 +1572,7 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -1624,7 +1639,7 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 *					 the identified best fitting coefficient values
 *					 for the desired machine learning algorithm. IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
-*					 AND INNITIALIZED WITH ZEROS BEFORE CALLING THIS
+*					 AND INITIALIZED WITH ZEROS BEFORE CALLING THIS
 *					 FUNCTION WITH A VARIABLE SIZE OF "m*2+1" TIMES
 *					 "p=1" 'DOUBLE' MEMORY SPACES. However, the
 *					 coefficients will be stored in a different manner
@@ -1661,7 +1676,7 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 21, 2021
-* LAST UPDATE: NOVEMBER 26, 2021
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isForceGaussianCurve, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -1863,7 +1878,7 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isFor
 *					 memory allocated input matrix, from which the
 *					 desired machine learning predictions will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -1896,7 +1911,7 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isFor
 *					 coefficient values for the desired machine
 *					 learning algorithm and that will be used to make
 *					 the specified predictions. IT IS INDISPENSABLE
-*					 THAT THIS VARIABLE WAS ALLOCATED AND INNITIALIZED
+*					 THAT THIS VARIABLE WAS ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING ITS TRAINING FUNCTION WITH A
 *					 VARIABLE SIZE OF "m*2+1" TIMES "p=1" 'DOUBLE'
 *					 MEMORY SPACES. This is because its actual used

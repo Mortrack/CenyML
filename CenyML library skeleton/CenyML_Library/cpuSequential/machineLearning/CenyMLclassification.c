@@ -21,20 +21,22 @@
 /**
 * The "getLinearLogisticClassification()" function is used to apply
 * the machine learning algorithm called linear logistic
-* classification. Within this process, the best fitting equation
-* with the form of "y_hat = 1 / (1+e^{-(b_{0} + b_{1}x_{1} +
-* b_{2}x_{2} + ... + b_{m}x_{m})})" will be identified with respect
-* to the sampled data given through the argument pointer variables
-* "X" and "Y". At the end of this algorithm, the identified
-* coefficient values will be stored in the argument pointer variable
-* "b". As a result, when inserting the coefficient values into this
-* model, whenever its output is greater than the defined threshold
-* (0 < threshold < 1), it should be interpreted as the model
-* predicting that the current input values represent group 1 or the
-* binary number "1". Conversely, if the model produces a value less
-* than the defined threshold, it should be interpreted as the model
-* predicting that the current input values represent group 2 or the
-* binary number "0".
+* classification as formulated in the master thesis of Cesar
+* Miranda Meza called "Machine learning to support applications with
+* embedded systems and parallel computing". Within this process, the
+* best fitting equation with the form of "y_hat = 1 / (1+e^{-(b_{0}
+* + b_{1}x_{1} + b_{2}x_{2} + ... + b_{m}x_{m})})" will be
+* identified with respect to the sampled data given through the
+* argument pointer variables "X" and "Y". At the end of this
+* algorithm, the identified coefficient values will be stored in the
+* argument pointer variable "b". As a result, when inserting the
+* coefficient values into this model, whenever its output is greater
+* than the defined threshold (0 < threshold < 1), it should be
+* interpreted as the model predicting that the current input values
+* represent group 1 or the binary number "1". Conversely, if the
+* model produces a value less than the defined threshold, it should
+* be interpreted as the model predicting that the current input
+* values represent group 2 or the binary number "0".
 *
 * NOTE: The algorithm section that applied the matrix inverse using
 * the Gauss-Jordan method was inspired in the following source:
@@ -47,7 +49,7 @@
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -56,7 +58,7 @@
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *					 Finally, make sure that the output values are
@@ -107,7 +109,7 @@
 *					 index 0 and the last coefficient (b_m) will be
 *					 stored in the row with index "m". IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
-*					 AND INNITIALIZED WITH ZEROS BEFORE CALLING THIS
+*					 AND INITIALIZED WITH ZEROS BEFORE CALLING THIS
 *					 FUNCTION WITH A VARIABLE SIZE OF "m+1" TIMES "p=1"
 *					 'DOUBLE' MEMORY SPACES.
 *
@@ -117,7 +119,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 23, 2021
-* LAST UPDATE: NOVEMBER 26, 2021
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, double Y_epsilon, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -294,7 +296,7 @@ void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, 
 *					 memory allocated input matrix, from which the
 *					 desired machine learning predictions will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -312,7 +314,7 @@ void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, 
 *					 coefficient values for the desired machine
 *					 learning algorithm and that will be used to make
 *					 the specified predictions. IT IS INDISPENSABLE
-*					 THAT THIS VARIABLE IS ALLOCATED AND INNITIALIZED
+*					 THAT THIS VARIABLE IS ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 *					 SIZE OF "m+1" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -394,23 +396,25 @@ void predictLinearLogisticClassification(double *X, double threshold, double *b,
 /**
 * The "getSimpleLinearMachineClassification()" function is used to
 * apply the machine learning algorithm called simple linear machine
-* classification. Within this process, the best fitting equation
-* with the form of "y_hat = omega.x^T + b_0" ("omega" and "b_0" are
-* the coefficients to be identified, "omega" is a vector containing
-* the coefficients of all the machine learning features, "b_0" is
-* the bias coefficient of the model, "T" stands for transpose and
-* "x" is a vector containing all the machine learning features)
-* will be identified with respect to the sampled data given through
-* the argument pointer variables "X" and "Y". At the end of this
-* algorithm, the identified coefficient values will be stored in the
-* argument pointer variable "b". As a result, when inserting the
-* coefficient values into this model, whenever its output is greater
-* than the value of "0", it should be interpreted as the model
-* predicting that the current input values represent group 1 or the
-* numeric value of "+1". Conversely, if the model produces a value
-* less than "0", it should be interpreted as the model predicting
-* that the current input values represent group 2 or the numeric
-* value of "-1".
+* classification as formulated in the master thesis of Cesar Miranda
+* Meza called "Machine learning to support applications with
+* embedded systems and parallel computing". Within this process, the
+* best fitting equation with the form of "y_hat = omega.x^T + b_0"
+* ("omega" and "b_0" are the coefficients to be identified, "omega"
+* is a vector containing the coefficients of all the machine
+* learning features, "b_0" is the bias coefficient of the model, "T"
+* stands for transpose and "x" is a vector containing all the
+* machine learning features) will be identified with respect to the
+* sampled data given through the argument pointer variables "X" and
+* "Y". At the end of this algorithm, the identified coefficient
+* values will be stored in the argument pointer variable "b". As a
+* result, when inserting the coefficient values into this model,
+* whenever its output is greater than the value of "0", it should be
+* interpreted as the model predicting that the current input values
+* represent group 1 or the numeric value of "+1". Conversely, if the
+* model produces a value less than "0", it should be interpreted as
+* the model predicting that the current input values represent group
+* 2 or the numeric value of "-1".
 *
 * NOTE: The algorithm section that applied the matrix inverse using
 * the Gauss-Jordan method was inspired in the following source:
@@ -423,7 +427,7 @@ void predictLinearLogisticClassification(double *X, double threshold, double *b,
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -432,7 +436,7 @@ void predictLinearLogisticClassification(double *X, double threshold, double *b,
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *					 Finally, make sure that the output values are
@@ -470,7 +474,7 @@ void predictLinearLogisticClassification(double *X, double threshold, double *b,
 *					 index 0 and the last coefficient (b_m or, in other
 *					 words, omega_m) will be stored in the row with
 *					 index "m". IT IS INDISPENSABLE THAT THIS VARIABLE
-*					 IS ALLOCATED AND INNITIALIZED WITH ZEROS BEFORE
+*					 IS ALLOCATED AND INITIALIZED WITH ZEROS BEFORE
 *					 CALLING THIS FUNCTION WITH A VARIABLE SIZE OF "m+1"
 *					 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -480,7 +484,7 @@ void predictLinearLogisticClassification(double *X, double threshold, double *b,
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 24, 2021
-* LAST UPDATE: NOVEMBER 26, 2021
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 void getSimpleLinearMachineClassification(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -644,7 +648,7 @@ void getSimpleLinearMachineClassification(double *X, double *Y, int n, int m, in
 *					 memory allocated input matrix, from which the
 *					 desired machine learning predictions will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -653,7 +657,7 @@ void getSimpleLinearMachineClassification(double *X, double *Y, int n, int m, in
 *					 coefficient values for the desired machine
 *					 learning algorithm and that will be used to make
 *					 the specified predictions. IT IS INDISPENSABLE
-*					 THAT THIS VARIABLE IS ALLOCATED AND INNITIALIZED
+*					 THAT THIS VARIABLE IS ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 *					 SIZE OF "m+1" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -735,8 +739,10 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 * bias coefficient of the model, "x" is a vector containing all
 * the machine learning features and the coefficients within
 * "K(x)" will be representend as "Beta". The way this algorithm
-* is going to be solved will be as explained in the thesis of
-* Cesar Miranda Meza. Moreover, when inserting all the identified
+* is going to be solved will be as formulated in the master
+* thesis of Cesar Miranda Meza called "Machine learning to
+* support applications with embedded systems and parallel
+* computing". Moreover, when inserting all the identified
 * coefficient values into this model, whenever its output is
 * greater than the value of "0", it should be interpreted as the
 * model predicting that the current input values represent group
@@ -759,7 +765,7 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -768,7 +774,7 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *					 Finally, make sure that the output values are
@@ -936,7 +942,7 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, int N, double zeroEpsilon, char Kernel[], char isInteractionTerms, char isForceGaussianCurve, char isVariableOptimizer, double *coefficients) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -991,17 +997,19 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, i
 * Kernel, "b_0" is the bias coefficient of the model, "x" is a
 * vector containing all the machine learning features and the
 * coefficients within "K(x)" will be representend as "Beta". With
-* this in mind and just like in the thesis of Cesar Miranda Meza,
-* the first step to train this model is to solve the kernel
-* function. For this purpose and for this particular type of
-* Kernel, a multiple linear regression will be applied with
-* respect to the output of the system under study "Y". Both the
-* characteristic equation of the multiple linear system and its
-* best fitting coefficient values will together represent the
-* Kernel function K(x). Now, for this particular Kernel machine
-* classifier, because of being a linear system, the coefficient
-* value of "alpha"=1 and "b_0"=0. As a result, when inserting all
-* the coefficient values into this model, whenever its output is
+* this in mind and just like in the master thesis of Cesar
+* Miranda Meza ("Machine learning to support applications with
+* embedded systems and parallel computing"), the first step to
+* train this model is to solve the kernel function. For this
+* purpose and for this particular type of Kernel, a multiple
+* linear regression will be applied with respect to the output
+* of the system under study "Y". Both the characteristic
+* equation of the multiple linear system and its best fitting
+* coefficient values will together represent the Kernel function
+* K(x). Now, for this particular Kernel machine classifier,
+* because of being a linear system, the coefficient value of
+* "alpha"=1 and "b_0"=0. As a result, when inserting all the
+* coefficient values into this model, whenever its output is
 * greater than the value of "0", it should be interpreted as the
 * model predicting that the current input values represent group
 * 1 or the numeric value of "+1". Conversely, if the model
@@ -1020,7 +1028,7 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, i
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -1029,7 +1037,7 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, i
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *					 Finally, make sure that the output values are
@@ -1075,7 +1083,7 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, i
 *					 "b" of the function "getMultipleLinearRegression()"
 *					 in the "CenyMLregression.c" file. IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED AND
-*					 INNITIALIZED WITH ZEROS BEFORE CALLING THIS
+*					 INITIALIZED WITH ZEROS BEFORE CALLING THIS
 *					 FUNCTION WITH A VARIABLE SIZE OF "m+3" TIMES
 *					 "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -1086,7 +1094,7 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, i
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 26, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *coefficients) {
 	// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
@@ -1233,23 +1241,25 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 * of the model, "x" is a vector containing all the machine
 * learning features and the coefficients within "K(x)" will be
 * representend as "Beta". With this in mind and just like in
-* the thesis of Cesar Miranda Meza, the first step to train
-* this model is to solve the kernel function. For this purpose
-* and for this particular type of Kernel, a multiple polynomial
-* regression will be applied with respect to the output of the
-* system under study "Y". Both the characteristic equation of
-* the multiple polynomial system and its best fitting
-* coefficient values will together represent the Kernel
-* function K(x). Now, for this particular Kernel machine
-* classifier, because of being a polynomial system, the
-* coefficient value of "alpha"=1 and "b_0"=0. As a result, when
-* inserting all the coefficient values into this model, whenever
-* its output is greater than the value of "0", it should be
-* interpreted as the model predicting that the current input
-* values represent group 1 or the numeric value of "+1".
-* Conversely, if the model produces a value less than "0", it
-* should be interpreted as the model predicting that the current
-* input values represent group 2 or the numeric value of "-1".
+* the master thesis of Cesar Miranda Meza ("Machine learning to
+* support applications with embedded systems and parallel
+* computing"), the first step to train this model is to solve
+* the kernel function. For this purpose and for this particular
+* type of Kernel, a multiple polynomial regression will be
+* applied with respect to the output of the system under study
+* "Y". Both the characteristic equation of the multiple
+* polynomial system and its best fitting coefficient values
+* will together represent the Kernel function K(x). Now, for
+* this particular Kernel machine classifier, because of being
+* a polynomial system, the coefficient value of "alpha"=1 and
+* "b_0"=0. As a result, when inserting all the coefficient
+* values into this model, whenever its output is greater than
+* the value of "0", it should be interpreted as the model
+* predicting that the current input values represent group 1
+* or the numeric value of "+1". Conversely, if the model
+* produces a value less than "0", it should be interpreted as
+* the model predicting that the current input values represent
+* group 2 or the numeric value of "-1".
 *
 * NOTE: The algorithm section that applied the matrix inverse using
 * the Gauss-Jordan method was inspired in the following source:
@@ -1262,7 +1272,7 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -1271,7 +1281,7 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *					 Finally, make sure that the output values are
@@ -1335,7 +1345,7 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 *					 for the argument pointer variable "b" of the
 *					 function "getMultiplePolynomialRegression()" in the
 *					 "CenyMLregression.c" file. IT IS INDISPENSABLE THAT
-*					 THIS VARIABLE IS ALLOCATED AND INNITIALIZED WITH
+*					 THIS VARIABLE IS ALLOCATED AND INITIALIZED WITH
 *					 ZEROS BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 *					 SIZE OF "m*N+3" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -1346,7 +1356,7 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 26, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int N, char isInteractionTerms, char isVariableOptimizer, double *coefficients) {
 	// Determine whether the interaction terms are desired in the resulting model to be generated or not and then excecute the corresponding code.
@@ -1513,24 +1523,26 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 * Kernel, "b_0" is the bias coefficient of the model, "x" is a
 * vector containing all the machine learning features and the
 * coefficients within "K(x)" will be representend as "Beta". With
-* this in mind and just like in the thesis of Cesar Miranda Meza,
-* the first step to train this model is to solve the kernel
-* function. For this purpose and for this particular type of
-* Kernel, a multiple linear regression will be applied with
-* respect to the required transformed output of the system under
-* study "Y_tilde" in order to obtain the equivalent of a logistic
-* regression (see the thesis of Cesar Miranda Meza for more
-* details). Both the characteristic equation of the logistic
-* system and its best fitting coefficient values will together
-* represent the Kernel function K(x). The next step is to now
-* apply the transformation of the Kernel function "K(x)" with
-* the coefficients that were obtained to then store its output.
-* Finally, we will use the output of "K(x)" as the input data of
-* a simple linear regression in order to learn the best fitting
-* coefficient values of "alpha" and "b_0". As a result, when
-* inserting all the coefficient values into the main model which
-* is "y_hat = alpha.K(x) + b_0", whenever its output is greater
-* than the value of "0", it should be interpreted as the model
+* this in mind and just like in the master thesis of Cesar
+* Miranda Meza ("Machine learning to support applications with
+* embedded systems and parallel computing"), the first step to
+* train this model is to solve the kernel function. For this
+* purpose and for this particular type of Kernel, a multiple
+* linear regression will be applied with respect to the required
+* transformed output of the system under study "Y_tilde" in order
+* to obtain the equivalent of a logistic regression (see the
+* thesis of Cesar Miranda Meza for more details). Both the
+* characteristic equation of the logistic system and its best
+* fitting coefficient values will together represent the Kernel
+* function K(x). The next step is to now apply the transformation
+* of the Kernel function "K(x)" with the coefficients that were
+* obtained to then store its output. Finally, we will use the
+* output of "K(x)" as the input data of a simple linear
+* regression in order to learn the best fitting coefficient
+* values of "alpha" and "b_0". As a result, when inserting all
+* the coefficient values into the main model which is
+* "y_hat = alpha.K(x) + b_0", whenever its output is greater than
+* the value of "0", it should be interpreted as the model
 * predicting that the current input values represent group 1 or
 * the numeric value of "+1". Conversely, if the model produces a
 * value less than "0", it should be interpreted as the model
@@ -1548,7 +1560,7 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -1557,7 +1569,7 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *					 Finally, make sure that the output values are
@@ -1602,7 +1614,7 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 *					 the argument pointer variable "coefficients" of the
 *					 function "getLogisticRegression()" in the
 *					 "CenyMLregression.c" file. IT IS INDISPENSABLE THAT
-*					 THIS VARIABLE IS ALLOCATED AND INNITIALIZED WITH
+*					 THIS VARIABLE IS ALLOCATED AND INITIALIZED WITH
 *					 ZEROS BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 *					 SIZE OF "m+3" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *
@@ -1613,7 +1625,7 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *coefficients) {
 	// Store the data that must be contained in the input matrix "X_tilde". In addition, we obtain the transpose of "X_tilde".
@@ -1798,12 +1810,14 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 * Kernel, "b_0" is the bias coefficient of the model, "x" is a
 * vector containing all the machine learning features and the
 * coefficients within "K(x)" will be representend as "Beta". With
-* this in mind and just like in the thesis of Cesar Miranda Meza,
-* the first step to train this model is to solve the kernel
-* function. For this purpose and for this particular type of
-* Kernel, a multiple polynomial regression will be applied with
-* respect to the required transformed output of the system under
-* study "Y_tilde" in order to obtain the equivalent of a gaussian
+* this in mind and just like in the master thesis of Cesar
+* Miranda Meza ("Machine learning to support applications with
+* embedded systems and parallel computing"), the first step to
+* train this model is to solve the kernel function. For this
+* purpose and for this particular type of Kernel, a multiple
+* polynomial regression will be applied with respect to the
+* required transformed output of the system under study
+* "Y_tilde" in order to obtain the equivalent of a gaussian
 * regression (see the thesis of Cesar Miranda Meza for more
 * details). Both the characteristic equation of the gaussian
 * system and its best fitting coefficient values will together
@@ -1833,7 +1847,7 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
@@ -1842,7 +1856,7 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 *					 the real data of the system under study. This
 *					 variable will be used as a reference to apply
 *					 the desired machine learning algorithm. THIS
-*					 VARIABLE SHOULD BE ALLOCATED AND INNITIALIZED
+*					 VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
 *					 BEFORE CALLING THIS FUNCTION WITH A SIZE OF
 *					 "n" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 *					 Finally, make sure that the output values are
@@ -1931,7 +1945,7 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 *					 store the identified best fitting coefficient values
 *					 for the desired machine learning algorithm.  IT IS
 *					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED AND
-*					 INNITIALIZED WITH ZEROS BEFORE CALLING THIS FUNCTION
+*					 INITIALIZED WITH ZEROS BEFORE CALLING THIS FUNCTION
 *					 WITH A VARIABLE SIZE OF "m*2+3" TIMES "p=1" 'DOUBLE'
 *					 MEMORY SPACES. Moreover, the coefficients will be
 *					 stored in a different manner depending on the value
@@ -1983,7 +1997,7 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: NOVEMBER 28, 2021
 */
 static void trainGaussianKernel(double *X, double *Y, int n, int m, int p, double zeroEpsilon, char isForceGaussianCurve, char isVariableOptimizer, double *coefficients) {
 	// If the argument flag variable "isForceGaussianCurve" is different than the value of "1" and "0", then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -2253,7 +2267,7 @@ static void trainGaussianKernel(double *X, double *Y, int n, int m, int p, doubl
 *					 memory allocated input matrix, from which the
 *					 desired machine learning algorithm will be
 *					 calculated. THIS VARIABLE SHOULD BE ALLOCATED
-*					 AND INNITIALIZED BEFORE CALLING THIS FUNCTION
+*					 AND INITIALIZED BEFORE CALLING THIS FUNCTION
 *					 WITH A SIZE OF "n" TIMES "m" 'DOUBLE' MEMORY
 *					 SPACES.
 *
