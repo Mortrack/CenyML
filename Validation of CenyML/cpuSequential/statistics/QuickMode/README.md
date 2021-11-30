@@ -2,23 +2,31 @@
 # Explanation of the purpose of these files and how to use them
   
 ## What are these files for
-The files located in this directory path are all used for the validation of the method of interest that was developed in the CenyML library. Both the "main.c" and "main.py" files contain a program that applies such method, where the former applies it through the CenyML library and the latter with a Python library. At the end, the console is expected to issue a message saying that the results match in case CenyML was able to get the correct results and if not, the console will say the opposite. At the same time, both programs will display in the console the execution times of all the processes performed so that they can also be compared and performance can be measured.
+The files located in this directory path are all used for the validation of the statistic method called quick mode and that was developed in the CenyML library. The following describes the purpose of each program contained in this directory:
+
+- **main.c** applies the statistic method called quick mode, with the CenyML library and with respect to the random data of a polynomial classification system.
+- **statistics.py** applies the statistic method called quick mode, with the statistics library and with respect to the random data of a polynomial classification system.
 
 ## How to compile and execute these files
-The instructions to excecute both programs are the following:
-1. Open the terminal and change its current working directory to this directory path.
-2. Enter the following commands into the terminal to compile the "main.c" file:
+For the following, it should be noted that after excecuting all these programs, either by console or outputted .csv files, it is expected to have obtained the corresponding results of the statistic methods that were applied and the excecution times of all the processes performed.
+
+### How to compile the CenyML program:
+1. Open the terminal and change its current working directory to the one that contains this README.md file (considering that the CenyML project files have not been changed).
+2. The ".c" program that is contained in the current directory was made with the CenyML library. To compile it, enter the following commands into the terminal:
 ```console
 $ make
 ```
-NOTE: After these commands, an excecutable file named "main.x" will be created and will contain the program resulting from compiling the "main.c" file.
-3. Enter the following commands into the terminal to excecute the compiled file:
+NOTE: After these commands, an excecutable file with the name: "main.x" will be created, which has the same name as its ".c" file but that has the extension ".x" instead.
+3. Run the compiled desired program made with the CenyML library with the command in the terminal window:
 ```console
 $ ./main.x
 ```
-NOTE: After these commands, the program of the "main.c" file will be executed and some messages will be displayed in the terminal window regarding its obtained results and the execution times of each process. In addition, the results will be stored in one or more .csv files and these should not be deleted, as they will be used in later steps in order to validate the CenyML function that was applied.
-4. Compile and excecute the "main.py" file with your preferred method (the original means for this step was to compile and run it through the Spyder IDE).
-5. Read the messages that will be displayed in the terminal where you executed the "main.py" file and there it should be know if the CenyML results matched or not with the ones being compared to in Python.
+
+### How to compile the statistics program:
+1. Compile and excecute the "statistics.py" file, that was made with the statistics library, with your preferred method (the way I compiled and ran it was through the Spyder IDE).
+
+## How to interpret the results obtained
+Read the messages that were displayed on the terminal in which you ran the programs chosen from this folder and analyze the results obtained. Compare the collected information and determine if they are consistent with the database that was used.
 
 # Annexes
 

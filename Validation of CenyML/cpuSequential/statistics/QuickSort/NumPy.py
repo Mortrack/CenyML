@@ -36,7 +36,7 @@ print("")
 # Read the .csv file containing the reference data.
 print("Innitializing data extraction from .csv file containing the reference input data ...")
 startingTime = time.time()
-dataset_mPES100S100SPAPS = pd.read_csv('../../../../databases/regressionDBs/randGaussianEquationSystem/1systems_10samplesPerSys.csv')
+dataset_mPES100S100SPAPS = pd.read_csv('../../../../databases/regression/randGaussianEquationSystem/1systems_10samplesPerSys.csv')
 elapsedTime = time.time() - startingTime
 n = len(dataset_mPES100S100SPAPS)
 m = len(dataset_mPES100S100SPAPS.iloc[0])

@@ -2,23 +2,33 @@
 # Explanation of the purpose of these files and how to use them
   
 ## What are these files for
-The files located in this directory path are all used for the validation of the method of interest that was developed in the CenyML library. Both the "main.c" and "scikitLearn.py" files contain a program that applies the same method, where the first one applies it through the CenyML library and the second one with a Python library. After running both programs, either by console or outputted .png/.csv files, it is expected to have obtained some evaluation metrics and execution times of all the processes performed so that they can also be compared. In addition, this data should also help to determine whether the CenyML results were consistent or not.
+The files located in this directory path are all used for the validation and evaluation of the simple linear regression that was developed in the CenyML library. The following describes the purpose of each program contained in this directory:
+
+- **main.c** creates a simple linear regression model with the CenyML library to solve a linear system.
+- **scikitLearn.py** creates a simple linear regression model with the scikit-learn library to solve a linear system.
+
+By comparing these algorithms, an additional goal is to make comparisons to get an idea of which algorithm obtains the best model and, in particular, which is faster and under what circumstances, if possible.
 
 ## How to compile and execute these files
-The instructions to excecute both programs are the following:
-1. Open the terminal and change its current working directory to this directory path.
-2. Enter the following commands into the terminal to compile the "main.c" file:
+For the following, it should be noted that after excecuting all these programs, either by console or outputted .png/.csv files, it is expected to have obtained some evaluation metrics and excecution times of all the processes performed in order to evaluate and compare them.
+
+### How to compile the CenyML program:
+1. Open the terminal and change its current working directory to the one that contains this README.md file (considering that the CenyML project files have not been changed).
+2. The ".c" program that is contained in the current directory was made with the CenyML library. To compile it, enter the following commands into the terminal:
 ```console
 $ make
 ```
-NOTE: After these commands, an excecutable file named "main.x" will be created and will contain the program resulting from compiling the "main.c" file.
-3. Enter the following commands into the terminal to excecute the compiled file:
+NOTE: After these commands, an excecutable file with the name: "main.x" will be created, which has the same name as its ".c" file but that has the extension ".x" instead.
+3. Run the compiled desired program made with the CenyML library with the command in the terminal window:
 ```console
 $ ./main.x
 ```
-NOTE: After these commands, the program of the "main.c" file will be executed and some messages will be displayed in the terminal window regarding its obtained results and the execution times of each process. In addition, the results will be stored in one or more .csv and .png files.
-4. Compile and excecute the "main.py" file with your preferred method (the original means for this step was to compile and run it through the Spyder IDE).
-5. Read the messages that will be displayed in the terminal where you executed the "main.py" file and analyze the plot made to determine if the CenyML results were consistent or not. As a complementary evaluation, compare the reference equation with which the data was created with the one obtained with the CenyML library (the documentation is available within the folder of the databases).
-  
+
+### How to compile the scikit-learn program:
+1. Compile and excecute the desired file, that was made with the scitkit-learn library, with your preferred method (the way I compiled and ran it was through the Spyder IDE).
+
+## How to interpret the results obtained
+Read the messages that were displayed in the terminal where you executed the chosen programs of this folder and analyze the results obtained. Review the documentation of the databases used, which is located in several .pdf files in the directory address "../../../../databases" with respect to the directory address of this README.md file. Compare the obtained models and determine if they correspond to the mathematical equation with which the databases were generated. In addition, compare all the evaluation metrics made and the processing times obtained with each tested program in order to obtain your own conclusions.
+
 # Permissions, conditions and limitations to use this Library  
 In accordance to the Apache License 2.0 which this Library has, it can used for commercial purposes, you can distribute it, modify it and/or use it privately as long as a copy of its license is included. It is also requested to give credit to the author and to be aware that this license includes a limitation of liability and explicitly states that it does NOT provide any warranty.
