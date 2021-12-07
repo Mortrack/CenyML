@@ -18,7 +18,8 @@
 // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
@@ -115,7 +116,7 @@ double *linspace(double startFrom, double endHere, int n) {
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: DECEMBER 06, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -211,9 +212,9 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML cross entropy error metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the cross entropy error metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "NLL" (which will contain the results of the cross entropy error metric between "Y" and "Y_hat").
-	double *NLL = (double *) calloc(p, sizeof(double));
+	double *NLL = (double *) calloc(1, sizeof(double));
 	// We apply the cross entropy error metric between "Y" and "Y_hat".
-	getCrossEntropyError(Y, Y_hat, n, p, NLLepsilon, NLL);
+	getCrossEntropyError(Y, Y_hat, n, NLLepsilon, NLL);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the cross entropy error metric between "Y" and "Y_hat".
 	printf("CenyML cross entropy error metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -221,9 +222,9 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML confusion matrix metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the confusion matrix metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "confusionMatrix" (which will contain the results of the confusion matrix metric between "Y" and "Y_hat").
-	double *confusionMatrix = (double *) calloc(p*4, sizeof(double));
+	double *confusionMatrix = (double *) calloc(4, sizeof(double));
 	// We apply the confusion matrix metric between "Y" and "Y_hat".
-	getConfusionMatrix(Y, Y_hat, n, p, confusionMatrix);
+	getConfusionMatrix(Y, Y_hat, n, confusionMatrix);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the confusion matrix metric between "Y" and "Y_hat".
 	printf("CenyML confusion matrix metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -231,9 +232,9 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML accuracy metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the accuracy metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "accuracy" (which will contain the results of the accuracy metric between "Y" and "Y_hat").
-	double *accuracy = (double *) calloc(p, sizeof(double));
+	double *accuracy = (double *) calloc(1, sizeof(double));
 	// We apply the accuracy metric between "Y" and "Y_hat".
-	getAccuracy(Y, Y_hat, n, p, accuracy);
+	getAccuracy(Y, Y_hat, n, accuracy);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the accuracy metric between "Y" and "Y_hat".
 	printf("CenyML accuracy metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -241,9 +242,9 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML precision metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the precision metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "precision" (which will contain the results of the precision metric between "Y" and "Y_hat").
-	double *precision = (double *) calloc(p, sizeof(double));
+	double *precision = (double *) calloc(1, sizeof(double));
 	// We apply the precision metric between "Y" and "Y_hat".
-	getPrecision(Y, Y_hat, n, p, precision);
+	getPrecision(Y, Y_hat, n, precision);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the precision metric between "Y" and "Y_hat".
 	printf("CenyML precision metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -251,9 +252,9 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML recall metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the recall metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "recall" (which will contain the results of the recall metric between "Y" and "Y_hat").
-	double *recall = (double *) calloc(p, sizeof(double));
+	double *recall = (double *) calloc(1, sizeof(double));
 	// We apply the recall metric between "Y" and "Y_hat".
-	getRecall(Y, Y_hat, n, p, recall);
+	getRecall(Y, Y_hat, n, recall);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the recall metric between "Y" and "Y_hat".
 	printf("CenyML recall metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -261,9 +262,9 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML F1 score metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the F1 score metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "F1 score" (which will contain the results of the F1 score metric between "Y" and "Y_hat").
-	double *F1score = (double *) calloc(p, sizeof(double));
+	double *F1score = (double *) calloc(1, sizeof(double));
 	// We apply the F1 score metric between "Y" and "Y_hat".
-	getF1score(Y, Y_hat, n, p, F1score);
+	getF1score(Y, Y_hat, n, F1score);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the F1 score metric between "Y" and "Y_hat".
 	printf("CenyML F1 score metric elapsed %f seconds.\n\n", elapsedTime);
 	

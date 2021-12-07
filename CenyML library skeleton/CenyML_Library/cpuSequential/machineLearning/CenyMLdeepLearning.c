@@ -203,11 +203,18 @@
 * @param double stopAboveThisAccuracy - This argument will represent a a stop
 *										value for the training process. The way
 *										this value will work is that if the
-*										neuron gets an accuracy that is strictly
-*										higher than the one defined in
-*										"stopAboveThisAccuracy", then the neuron
-*										will stop its training process and the
-*										function "getSingleNeuronDNN()" will end.
+*										neuron gets an evaluation metric result
+*										that is strictly higher than the one
+*										defined in "stopAboveThisAccuracy", then
+*										the neuron will stop its training process
+*										and the function "getSingleNeuronDNN()"
+*										will end. Note that if "isClassification"
+*										= (int) 1, then the evaluation metric to
+*										be used will be the accuracy (for
+*										classification). Conversely, if
+*										"isClassification" = (int) 0, then the
+*										evaluation metric to be used will be the
+*										adjusted R squared (for regression).
 *
 * @param int maxEpochs - This argument will represent the maximum number of
 *						 epochs that are desired for the training process of the
@@ -282,7 +289,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 29, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: DECEMBER 05, 2021
 */
 void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 	// If the machine learning samples are less than value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -428,7 +435,7 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 		}
 		
 		// We calculate the corresponding evaluation metric with respect to the actual data of the system under study "neuron->Y" and the currently predicted output made by the neuron "A_u".
-		getNeuronAccuracy(neuron->Y, A_u, neuron->n, neuron->p, &currentAccuracy); // We calculate the current accuracy of the neuron.
+		getNeuronAccuracy(neuron->Y, A_u, neuron->n, &currentAccuracy); // We calculate the current accuracy of the neuron.
 		neuron->bestAccuracy = currentAccuracy; // We pass the current accuracy to the best accuracy record because this is the evaluation of the very first weight values.
 		
 		// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
@@ -497,7 +504,7 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 		
 			// We recalculate the corresponding evaluation metric with respect to the actual data of the system under study "neuron->Y" and the currently predicted output made by the neuron "A_u".
 			currentAccuracy = 0; // We reset the value of this variable in order to recalculate it.
-			getNeuronAccuracy(neuron->Y, A_u, neuron->n, neuron->p, &currentAccuracy); // We calculate the current accuracy of the neuron.
+			getNeuronAccuracy(neuron->Y, A_u, neuron->n, &currentAccuracy); // We calculate the current accuracy of the neuron.
 			
 			// Determine whether it was requested that the neuron reports its learning progress or not.
 			if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
@@ -554,12 +561,12 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 		
 		
 		// We calculate the corresponding evaluation metric with respect to the actual data of the system under study "neuron->Y" and the currently predicted output made by the neuron "A_u".
-		getNeuronAdjustedCoefficientOfDetermination(neuron->Y, A_u, neuron->n, neuron->m, neuron->p, 1, &currentAccuracy); // We calculate the current accuracy of the neuron.
+		getNeuronAdjustedCoefficientOfDetermination(neuron->Y, A_u, neuron->n, neuron->m, 1, &currentAccuracy); // We calculate the current accuracy of the neuron.
 		neuron->bestAccuracy = currentAccuracy; // We pass the current accuracy to the best accuracy record because this is the evaluation of the very first weight values.
 		
 		// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
 		if (currentAccuracy > neuron->stopAboveThisAccuracy) {
-			printf("\nThe accuracy of the neuron has achieved a higher one with respect to the one that was specified as a goal the very first instant it was created.\n");
+			printf("\nThe adjusted R squared of the neuron has achieved a higher one with respect to the one that was specified as a goal the very first instant it was created.\n");
 			
 			// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
 			free(TransposeOf_X_tilde);
@@ -614,12 +621,12 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 			
 			// We recalculate the corresponding evaluation metric with respect to the actual data of the system under study "neuron->Y" and the currently predicted output made by the neuron "A_u".
 			currentAccuracy = 0; // We reset the value of this variable in order to recalculate it.
-			getNeuronAdjustedCoefficientOfDetermination(neuron->Y, A_u, neuron->n, neuron->m, neuron->p, 1, &currentAccuracy); // We calculate the current accuracy of the neuron.
+			getNeuronAdjustedCoefficientOfDetermination(neuron->Y, A_u, neuron->n, neuron->m, 1, &currentAccuracy); // We calculate the current accuracy of the neuron.
 			
 			// Determine whether it was requested that the neuron reports its learning progress or not.
 			if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
 				if ((currentEpoch % neuron->reportEachSpecifiedEpochs) == 0) { // Make neuron report at each "neuron->reportEachSpecifiedEpochs" epochs.
-		            printf("\nEpoch %d --> single neuron in DNN has achieved an accuracy of %f\n", currentEpoch+1, currentAccuracy);
+		            printf("\nEpoch %d --> single neuron in DNN has achieved an adjusted R squared of %f\n", currentEpoch+1, currentAccuracy);
 		        }
 			}
 			
@@ -633,7 +640,7 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 			
 			// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
 			if (currentAccuracy > neuron->stopAboveThisAccuracy) {
-				printf("\nThe accuracy of the neuron has achieved a higher one with respect to the one that was specified as a goal when concluding the epoch number %d.\n", currentEpoch);
+				printf("\nThe adjusted R squared of the neuron has achieved a higher one with respect to the one that was specified as a goal when concluding the epoch number %d.\n", currentEpoch);
 				
 				// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
 				free(TransposeOf_X_tilde);
@@ -651,7 +658,11 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 	// Determine whether it was requested that the neuron reports its learning progress or not.
 	if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
 		// Make the neuron report its last progress made.
-		printf("\nEpoch %d --> single neuron in DNN has achieved an accuracy of %f\n", neuron->maxEpochs, currentAccuracy);
+		if (neuron->isClassification == 1) {
+			printf("\nEpoch %d --> single neuron in DNN has achieved an accuracy of %f\n", neuron->maxEpochs, currentAccuracy);
+		} else {
+			printf("\nEpoch %d --> single neuron in DNN has achieved an adjusted R squared of %f\n", neuron->maxEpochs, currentAccuracy);
+		}
 	}
 	
 	// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
@@ -663,7 +674,11 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 	free(errorTerm);
 	free(errorTerm_dot_Xtilde);
 	
-	printf("\nThe accuracy of the neuron did not surpased the defined goal but its training process has been successfully concluded.\n");
+	if (neuron->isClassification == 1) {
+		printf("\nThe accuracy of the neuron did not surpased the defined goal but its training process has been successfully concluded.\n");
+	} else {
+		printf("\nThe adjusted R squared of the neuron did not surpased the defined goal but its training process has been successfully concluded.\n");
+	}
 	return;
 }
 
@@ -999,22 +1014,21 @@ static void getDerivateSecondOrderDegreeExponentialActivation(double *u, double 
 *				 features (independent variables) that the input matrix
 *				 has, with which the output data was obtained.
 *
-* @param int p - This argument will represent the total number of 
-*				 outputs that exist in the the output matrix, containing
-*				 the real/predicted results of the system under study.
-*
 * @param double *adjustedRsquared - This argument will contain the
-*									pointer to a variable in which we
-*									will store the resulting metric
-*									evaluation obtained after having
-*									applied the adjusted coefficient of
-*									determination metric between the
-*									argument pointer variables
+*									pointer to a memory allocated
+*									variable in which we will store the
+*									resulting metric evaluation obtained
+*									after having applied the adjusted
+*									coefficient of determination metric
+*									between the argument pointer variables
 *					   				"realOutputMatrix" and
 *									"predictedOutputMatrix". IT IS
-*									INDISPENSABLE TO STORE IN THIS
-*									VARIABLE A VALUE OF ZERO BEFORE
-*									CALLING THIS FUNCTION.
+*									INDISPENSABLE
+*									THAT THIS VARIABLE IS ALLOCATED AND
+*									INNITIALIZED WITH ZERO BEFORE CALLING
+*									THIS FUNCTION WITH A SIZE OF "1"
+*									'DOUBLE' MEMORY SPACES where the
+*									result will be stored.
 *
 * NOTE: RESULTS ARE STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "adjustedRsquared".
@@ -1023,35 +1037,35 @@ static void getDerivateSecondOrderDegreeExponentialActivation(double *u, double 
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 29, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: DECEMBER 05, 2021
 */
-static void getNeuronAdjustedCoefficientOfDetermination(double *realOutputMatrix, double *predictedOutputMatrix, int n, int m, int p, int degreesOfFreedom, double *adjustedRsquared) {
+static void getNeuronAdjustedCoefficientOfDetermination(double *realOutputMatrix, double *predictedOutputMatrix, int n, int m, int degreesOfFreedom, double *adjustedRsquared) {
 	// We obtain the sums required for the means to be calculated and the SSE values for each of the columns of the input matrix.
-    int currentRowTimesP; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
-    int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
-    double squareThisValue; // Variable used to store the value that wants to be squared, for performance purposes.
-	double mean_realOutputMatrix = 0; // This variable is used to store the means of the output of the argument pointer variable "realOutputMatrix".
+	double squareThisValue; // Variable used to store the value that wants to be squared, for performance purposes.
+	double mean_realOutputMatrix = 0; // This variable is used to store the means of all the outputs of the argument pointer variable "realOutputMatrix".
 	for (int currentRow = 0; currentRow < n; currentRow++) {
-    	// We make the required calculations to obtain the SSE values.
+		// We make the required calculations to obtain the SSE values.
 		squareThisValue = realOutputMatrix[currentRow] - predictedOutputMatrix[currentRow];
 		adjustedRsquared[0] += (squareThisValue * squareThisValue); // We temporarly store the SSE values in the argument pointer variable "adjustedRsquared", for performance purposes.
 		
 		// We make the required calculations to obtain the sums required for the calculation of the means.
-		mean_realOutputMatrix += realOutputMatrix[currentRow];
+    		mean_realOutputMatrix += realOutputMatrix[currentRow];
 	}
 	// We apply the final operations required to complete the calculation of the means.
 	mean_realOutputMatrix = mean_realOutputMatrix/n;
 	
 	// We obtain the SST values that will be required to make the calculation of the adjusted coefficient of determination.
-	double SST = 0; // This variable is used to store the SST values for the output of the argument pointer variable "realOutputMatrix".
+	double SST = 0; // This variable is used to store the SST values for all the outputs of the argument pointer variable "realOutputMatrix".
 	for (int currentRow = 0; currentRow < n; currentRow++) {
-    	// We make the required calculations to obtain the SST values.
+		// We make the required calculations to obtain the SST values.
 		squareThisValue = realOutputMatrix[currentRow] - mean_realOutputMatrix;
 		SST += (squareThisValue * squareThisValue); // We temporarly store the SSE values in the argument pointer variable "R", for performance purposes.
 	}
 	
 	// Finally, we calculate the adjusted coefficient of determination and store its results in the pointer variable "adjustedRsquared".
 	adjustedRsquared[0] = 1 - ( (adjustedRsquared[0]/(n-m-degreesOfFreedom))/(SST/(n-degreesOfFreedom)) );
+	
+	return;
 }
 
 
@@ -1096,18 +1110,17 @@ static void getNeuronAdjustedCoefficientOfDetermination(double *realOutputMatrix
 *				 samples (rows) that the input matrix has, with which 
 *				 the output data was obtained.
 *
-* @param int p - This argument will represent the total number of 
-*				 outputs that exist in the the output matrix, containing
-*				 the real/predicted results of the system under study.
-*
 * @param double *accuracy - This argument will contain the pointer to a
-*							variable in which we will store the resulting
-*							metric evaluation obtained after having
-*							applied the accuracy metric between the
-*							argument pointer variables "realOutputMatrix"
-*							and "predictedOutputMatrix". IT IS
-*							INDISPENSABLE TO STORE IN THIS VARIABLE A
-*							VALUE OF ZERO BEFORE CALLING THIS FUNCTION.
+*							memory allocated variable in which we will
+*							store the resulting metric evaluation
+*							obtained after having applied the accuracy
+*							metric between the argument pointer variables
+*							"realOutputMatrix" and
+*							"predictedOutputMatrix". IT IS INDISPENSABLE
+*							THAT THIS VARIABLE IS ALLOCATED AND
+*							INNITIALIZED WITH ZERO BEFORE CALLING THIS
+*							FUNCTION WITH A SIZE OF "1" 'DOUBLE' MEMORY
+*							SPACES where the result will be stored.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "accuracy".
@@ -1116,9 +1129,9 @@ static void getNeuronAdjustedCoefficientOfDetermination(double *realOutputMatrix
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 29, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: DECEMBER 05, 2021
 */
-static void getNeuronAccuracy(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *accuracy) {
+static void getNeuronAccuracy(double *realOutputMatrix, double *predictedOutputMatrix, int n, double *accuracy) {
 	// In order to calculate the accuracy, we calculate the true positives and true negatives between the argument pointer variables "realOutputMatrix" and "predictedOutputMatrix".
 	double tp = 0; // Variable used to store the true positives.
 	double tn = 0; // Variable used to store the true negatives.
@@ -1129,9 +1142,9 @@ static void getNeuronAccuracy(double *realOutputMatrix, double *predictedOutputM
 			tn += 1; // Increase the true negative counter.
 		}
 	}
+	accuracy[0] = (tp + tn) / n; // We apply the last procedure to mathematically obtain the accuracy.
 	
-	// We calculate the accuracy for every output given.
-	accuracy[0] = (tp + tn) / n;
+	return;
 }
 
 

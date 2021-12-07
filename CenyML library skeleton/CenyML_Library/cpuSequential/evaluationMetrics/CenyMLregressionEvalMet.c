@@ -61,10 +61,6 @@
 *				 features (independent variables) that the input matrix
 *				 has, with which the output data was obtained.
 *
-* @param int p - This argument will represent the total number of 
-*				 outputs that exist in the the output matrix, containing
-*				 the real/predicted results of the system under study.
-*
 * @param int degreesOfFreedom - This argument will represent the desired
 *								value for the degrees of freedom to be
 *								applied when calculating the variance.
@@ -77,13 +73,9 @@
 *					   "realOutputMatrix" and "predictedOutputMatrix".
 *					   IT IS INDISPENSABLE THAT THIS VARIABLE IS
 *					   ALLOCATED AND INNITIALIZED WITH ZERO BEFORE
-*					   CALLING THIS FUNCTION WITH A SIZE OF "p" 'DOUBLE'
-*					   MEMORY SPACES, WHERE "p" STANDS FOR THE NUMBER OF
-*					   OUTPUTS THAT THE SYSTEM UNDER STUDY HAS. Note that
-*					   the results will be stored in ascending order with
-*					   respect to the outputs of the system under study.
-*					   In other words, from the first output in index "0"
-*					   up to the last output in index "p-1".
+*					   CALLING THIS FUNCTION WITH A SIZE OF "1"
+*					   'DOUBLE' MEMORY SPACES where the result will
+*					   be stored.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "MSE".
@@ -92,24 +84,18 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 09, 2021
-* LAST UPDATE: NOVEMBER 17, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
-void getMeanSquaredError(double *realOutputMatrix, double *predictedOutputMatrix, int n, int m, int p, int degreesOfFreedom, double *MSE) {
+void getMeanSquaredError(double *realOutputMatrix, double *predictedOutputMatrix, int n, int m, int degreesOfFreedom, double *MSE) {
 	// We calculate the mean squared error between the argument pointer variables "realOutputMatrix" and "predictedOutputMatrix".
-	int currentRowTimesP; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
-	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
 	double squareThisValue; // Variable used to store the value that wants to be squared, for performance purposes.
 	for (int currentRow = 0; currentRow < n; currentRow++) {
-		currentRowTimesP = currentRow*p;
-		for (int currentOutput=0; currentOutput<p; currentOutput++) {
-			currentRowAndColumn = currentOutput + currentRowTimesP;
-			squareThisValue = realOutputMatrix[currentRowAndColumn] - predictedOutputMatrix[currentRowAndColumn];
-			MSE[currentOutput] += (squareThisValue * squareThisValue);
-		}
+		squareThisValue = realOutputMatrix[currentRow] - predictedOutputMatrix[currentRow];
+		MSE[0] += (squareThisValue * squareThisValue);
 	}
-	for (int currentOutput=0; currentOutput<p; currentOutput++) {
-		MSE[currentOutput] = MSE[currentOutput] / (n - m - degreesOfFreedom);
-	}
+	MSE[0] = MSE[0] / (n - m - degreesOfFreedom);
+	
+	return;
 }
 
 
@@ -155,10 +141,6 @@ void getMeanSquaredError(double *realOutputMatrix, double *predictedOutputMatrix
 *				 samples (rows) that the input matrix has, with which 
 *				 the output data was obtained.
 *
-* @param int p - This argument will represent the total number of 
-*				 outputs that exist in the the output matrix, containing
-*				 the real/predicted results of the system under study.
-*
 * @param double *Rsquared - This argument will contain the pointer to a
 *					   		memory allocated variable in which we will
 *							store the resulting metric evaluation
@@ -169,14 +151,8 @@ void getMeanSquaredError(double *realOutputMatrix, double *predictedOutputMatrix
 *							"predictedOutputMatrix". IT IS INDISPENSABLE
 *							THAT THIS VARIABLE IS ALLOCATED AND
 *							INNITIALIZED WITH ZERO BEFORE CALLING THIS
-*							FUNCTION WITH A SIZE OF "p" 'DOUBLE' MEMORY
-*							SPACES, WHERE "p" STANDS FOR THE NUMBER OF
-*							OUTPUTS THAT THE SYSTEM UNDER STUDY HAS. Note
-*							that the results will be stored in ascending
-*							order with respect to the outputs of the
-*							system under study. In other words, from the
-*							first output in index "0" up to the last
-*							output in index "p-1".
+*							FUNCTION WITH A SIZE OF "1" 'DOUBLE' MEMORY
+*							SPACES where the result will be stored.
 *
 * NOTE: RESULTS ARE STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "Rsquared".
@@ -185,50 +161,35 @@ void getMeanSquaredError(double *realOutputMatrix, double *predictedOutputMatrix
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 09, 2021
-* LAST UPDATE: NOVEMBER 17, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
-void getCoefficientOfDetermination(double *realOutputMatrix, double *predictedOutputMatrix, int n, int p, double *Rsquared) {
+void getCoefficientOfDetermination(double *realOutputMatrix, double *predictedOutputMatrix, int n, double *Rsquared) {
 	// We obtain the sums required for the means to be calculated and the SSE values for each of the columns of the input matrix.
-    int currentRowTimesP; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
-    int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
-    double squareThisValue; // Variable used to store the value that wants to be squared, for performance purposes.
-	double *mean_realOutputMatrix = (double *) calloc(p, sizeof(double)); // This pointer variable is used to store the means of all the outputs of the argument pointer variable "realOutputMatrix".
+	double squareThisValue; // Variable used to store the value that wants to be squared, for performance purposes.
+	double mean_realOutputMatrix = 0; // This variable is used to store the means of all the outputs of the argument pointer variable "realOutputMatrix".
 	for (int currentRow = 0; currentRow < n; currentRow++) {
-		currentRowTimesP = currentRow*p;
-    	for (int currentOutput=0; currentOutput<p; currentOutput++) {
-    		// We make the required calculations to obtain the SSE values.
-			currentRowAndColumn = currentOutput + currentRowTimesP;
-			squareThisValue = realOutputMatrix[currentRowAndColumn] - predictedOutputMatrix[currentRowAndColumn];
-			Rsquared[currentOutput] += (squareThisValue * squareThisValue); // We temporarly store the SSE values in the argument pointer variable "Rsquared", for performance purposes.
-			
-			// We make the required calculations to obtain the sums required for the calculation of the means.
-    		mean_realOutputMatrix[currentOutput] += realOutputMatrix[currentRowAndColumn];
-		}
+		// We make the required calculations to obtain the SSE values.
+		squareThisValue = realOutputMatrix[currentRow] - predictedOutputMatrix[currentRow];
+		Rsquared[0] += (squareThisValue * squareThisValue); // We temporarly store the SSE values in the argument pointer variable "Rsquared", for performance purposes.
+		
+		// We make the required calculations to obtain the sums required for the calculation of the means.
+    		mean_realOutputMatrix += realOutputMatrix[currentRow];
 	}
 	// We apply the final operations required to complete the calculation of the means.
-	for (int currentOutput=0; currentOutput<p; currentOutput++) {
-		mean_realOutputMatrix[currentOutput] = mean_realOutputMatrix[currentOutput]/n;
-	}
+	mean_realOutputMatrix = mean_realOutputMatrix/n;
 	
 	// We obtain the SST values that will be required to make the calculation of the coefficient of determination.
-	double *SST = (double *) calloc(p, sizeof(double)); // This pointer variable is used to store the SST values for all the outputs of the argument pointer variable "realOutputMatrix".
+	double SST = 0; // This variable is used to store the SST values for all the outputs of the argument pointer variable "realOutputMatrix".
 	for (int currentRow = 0; currentRow < n; currentRow++) {
-		currentRowTimesP = currentRow*p;
-    	for (int currentOutput=0; currentOutput<p; currentOutput++) {
-    		// We make the required calculations to obtain the SST values.
-			squareThisValue = realOutputMatrix[currentOutput + currentRowTimesP] - mean_realOutputMatrix[currentOutput];
-			SST[currentOutput] += (squareThisValue * squareThisValue); // We temporarly store the SSE values in the argument pointer variable "R", for performance purposes.
-		}
+		// We make the required calculations to obtain the SST values.
+		squareThisValue = realOutputMatrix[currentRow] - mean_realOutputMatrix;
+		SST += (squareThisValue * squareThisValue); // We temporarly store the SSE values in the argument pointer variable "R", for performance purposes.
 	}
 	
 	// Finally, we calculate the coefficient of determination and store its results in the pointer variable "Rsquared".
-	for (int currentOutput=0; currentOutput<p; currentOutput++) {
-		Rsquared[currentOutput] = 1 - (Rsquared[currentOutput]/SST[currentOutput]);
-	}
+	Rsquared[0] = 1 - (Rsquared[0]/SST);
 	
-	// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
-	free(mean_realOutputMatrix);
-	free(SST);
+	return;
 }
 
 
@@ -279,10 +240,6 @@ void getCoefficientOfDetermination(double *realOutputMatrix, double *predictedOu
 *				 features (independent variables) that the input matrix
 *				 has, with which the output data was obtained.
 *
-* @param int p - This argument will represent the total number of 
-*				 outputs that exist in the the output matrix, containing
-*				 the real/predicted results of the system under study.
-*
 * @param double *adjustedRsquared - This argument will contain the
 *									pointer to a memory allocated
 *									variable in which we will store the
@@ -292,16 +249,12 @@ void getCoefficientOfDetermination(double *realOutputMatrix, double *predictedOu
 *									between the argument pointer variables
 *					   				"realOutputMatrix" and
 *									"predictedOutputMatrix". IT IS
-*									INDISPENSABLE THAT THIS VARIABLE IS
-*									ALLOCATED AND INNITIALIZED WITH ZERO
-*									BEFORE CALLING THIS FUNCTION WITH A
-*									SIZE OF "p" 'DOUBLE' MEMORY SPACES.
-*									Note that the results will be stored
-*									in ascending order with respect to the
-*									outputs of the system under study. In
-*									other words, from the first output in
-*									index "0" up to the last output in
-*									index "p-1".
+*									INDISPENSABLE
+*									THAT THIS VARIABLE IS ALLOCATED AND
+*									INNITIALIZED WITH ZERO BEFORE CALLING
+*									THIS FUNCTION WITH A SIZE OF "1"
+*									'DOUBLE' MEMORY SPACES where the
+*									result will be stored.
 *
 * NOTE: RESULTS ARE STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *       "adjustedRsquared".
@@ -310,49 +263,34 @@ void getCoefficientOfDetermination(double *realOutputMatrix, double *predictedOu
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 12, 2021
-* LAST UPDATE: NOVEMBER 17, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
-void getAdjustedCoefficientOfDetermination(double *realOutputMatrix, double *predictedOutputMatrix, int n, int m, int p, int degreesOfFreedom, double *adjustedRsquared) {
+void getAdjustedCoefficientOfDetermination(double *realOutputMatrix, double *predictedOutputMatrix, int n, int m, int degreesOfFreedom, double *adjustedRsquared) {
 	// We obtain the sums required for the means to be calculated and the SSE values for each of the columns of the input matrix.
-    int currentRowTimesP; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
-    int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
-    double squareThisValue; // Variable used to store the value that wants to be squared, for performance purposes.
-	double *mean_realOutputMatrix = (double *) calloc(p, sizeof(double)); // This pointer variable is used to store the means of all the outputs of the argument pointer variable "realOutputMatrix".
+	double squareThisValue; // Variable used to store the value that wants to be squared, for performance purposes.
+	double mean_realOutputMatrix = 0; // This variable is used to store the means of all the outputs of the argument pointer variable "realOutputMatrix".
 	for (int currentRow = 0; currentRow < n; currentRow++) {
-		currentRowTimesP = currentRow*p;
-    	for (int currentOutput=0; currentOutput<p; currentOutput++) {
-    		// We make the required calculations to obtain the SSE values.
-			currentRowAndColumn = currentOutput + currentRowTimesP;
-			squareThisValue = realOutputMatrix[currentRowAndColumn] - predictedOutputMatrix[currentRowAndColumn];
-			adjustedRsquared[currentOutput] += (squareThisValue * squareThisValue); // We temporarly store the SSE values in the argument pointer variable "adjustedRsquared", for performance purposes.
-			
-			// We make the required calculations to obtain the sums required for the calculation of the means.
-    		mean_realOutputMatrix[currentOutput] += realOutputMatrix[currentRowAndColumn];
-		}
+		// We make the required calculations to obtain the SSE values.
+		squareThisValue = realOutputMatrix[currentRow] - predictedOutputMatrix[currentRow];
+		adjustedRsquared[0] += (squareThisValue * squareThisValue); // We temporarly store the SSE values in the argument pointer variable "adjustedRsquared", for performance purposes.
+		
+		// We make the required calculations to obtain the sums required for the calculation of the means.
+    		mean_realOutputMatrix += realOutputMatrix[currentRow];
 	}
 	// We apply the final operations required to complete the calculation of the means.
-	for (int currentOutput=0; currentOutput<p; currentOutput++) {
-		mean_realOutputMatrix[currentOutput] = mean_realOutputMatrix[currentOutput]/n;
-	}
+	mean_realOutputMatrix = mean_realOutputMatrix/n;
 	
 	// We obtain the SST values that will be required to make the calculation of the adjusted coefficient of determination.
-	double *SST = (double *) calloc(p, sizeof(double)); // This pointer variable is used to store the SST values for all the outputs of the argument pointer variable "realOutputMatrix".
+	double SST = 0; // This variable is used to store the SST values for all the outputs of the argument pointer variable "realOutputMatrix".
 	for (int currentRow = 0; currentRow < n; currentRow++) {
-		currentRowTimesP = currentRow*p;
-    	for (int currentOutput=0; currentOutput<p; currentOutput++) {
-    		// We make the required calculations to obtain the SST values.
-			squareThisValue = realOutputMatrix[currentOutput + currentRowTimesP] - mean_realOutputMatrix[currentOutput];
-			SST[currentOutput] += (squareThisValue * squareThisValue); // We temporarly store the SSE values in the argument pointer variable "R", for performance purposes.
-		}
+		// We make the required calculations to obtain the SST values.
+		squareThisValue = realOutputMatrix[currentRow] - mean_realOutputMatrix;
+		SST += (squareThisValue * squareThisValue); // We temporarly store the SSE values in the argument pointer variable "R", for performance purposes.
 	}
 	
 	// Finally, we calculate the adjusted coefficient of determination and store its results in the pointer variable "adjustedRsquared".
-	for (int currentOutput=0; currentOutput<p; currentOutput++) {
-		adjustedRsquared[currentOutput] = 1 - ( (adjustedRsquared[currentOutput]/(n-m-degreesOfFreedom))/(SST[currentOutput]/(n-degreesOfFreedom)) );
-	}
+	adjustedRsquared[0] = 1 - ( (adjustedRsquared[0]/(n-m-degreesOfFreedom))/(SST/(n-degreesOfFreedom)) );
 	
-	// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
-	free(mean_realOutputMatrix);
-	free(SST);
+	return;
 }
 

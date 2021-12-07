@@ -18,7 +18,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h" // library to use the regression evaluation metrics of CenyML.
 
@@ -63,7 +64,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 12, 2021
-* LAST UPDATE: NOVEMBER 27, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -181,7 +182,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "adjustedRsquared" (which will contain the results of the adjusted coefficient of determination metric between "Y" and "Y_hat").
 	double *adjustedRsquared = (double *) calloc(p, sizeof(double));
 	// We apply the adjusted coefficient of determination metric between "Y" and "Y_hat".
-	getAdjustedCoefficientOfDetermination(Y, Y_hat, n, m, p, degreesOfFreedom, adjustedRsquared);
+	getAdjustedCoefficientOfDetermination(Y, Y_hat, n, m, degreesOfFreedom, adjustedRsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	printf("CenyML adjusted coefficient of determination metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -191,7 +192,7 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML validation process with respect to the results obtained in Python ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results that were obtained.
 	double differentiation; // Variable used to store the error obtained for a certain value.
-	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
+	double epsilon = 1.0E-14; // Variable used to store the max error value permitted during validation process.
 	char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
 	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
 	for (int currentRow=0; currentRow<databaseRows2; currentRow++) {

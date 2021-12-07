@@ -21,12 +21,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-void getCrossEntropyError(double *, double *, int, int, double, double *);
-void getConfusionMatrix(double *, double *, int, int, double *);
-void getAccuracy(double *, double *, int, int, double *);
-void getPrecision(double *, double *, int, int, double *);
-void getRecall(double *, double *, int, int, double *);
-void getF1score(double *, double *, int, int, double *);
+void getCrossEntropyError(double *, double *, int, double, double *);
+void getConfusionMatrix(double *, double *, int, double *);
+void getAccuracy(double *, double *, int, double *);
+void getPrecision(double *, double *, int, double *);
+void getRecall(double *, double *, int, double *);
+void getF1score(double *, double *, int, double *);
 
 #endif
 

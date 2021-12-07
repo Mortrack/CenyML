@@ -18,7 +18,8 @@
 // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
@@ -66,7 +67,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 19, 2021
-* LAST UPDATE: NOVEMBER 27, 2021
+* LAST UPDATE: DECEMBER 06, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -103,7 +104,7 @@ int main(int argc, char **argv) {
 	
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
-	printf("Initializing the output and input data with %d samples for each of the %d columns (total samples = %d) each...\n", n, m, (n*m));
+	printf("Initializing the output and input data with %d samples for each of the %d columns (total samples = %d) each...\n", n, m, n);
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
 	// Allocate the memory required for the variable "Y", which will contain the real output data of the system under study.
 	double *Y = (double *) malloc(n*p*sizeof(double));
@@ -157,7 +158,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "MSE" (which will contain the results of the mean squared error metric between "Y" and "Y_hat").
 	double *MSE = (double *) calloc(p, sizeof(double));
 	// We apply the mean squared error metric between "Y" and "Y_hat".
-	getMeanSquaredError(Y, Y_hat, n, m, p, -m, MSE);
+	getMeanSquaredError(Y, Y_hat, n, m, -m, MSE);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the mean squared error metric between "Y" and "Y_hat".
 	printf("CenyML mean squared error metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -167,7 +168,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "Rsquared" (which will contain the results of the coefficient of determination metric between "Y" and "Y_hat").
 	double *Rsquared = (double *) calloc(p, sizeof(double));
 	// We apply the coefficient of determination metric between "Y" and "Y_hat".
-	getCoefficientOfDetermination(Y, Y_hat, n, p, Rsquared);
+	getCoefficientOfDetermination(Y, Y_hat, n, Rsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the coefficient of determination metric between "Y" and "Y_hat".
 	printf("CenyML coefficient of determination metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -177,7 +178,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "adjustedRsquared" (which will contain the results of the adjusted coefficient of determination metric between "Y" and "Y_hat").
 	double *adjustedRsquared = (double *) calloc(p, sizeof(double));
 	// We apply the adjusted coefficient of determination metric between "Y" and "Y_hat".
-	getAdjustedCoefficientOfDetermination(Y, Y_hat, n, m, p, 1, adjustedRsquared);
+	getAdjustedCoefficientOfDetermination(Y, Y_hat, n, m, 1, adjustedRsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	printf("CenyML adjusted coefficient of determination metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -185,7 +186,7 @@ int main(int argc, char **argv) {
 	printf("Initializing single variable that will store all the evaluation metrics done ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	// Allocate the memory required for the variable "evaluationMetrics" (which will contain all the results of the evaluation metrics that were obtained).
-	double *evaluationMetrics = (double *) malloc(3*p*sizeof(double));
+	double *evaluationMetrics = (double *) malloc(3*sizeof(double));
 	evaluationMetrics[0] = MSE[0]; // We add the mean squared error metric.
 	evaluationMetrics[1] = Rsquared[0]; // We add the coefficient of determination metric.
 	evaluationMetrics[2] = adjustedRsquared[0]; // We add the adjusted coefficient of determination metric.
@@ -216,7 +217,7 @@ int main(int argc, char **argv) {
 	char is_nArray2 = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
 	char isInsertId2 = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
 	int csvFile_n2 = 1; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
-	createCsvFile(nameOfTheCsvFile2, csvHeaders2, evaluationMetrics, &csvFile_n2, is_nArray2, 3*p, isInsertId2); // We create the desired .csv file.
+	createCsvFile(nameOfTheCsvFile2, csvHeaders2, evaluationMetrics, &csvFile_n2, is_nArray2, 3, isInsertId2); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the evaluation metrics that were obtained, elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -286,7 +287,7 @@ int main(int argc, char **argv) {
 	printf("Initializing coefficients validation of the CenyML getLogisticRegression method ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getLogisticRegression method.
 	double differentiation; // Variable used to store the error obtained for a certain value.
-	double epsilon = 1.0E-6; // Variable used to store the max error value permitted during validation process.
+	double epsilon = 1.0E-7; // Variable used to store the max error value permitted during validation process.
 	char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
 	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
 	for (int currentRow=0; currentRow<m+1; currentRow++) {

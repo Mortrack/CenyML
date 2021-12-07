@@ -49,9 +49,9 @@ columnIndexOfInputDataInCsvFile = 3; # This variable will contain the index
 # ----- Import the dataset ----- #
 # ------------------------------ #
 # Read the .csv file containing the data to be trained with.
-print("Innitializing data extraction from .csv file containing the data to train with ...")
+print("Initializing data extraction from .csv file containing the data to train with ...")
 startingTime = time.time()
-dataset_gES1000S1000SPS = pd.read_csv("../../../../databases/regressionDBs/gaussianEquationSystem/100systems_100samplesPerSys.csv")
+dataset_gES1000S1000SPS = pd.read_csv("../../../../databases/regression/gaussianEquationSystem/100systems_100samplesPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_gES1000S1000SPS)
 csvColumns = len(dataset_gES1000S1000SPS.iloc[0])
@@ -63,7 +63,7 @@ print("")
 # ----- Preprocessing of the data ----- #
 # ------------------------------------- #
 # Retrieving the real data of its corresponding dataset
-print("Innitializing input and output data with " + format(n) + " samples for each of the " + format(p) + " columns (total samples = " + format(n*p) + ") ...")
+print("Initializing input and output data with " + format(n) + " samples for each of the " + format(p) + " columns (total samples = " + format(n*p) + ") ...")
 startingTime = time.time()
 X = np.ones((n, 0))
 Y = np.ones((n, 0))
@@ -80,7 +80,7 @@ print("")
 # -------------------------- #
 # ----- Model training ----- #
 # -------------------------- #
-print("Innitializing model training with the scikit-learn library ...")
+print("Initializing model training with the scikit-learn library ...")
 startingTime = time.time()
 gpr = GaussianProcessRegressor(random_state=0)
 gpr.fit(X, Y)
@@ -93,7 +93,7 @@ print("")
 # ----- Storage of the results obtained ----- #
 # ------------------------------------------- #
 # We obtained the predicted results by the model that was constructed.
-print("Innitializing predictions of the model obtained ...")
+print("Initializing predictions of the model obtained ...")
 startingTime = time.time()
 Y_hat = gpr.predict(X)
 elapsedTime = time.time() - startingTime
@@ -101,7 +101,7 @@ print("Model predictions elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 # We obtained the mean squared error metric on the obtained ML model.
-print("Innitializing scikit-learn mean squared error metric calculation ...")
+print("Initializing scikit-learn mean squared error metric calculation ...")
 startingTime = time.time()
 MSE = mean_squared_error(Y, Y_hat) # We apply the desired evaluation metric.
 elapsedTime = time.time() - startingTime
@@ -110,7 +110,7 @@ print("scikit-learn mean squared error metric elapsed " + format(elapsedTime) + 
 print("")
 
 # We obtained the coefficient of determination metric on the obtained ML model.
-print("Innitializing scikit-learn R-squared metric calculation ...")
+print("Initializing scikit-learn R-squared metric calculation ...")
 startingTime = time.time()
 Rsquared = gpr.score(X, Y)
 elapsedTime = time.time() - startingTime

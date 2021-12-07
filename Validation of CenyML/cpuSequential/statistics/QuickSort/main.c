@@ -14,7 +14,8 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/statistics/CenyMLstatistics.h" // library to use the statistics methods of CenyML.
 
@@ -163,14 +164,14 @@ void getPermutations(int l, int r, int m, int *currentRow, int *inputMatrix) {
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-	char csv1Directory[] = "../../../../databases/regression/randGaussianEquationSystem/1systems_10samplesPerSys.csv"; // Directory of the reference .csv file
+	char csv1Directory[] = "../../../../databases/regression/randGaussianEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
 	char nameOfTheCsvFile[] = "CenyML_getQuickSort_Results.csv"; // Name the .csv file that will store the results.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
 	// NOTE: "desired_m" can be any value as long as (desired_m*n) <= 2'147'483'647, because of the long int max value (the compiler seems to activate the long data type when needed when using integer variables only).
 	// desired_m <= 53'687'091 to comply with the note considering that n=10 and m=4.
-	int desired_m = 1000; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
+	int desired_m = 4; // We define the desired number of columns that want to be processed with respect to the samples contained in the .csv file read by duplicating its columns.
 	int permutationIndexToEvaluate = 0; // We define the index of the permutation that we specifically want to evaluate.
 	
 	// ---------------------- IMPORT DATA TO USE --------------------- //
@@ -213,37 +214,9 @@ int main(int argc, char **argv) {
 	
 	// ------------------------- DATA MODELING ----------------------- //
 	printf("Initializing CenyML Quick Sort method ...\n");
-	// Obtain the number of possible permutations (which will be the factorial of "n").
-	int factorialValue = n;
-	for (int i=1; i<n; i++) {
-		factorialValue = factorialValue*i;
-	}
-	// Innitialize the data of the first row of the pointer variable to be permutated with the values of all the possible indexes that the matrix "X" can have (which is "0" up to "n").
-	int *indexIndicator = (int *) malloc(factorialValue*n*sizeof(int));
-	for (int currentColumn=0; currentColumn<n; currentColumn++) {
-		indexIndicator[currentColumn] = currentColumn;
-	}
-	// Get all possible index permutations that were stored in "indexIndicator".
-	int *currentPermutation = (int *) calloc(1, sizeof(int));
-	getPermutations(0, (n-1), n, currentPermutation, indexIndicator);
-	// Excecute the "quick sort" method over each permutation identified.
-	elapsedTime = 0;
-	double *newX = (double *) malloc(n*desired_m*sizeof(double)); // This variable will be used to store the data in which the "quick sort" method will be applied.
-	for (int currentPermutation=0; currentPermutation<factorialValue; currentPermutation++) {
-		// Fill "newX" with the data of X but arranged with the current permutation indicated in "indexIndicator".
-		for (int currentRow=0; currentRow<n; currentRow++) {
-			for (int currentColumn=0; currentColumn<desired_m; currentColumn++) {
-		        newX[currentColumn + currentRow*desired_m] = X[currentColumn + indexIndicator[currentRow + currentPermutation*n]*desired_m];
-		    }
-		}
-		// We sort the values contained in each of the columns available in the matrix "newX" and the result is stored in the memory location of the pointer "newX".
-		if (currentPermutation == permutationIndexToEvaluate) {
-			startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the current sort of the input data (X).
-			getSort("quicksort", n, desired_m, newX);
-			elapsedTime = elapsedTime + (seconds() - startingTime); // We obtain the elapsed time to calculate all the current sorts of the input data (X).
-			break;
-		}
-	}
+	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the current sort of the input data (X).
+	getSort("quicksort", n, desired_m, X);
+	elapsedTime = elapsedTime + (seconds() - startingTime); // We obtain the elapsed time to calculate all the current sorts of the input data (X).
 	printf("CenyML Quick Sort method elapsed %f seconds.\n\n", elapsedTime);
 	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
@@ -265,7 +238,7 @@ int main(int argc, char **argv) {
 	// Create a new .csv file and save the results obtained in it.
 	char is_nArray = 0; // Indicate through this flag variable that the variable that indicates the samples (n) is not an array because it has the same amount of samples per columns.
 	char isInsertId = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
-	createCsvFile(nameOfTheCsvFile, csvHeaders, newX, &n, is_nArray, desired_m, isInsertId); // We create the desired .csv file.
+	createCsvFile(nameOfTheCsvFile, csvHeaders, X, &n, is_nArray, desired_m, isInsertId); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the results obtained, elapsed %f seconds.\n\n", elapsedTime);
 	printf("The program has been successfully completed!\n");
@@ -275,9 +248,6 @@ int main(int argc, char **argv) {
 	free(csv1.rowsAndColumnsDimensions);
 	free(csv1.allData);
 	free(X);
-	free(currentPermutation);
-	free(indexIndicator);
-	free(newX);
 	return (0); // end of program.
 }
 

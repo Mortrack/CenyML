@@ -38,7 +38,7 @@ print("")
 # Read the .csv file containing the reference data.
 print("Innitializing data extraction from .csv file containing the reference input data ...")
 startingTime = time.time()
-dataset_pCS10S100SPAPS = pd.read_csv('../../../../databases/classificationDBs/randPolynomialClassificationSystem/10systems_100samplesPerAxisPerSys.csv')
+dataset_pCS10S100SPAPS = pd.read_csv('../../../../databases/classification/randPolynomialEquationSystem/10systems_100samplesPerAxisPerSys.csv')
 elapsedTime = time.time() - startingTime
 n = len(dataset_pCS10S100SPAPS)
 m = len(dataset_pCS10S100SPAPS.iloc[0])
@@ -82,7 +82,7 @@ print("")
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The results will begin their comparation process...")
 startingTime = time.time()
-epsilon = 1e-20
+epsilon = 0
 isMatch = 1
 for currentColumn in range(0, len(dataset_pCS10S100SPAPS.iloc[0]) ):
     for currentRow in range(0, Mo_n[currentColumn]):

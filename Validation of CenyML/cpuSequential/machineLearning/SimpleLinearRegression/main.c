@@ -18,7 +18,8 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
@@ -66,7 +67,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 13, 2021
-* LAST UPDATE: NOVEMBER 27, 2021
+* LAST UPDATE: DECEMBER 06, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -104,7 +105,7 @@ int main(int argc, char **argv) {
 	
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
-	printf("Initializing the output and input data with %d samples for each of the %d columns (total samples = %d) each...\n", n, m, (n*m));
+	printf("Initializing the output and input data with %d samples for each of the %d columns (total samples = %d) each...\n", n, m, n);
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to innitialize the input data to be used.
 	// Allocate the memory required for the variable "Y", which will contain the real output data of the system under study.
 	double *Y = (double *) malloc(n*p*sizeof(double));
@@ -147,7 +148,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "MSE" (which will contain the results of the mean squared error metric between "Y" and "Y_hat").
 	double *MSE = (double *) calloc(p, sizeof(double));
 	// We apply the mean squared error metric between "Y" and "Y_hat".
-	getMeanSquaredError(Y, Y_hat, n, m, p, -m, MSE);
+	getMeanSquaredError(Y, Y_hat, n, m, -m, MSE);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the mean squared error metric between "Y" and "Y_hat".
 	printf("CenyML mean squared error metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -157,7 +158,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "Rsquared" (which will contain the results of the coefficient of determination metric between "Y" and "Y_hat").
 	double *Rsquared = (double *) calloc(p, sizeof(double));
 	// We apply the coefficient of determination metric between "Y" and "Y_hat".
-	getCoefficientOfDetermination(Y, Y_hat, n, p, Rsquared);
+	getCoefficientOfDetermination(Y, Y_hat, n, Rsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the coefficient of determination metric between "Y" and "Y_hat".
 	printf("CenyML coefficient of determination metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -167,7 +168,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "adjustedRsquared" (which will contain the results of the adjusted coefficient of determination metric between "Y" and "Y_hat").
 	double *adjustedRsquared = (double *) calloc(p, sizeof(double));
 	// We apply the adjusted coefficient of determination metric between "Y" and "Y_hat".
-	getAdjustedCoefficientOfDetermination(Y, Y_hat, n, m, p, 1, adjustedRsquared);
+	getAdjustedCoefficientOfDetermination(Y, Y_hat, n, m, 1, adjustedRsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the adjusted coefficient of determination metric between "Y" and "Y_hat".
 	printf("CenyML adjusted coefficient of determination metric elapsed %f seconds.\n\n", elapsedTime);
 	

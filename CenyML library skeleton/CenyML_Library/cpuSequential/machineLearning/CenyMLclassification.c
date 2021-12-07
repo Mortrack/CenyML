@@ -119,7 +119,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 23, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, double Y_epsilon, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -282,6 +282,7 @@ void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, 
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+	return;
 }
 
 
@@ -351,7 +352,7 @@ void getLinearLogisticClassification(double *X, double *Y, int n, int m, int p, 
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 24, 2021
-* LAST UPDATE: NOVEMBER 26, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void predictLinearLogisticClassification(double *X, double threshold, double *b, int n, int m, int p, double *Y_hat) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -390,6 +391,8 @@ void predictLinearLogisticClassification(double *X, double threshold, double *b,
 			Y_hat[currentRow] = 0;
 		}
 	}
+	
+	return;
 }
 
 
@@ -484,7 +487,7 @@ void predictLinearLogisticClassification(double *X, double threshold, double *b,
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 24, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getSimpleLinearMachineClassification(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -634,6 +637,7 @@ void getSimpleLinearMachineClassification(double *X, double *Y, int n, int m, in
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+	return;
 }
 
 
@@ -694,7 +698,7 @@ void getSimpleLinearMachineClassification(double *X, double *Y, int n, int m, in
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 24, 2021
-* LAST UPDATE: NOVEMBER 26, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m, int p, double *Y_hat) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -723,6 +727,8 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 			Y_hat[currentRow] = -1;
 		}
 	}
+	
+	return;
 }
 
 
@@ -942,7 +948,7 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, int N, double zeroEpsilon, char Kernel[], char isInteractionTerms, char isForceGaussianCurve, char isVariableOptimizer, double *coefficients) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -981,6 +987,8 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, i
 		printf("\nERROR: The requested Kernel has not yet been implemented in the CenyML library. Please assign a valid one.\n");
 		exit(1);
 	}
+	
+	return;
 }
 
 
@@ -1094,7 +1102,7 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, i
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 26, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *coefficients) {
 	// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
@@ -1224,6 +1232,8 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+	
+	return;
 }
 
 
@@ -1356,7 +1366,7 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 26, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int N, char isInteractionTerms, char isVariableOptimizer, double *coefficients) {
 	// Determine whether the interaction terms are desired in the resulting model to be generated or not and then excecute the corresponding code.
@@ -1507,6 +1517,8 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 		printf("\nERROR: The argument variable \"isInteractionTerms\" is meant to store only a binary value that equals either 1 or 0.\n");
 		exit(1);
 	}
+	
+	return;
 }
 
 
@@ -1625,7 +1637,7 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *coefficients) {
 	// Store the data that must be contained in the input matrix "X_tilde". In addition, we obtain the transpose of "X_tilde".
@@ -1794,6 +1806,7 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+	return;
 }
 
 
@@ -1997,7 +2010,7 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 static void trainGaussianKernel(double *X, double *Y, int n, int m, int p, double zeroEpsilon, char isForceGaussianCurve, char isVariableOptimizer, double *coefficients) {
 	// If the argument flag variable "isForceGaussianCurve" is different than the value of "1" and "0", then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -2243,6 +2256,7 @@ static void trainGaussianKernel(double *X, double *Y, int n, int m, int p, doubl
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+	return;
 }
 
 
@@ -2410,7 +2424,7 @@ static void trainGaussianKernel(double *X, double *Y, int n, int m, int p, doubl
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void predictKernelMachineClassification(double *X, int N, char Kernel[], char isInteractionTerms, char isForceGaussianCurve, double *coefficients, int n, int m, int p, double *Y_hat) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -2574,5 +2588,7 @@ void predictKernelMachineClassification(double *X, int N, char Kernel[], char is
 		printf("\nERROR: The requested Kernel has not yet been implemented in the CenyML library. Please assign a valid one.\n");
 		exit(1);
 	}
+	
+	return;
 }
 

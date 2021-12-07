@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
 # COMPLETITION DATE: November 13, 2021.
-# LAST UPDATE: November 27, 2021.
+# LAST UPDATE: December 06, 2021.
 #
 # This code is used to apply the machine learning method known as the simple
 # linear regression. This is done with the database used for linear equation
@@ -59,7 +59,7 @@ print("")
 # Read the .csv file containing the data to be trained with.
 print("Innitializing data extraction from .csv file containing the data to train with ...")
 startingTime = time.time()
-dataset_rLES1000S1000SPS = pd.read_csv("../../../../databases/regressionDBs/linearEquationSystem/1000systems_1000samplesPerSys.csv")
+dataset_rLES1000S1000SPS = pd.read_csv("../../../../databases/regression/linearEquationSystem/1000systems_1000samplesPerSys.csv")
 elapsedTime = time.time() - startingTime
 n = len(dataset_rLES1000S1000SPS)
 csvColumns = len(dataset_rLES1000S1000SPS.iloc[0])
@@ -143,7 +143,7 @@ print("b_1 = " + format(b[0][1]))
 
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The coefficients will begin their comparation process...")
-epsilon = 1e-6
+epsilon = 4.3e-14
 isMatch = 1
 for currentRow in range(0, len(dataset_CenyML_linearRegresCoeff) ):
     differentiation = abs(dataset_CenyML_linearRegresCoeff.iloc[currentRow][0] - b[0][currentRow])

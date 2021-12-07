@@ -15,7 +15,8 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.h" // library to use the classification evaluation metrics of CenyML.
 
@@ -59,7 +60,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 23, 2021
-* LAST UPDATE: NOVEMBER 27, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -144,7 +145,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "accuracy" (which will contain the results of the accuracy metric between "Y" and "Y_hat").
 	double *accuracy = (double *) calloc(p, sizeof(double));
 	// We apply the accuracy metric between "Y" and "Y_hat".
-	getAccuracy(Y, Y_hat, n, p, accuracy);
+	getAccuracy(Y, Y_hat, n, accuracy);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the accuracy metric between "Y" and "Y_hat".
 	printf("CenyML accuracy metric elapsed %f seconds.\n\n", elapsedTime);
 	

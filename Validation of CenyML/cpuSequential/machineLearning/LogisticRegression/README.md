@@ -9,16 +9,20 @@ The file located in this directory path is used for the validation and evaluatio
 It is important to note that it was desired to compare this algorithm with an existing alternative. However, with respect to the available time I had to do research, I was unable to find any machine learning library that had an algorithm such as the one mathematically formulated in the CenyML library. In this sense, the only means to generate a solution for the proposed problem to be solved was through the deep learning solutions provided by other libraries. However, they differed completely mathematically in the way they solve the problem and I considered it biased to compare them and publish such results, which is why i did not compared this CenyML library algorithm with others.
 
 ## How to compile and execute these files
-For the following, it should be noted that after excecuting the .c program, either by console or outputted .png/.csv files, it is expected to have obtained some evaluation metrics and excecution times of all the processes performed in order to evaluate them.
+For the following, it should be noted that after executing the .c program, either by console or outputted .png/.csv files, it is expected to have obtained some evaluation metrics and execution times of all the processes performed in order to evaluate them.
 
 ### How to compile the CenyML program:
 1. Open the terminal and change its current working directory to the one that contains this README.md file (considering that the CenyML project files have not been changed).
 2. The ".c" program that is contained in the current directory was made with the CenyML library. To compile it, enter the following commands into the terminal:
+
 ```console
 $ make
 ```
-NOTE: After these commands, an excecutable file with the name: "main.x" will be created, which has the same name as its ".c" file but that has the extension ".x" instead.
+
+**NOTE:** After these commands, an executable file with the name: "main.x" will be created, which has the same name as its ".c" file but that has the extension ".x" instead.
+
 3. Run the compiled desired program made with the CenyML library with the command in the terminal window:
+
 ```console
 $ ./main.x
 ```

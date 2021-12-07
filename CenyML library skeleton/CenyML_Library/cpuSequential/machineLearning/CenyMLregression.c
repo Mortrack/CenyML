@@ -79,7 +79,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 13, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getSimpleLinearRegression(double *X, double *Y, int n, int m, int p, double *b) {
 	// If the machine learning features exceed the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -113,6 +113,8 @@ void getSimpleLinearRegression(double *X, double *Y, int n, int m, int p, double
 	
 	// We calculate the value of the coefficient "b_0".
 	b[0] = (sumOf_y - b[1]*sumOf_x)/n;
+	
+	return;
 }
 
 
@@ -172,7 +174,7 @@ void getSimpleLinearRegression(double *X, double *Y, int n, int m, int p, double
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 13, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, double *Y_hat) {
 	// If the machine learning features exceed the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -190,6 +192,8 @@ void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, do
 	for (int currentRow = 0; currentRow < n; currentRow++) {
 		Y_hat[currentRow] = b[0] + b[1]*X[currentRow];
 	}
+	
+	return;
 }
 
 
@@ -271,7 +275,7 @@ void predictSimpleLinearRegression(double *X, double *b, int n, int m, int p, do
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 17, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -414,6 +418,7 @@ void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+	return;
 }
 
 
@@ -473,7 +478,7 @@ void getMultipleLinearRegression(double *X, double *Y, int n, int m, int p, char
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 17, 2021
-* LAST UPDATE: NOVEMBER 18, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, double *Y_hat) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -497,6 +502,8 @@ void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, 
 			Y_hat[currentRow] = Y_hat[currentRow] + b[currentColumn]*X[currentColumn-1 + currentRowTimesM];
 		}
 	}
+	
+	return;
 }
 
 
@@ -581,7 +588,7 @@ void predictMultipleLinearRegression(double *X, double *b, int n, int m, int p, 
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 18, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -720,6 +727,7 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+	return;
 }
 
 
@@ -782,7 +790,7 @@ void getPolynomialRegression(double *X, double *Y, int n, int m, int p, int N, c
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 18, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void predictPolynomialRegression(double *X, int N, double *b, int n, int m, int p, double *Y_hat) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -807,6 +815,8 @@ void predictPolynomialRegression(double *X, int N, double *b, int n, int m, int 
 			Y_hat[currentRow] = Y_hat[currentRow] + b[currentExponential]*increaseExponentialOfThisValue;
 		}
 	}
+	
+	return;
 }
 
 
@@ -911,7 +921,7 @@ void predictPolynomialRegression(double *X, int N, double *b, int n, int m, int 
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 18, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getMultiplePolynomialRegression(double *X, double *Y, int n, int m, int p, int N, char isInteractionTerms, char isVariableOptimizer, double *b) {
 	// Determine whether the interaction terms are desired in the resulting model to be generated or not and then excecute the corresponding code.
@@ -1075,6 +1085,8 @@ void getMultiplePolynomialRegression(double *X, double *Y, int n, int m, int p, 
 		printf("\nERROR: The argument variable \"isInteractionTerms\" is meant to store only a binary value that equals either 1 or 0.\n");
 		exit(1);
 	}
+	
+	return;
 }
 
 
@@ -1152,7 +1164,7 @@ void getMultiplePolynomialRegression(double *X, double *Y, int n, int m, int p, 
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 18, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void predictMultiplePolynomialRegression(double *X, int N, char isInteractionTerms, double *b, int n, int m, int p, double *Y_hat) {
 	// Determine whether the interaction terms are available in the model to be used or not and then excecute the corresponding code.
@@ -1205,6 +1217,8 @@ void predictMultiplePolynomialRegression(double *X, int N, char isInteractionTer
 		printf("\nERROR: The argument variable \"isInteractionTerms\" is meant to store only a binary value that equals either 1 or 0.\n");
 		exit(1);
 	}
+	
+	return;
 }
 
 
@@ -1287,7 +1301,7 @@ void predictMultiplePolynomialRegression(double *X, int N, char isInteractionTer
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 19, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -1444,6 +1458,7 @@ void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVar
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+	return;
 }
 
 
@@ -1503,7 +1518,7 @@ void getLogisticRegression(double *X, double *Y, int n, int m, int p, char isVar
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 19, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void predictLogisticRegression(double *X, double *b, int n, int m, int p, double *Y_hat) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -1528,6 +1543,8 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 		}
 		Y_hat[currentRow] = 1 / (1 + exp(-Y_hat[currentRow]));
 	}
+	
+	return;
 }
 
 
@@ -1676,7 +1693,7 @@ void predictLogisticRegression(double *X, double *b, int n, int m, int p, double
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 21, 2021
-* LAST UPDATE: NOVEMBER 28, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isForceGaussianCurve, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -1864,6 +1881,7 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isFor
 	free(TransposeOf_X_tilde);
 	free(matMul1);
 	free(matMul2);
+	return;
 }
 
 
@@ -1958,7 +1976,7 @@ void getGaussianRegression(double *X, double *Y, int n, int m, int p, char isFor
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 21, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void predictGaussianRegression(double *X, char isForceGaussianCurve, double *b, int n, int m, int p, double *Y_hat) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -2024,5 +2042,7 @@ void predictGaussianRegression(double *X, char isForceGaussianCurve, double *b, 
 		printf("\nERROR: Please assign a valid value for the flag \"isForceGaussianCurve\", which may be 1 or 0.\n");
 		exit(1);
 	}
+	
+	return;
 }
 

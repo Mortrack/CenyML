@@ -221,7 +221,7 @@ void createCsvFile(char *filename, char *header, double *data, int *n, char is_n
 			modifiedFilename[0] = '\0'; // Innitialize this char variable with a null value.
 			strcat(modifiedFilename, "id,"); // We define the requested id header at the beginning.
 			strcat(modifiedFilename, header); // We subsequently add all the other headers that were requested by the implementer.
-			fprintf(fp, modifiedFilename); // Insert the headers into the .csv file created.
+			fprintf(fp, "%s", modifiedFilename); // Insert the headers into the .csv file created.
 			
 			// Write the requested data into the .csv file created.
 			for(int currentRow=0; currentRow<max_n; currentRow++){
@@ -236,7 +236,7 @@ void createCsvFile(char *filename, char *header, double *data, int *n, char is_n
 			}
 		} else { // If the flag "isInsertId"!=1, then add the requested data into the .csv file with not "id" values.
 			// Write the specified headers into the .csv file created.
-			fprintf(fp, header);
+			fprintf(fp, "%s", header);
 			
 			// Write the requested data into the .csv file created.
 			for(int currentRow=0; currentRow<max_n; currentRow++){
@@ -263,7 +263,7 @@ void createCsvFile(char *filename, char *header, double *data, int *n, char is_n
 			modifiedFilename[0] = '\0'; // Innitialize this char variable with a null value.
 			strcat(modifiedFilename, "id,"); // We define the requested id header at the beginning.
 			strcat(modifiedFilename, header); // We subsequently add all the other headers that were requested by the implementer.
-			fprintf(fp, modifiedFilename); // Insert the headers into the .csv file created.
+			fprintf(fp, "%s", modifiedFilename); // Insert the headers into the .csv file created.
 			
 			// Write the requested data into the .csv file created.
 			for(int currentRow=0; currentRow<(*n); currentRow++){
@@ -274,7 +274,7 @@ void createCsvFile(char *filename, char *header, double *data, int *n, char is_n
 			}
 		} else { // If the flag "isInsertId"!=1, then add the requested data into the .csv file with not "id" values.
 			// Write the specified headers into the .csv file created.
-			fprintf(fp, header);
+			fprintf(fp, "%s", header);
 			
 			// Write the requested data into the .csv file created.
 			for(int currentRow=0; currentRow<(*n); currentRow++){

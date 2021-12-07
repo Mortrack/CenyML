@@ -15,7 +15,8 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/featureScaling/CenyMLfeatureScaling.h" // library to use the feature scaling methods of CenyML.
 
@@ -141,7 +142,7 @@ int main(int argc, char **argv) {
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the reverse of the Z score normalization method.
 	// We validate the reverse of the Z score normalization method.
 	double differentiation; // Variable used to store the error obtained for a certain value.
-	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
+	double epsilon = 1.0E-10; // Variable used to store the max error value permitted during validation process.
 	char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
 	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
 	for (int currentRow=0; currentRow<n; currentRow++) {

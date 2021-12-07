@@ -20,9 +20,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void getMeanSquaredError(double *, double *, int, int, int, int, double *);
-void getCoefficientOfDetermination(double *, double *, int, int, double *);
-void getAdjustedCoefficientOfDetermination(double *, double *, int, int, int, int, double *);
+void getMeanSquaredError(double *, double *, int, int, int, double *);
+void getCoefficientOfDetermination(double *, double *, int, double *);
+void getAdjustedCoefficientOfDetermination(double *, double *, int, int, int, double *);
 
 #endif
 

@@ -119,7 +119,7 @@ confusionMatrix[3] = tmp
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The results will begin their comparation process...")
 startingTime = time.time()
-epsilon = 1.0e-6
+epsilon = 0
 isMatch = 1
 for currentColumn in range(0, 4):
     differentiation = abs(dataset_CenyML_getConfusionMatrixResults.iloc[0][currentColumn] - confusionMatrix[currentColumn])

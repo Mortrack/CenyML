@@ -108,7 +108,7 @@ startingTime = time.time()
 #  svm = dlib.svm_c_trainer_histogram_intersection()
 #  svm = dlib.svm_c_trainer_radial_basis()
 svm = dlib.svm_c_trainer_linear()
-svm.be_verbose()
+#svm.be_verbose()
 # NOTE: If you do not define a specific value for "C" with "set_c()", then it
 #       seems to me like Dilb assigns a default value for it, which may not
 #       always produce satisfactory results. Unlike its Kernel SVM function,

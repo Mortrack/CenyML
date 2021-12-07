@@ -36,7 +36,7 @@ This CenyML framework was successfully compiled and excecuted in a computational
 - 1 x GeForce GTX 1660 SUPER (connected through Timack 20cm riser PCIe extension cable model B08BR7NB3W).
 - GPU: 4 x Tesla K80 (two of the four physical GPUs are contained in a single enclosure that has one PCI-E connector. In other words, two Tesla K80 GPUs where each one of them has two GPUs inside, making a total of four).
 
-**NOTE:** The CUDA files were excecuted only in the Tesla K80 GPUs.
+**NOTE:** The CUDA files were excecuted only in the Tesla K80 GPUs which were entirely dedicated to the CenyML project.
 
 # How to compile and excecute the CenyML framework
 TODO: It is still pending to add this information since the framework has not yet been reviewed to be completely functional.

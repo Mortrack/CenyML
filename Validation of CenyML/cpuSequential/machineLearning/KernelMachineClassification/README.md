@@ -17,21 +17,26 @@ The files located in this directory path are all used for the validation of the 
 It is important to note that no library was found to have the Kernel machine classification algorithm as done in the CenyML library. However, because it was partly inspired by the Kernel support vector machine classifier, I decided to compare its performance with some representative libraries applying the Kernel support vector machine classifier. Therefore, when comparing these algorithms, it is unfair to automatically rule out that the faster one is the one that was programmed better due to their different solution approaches. However, these comparisons should give an idea of which algorithm obtains the best model and, in particular, which one is faster and under what circumstances, if possible.
 
 ## How to compile and execute these files
-For the following, it should be noted that after excecuting all these programs, either by console or outputted .png/.csv files, it is expected to have obtained some evaluation metrics and excecution times of all the processes performed in order to evaluate and compare them.
+For the following, it should be noted that after executing all these programs, either by console or outputted .png/.csv files, it is expected to have obtained some evaluation metrics and execution times of all the processes performed in order to evaluate and compare them.
 
 ### How to compile the CenyML program:
 1. Open the terminal and change its current working directory to the one that contains this README.md file (considering that the CenyML project files have not been changed).
 2. All the ".c" programs that are contained in the current directory were made with the CenyML library. To compile them, enter the following commands into the terminal:
+
 ```console
 $ make
 ```
-NOTE: After these commands, several excecutable files with the names: "main_linearKernel.x"; "main_polynomialKernel.x"; "main_logisticKernel.x" and; "main_gaussianKernel.x" will be created, where each of them will contain the compiled program of their respectives C files but with the extension ".x".
+
+**NOTE:** After these commands, several executable files with the names: "main_linearKernel.x"; "main_polynomialKernel.x"; "main_logisticKernel.x" and; "main_gaussianKernel.x" will be created, where each of them will contain the compiled program of their respectives C files but with the extension ".x".
+
 3. Run the compiled desired program made with the CenyML library with the command in the terminal window:
 ```console
 $ ./nameOfTheProgram.x
 ``` 
-NOTE: Substitute "nameOfTheProgram" for the particular name of the compiled file you want to excecute.
+
+**NOTE:** Substitute "nameOfTheProgram" for the particular name of the compiled file you want to excecute.
 For example:
+
 ```console
 $ ./main_linearKernel.x
 ``` 
@@ -45,11 +50,15 @@ $ ./main_linearKernel.x
 ### How to compile the Dlib program made with C++:
 1. Enter the directory address through the terminal window: "/DlibCplusplus/radialBasisFunctionKSVM/main.cpp".
 2. Enter the following commands into the terminal to compile the "main.cpp" file, containing the program made with the Dlib library in C++:
+
 ```console
 $ make
 ```
-NOTE: After these commands, an excecutable file named "main.x" will be created and will contain the program resulting from compiling the "main.cpp" file.
+
+**NOTE:** After these commands, an excecutable file named "main.x" will be created and will contain the program resulting from compiling the "main.cpp" file.
+
 11. Enter the following commands into the terminal to excecute the compiled file:
+
 ```console
 $ ./main.x
 ```

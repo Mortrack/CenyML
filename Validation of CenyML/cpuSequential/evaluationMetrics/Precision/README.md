@@ -10,22 +10,27 @@ The files located in this directory path are all used for the validation and eva
 By comparing these algorithms, an additional goal is to make comparisons to get an idea of which algorithm obtains faster results and under what circumstances, if possible.
 
 ## How to compile and execute these files
-For the following, it should be noted that after excecuting all these programs, either by console or outputted .csv files, it is expected to have obtained the corresponding results of the evaluation metrics that were applied and the excecution times of all the processes performed in order to evaluate and compare them.
+For the following, it should be noted that after executing all these programs, either by console or outputted .csv files, it is expected to have obtained the corresponding results of the evaluation metrics that were applied and the execution times of all the processes performed in order to evaluate and compare them.
 
 ### How to compile the CenyML program:
 1. Open the terminal and change its current working directory to the one that contains this README.md file (considering that the CenyML project files have not been changed).
 2. The ".c" program that is contained in the current directory was made with the CenyML library. To compile it, enter the following commands into the terminal:
+
 ```console
 $ make
 ```
-NOTE: After these commands, an excecutable file with the name: "main.x" will be created, which has the same name as its ".c" file but that has the extension ".x" instead.
+
+**NOTE:** After these commands, an executable file with the name: "main.x" will be created, which has the same name as its ".c" file but that has the extension ".x" instead.
 3. Run the compiled desired program made with the CenyML library with the command in the terminal window:
+
 ```console
 $ ./main.x
 ```
 
+**NOTE:** Do not delete the generated .csv file because it will be used by the Python program for validation purposes.
+
 ### How to compile the scikit-learn program:
-1. Compile and excecute the "scikitLearn.py" file, that was made with the scitkit-learn library, with your preferred method (the way I compiled and ran it was through the Spyder IDE).
+1. Compile and execute the "scikitLearn.py" file, that was made with the scitkit-learn library, with your preferred method (the way I compiled and ran it was through the Spyder IDE).
 
 ## How to interpret the results obtained
 Read the messages that were displayed on the terminal in which you ran the programs chosen from this folder and analyze the results obtained. Compare the collected information and determine if they are consistent with the databases that were used. Also, compare the processing times obtained with each program tested to obtain your own conclusions.

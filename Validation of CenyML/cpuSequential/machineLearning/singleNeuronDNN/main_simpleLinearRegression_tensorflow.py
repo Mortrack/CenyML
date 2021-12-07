@@ -46,6 +46,7 @@ from keras.callbacks import EarlyStopping # version 2.6.0
 from tensorflow.keras.optimizers import SGD # version 2.6.0
 from sklearn.metrics import mean_squared_error # version 1.0.1
 import matplotlib.pyplot as plt # version 3.4.3
+import tensorflow as tf # version 2.6.0
 
 
 # -------------------------------------------- #
@@ -105,34 +106,42 @@ print("")
 # -------------------------- #
 # ----- Model training ----- #
 # -------------------------- #
-model = Sequential()
-# Load the class that will indicate that the initial weight values are desired
-# to be zeros.
-initializer = Zeros()
-# Create the artificial neuron input layer
-model.add(Dense(nodes, input_dim=m, activation='linear', kernel_initializer=initializer))
-# Indicate desired learning rate
-sgd = SGD(learning_rate=0.0001)
-# Compile the keras model
-model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['mse'])
-"""
-# Define a stop function in which you want the argument variable "loss" of the
-# class "model.compile()" to be monitored and indicate through the variable
-# argument of "EarlyStopping()" named "patience", the number of epochs that
-# you want the training to be stoped if no changes occur in the monitored
-# variable.
-callback = EarlyStopping(monitor='loss', patience=3)
-"""
 print("Innitializing model training with the tensorflow library ...")
 startingTime = time.time()
-# fit the keras model on the dataset
-# NOTE: The argument variable "batch_size" represents the desired value that
-#       we want the model to consider before the model updates its weights.
-# NOTE: The argument variable "verbose" indicates if the user wants Keras
-#       to display training messages progress in the terminal window (with 1)
-#       or not (with 0).
-model.fit(X, Y, epochs=30863, batch_size=n, verbose=0)
-#model.fit(X, Y, epochs=50000, batch_size=n, verbose=0, callbacks=callback)
+# Define the number of threads that are desired to be used (the value of 0
+# makes tensorflow automatically define the most suitable number).
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
+with tf.device('/CPU:0'): # To define the specific CPU to be used.
+#tf.config.threading.set_intra_op_parallelism_threads(0)
+#tf.config.threading.set_inter_op_parallelism_threads(0)
+#with tf.device('GPU:2'): # To define the specific GPU to be used.
+    model = Sequential()
+    # Load the class that will indicate that the initial weight values are desired
+    # to be zeros.
+    initializer = Zeros()
+    # Create the artificial neuron input layer
+    model.add(Dense(nodes, input_dim=m, activation='linear', kernel_initializer=initializer))
+    # Indicate desired learning rate
+    sgd = SGD(learning_rate=0.0001)
+    # Compile the keras model
+    model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['mse'])
+    """
+    # Define a stop function in which you want the argument variable "loss" of the
+    # class "model.compile()" to be monitored and indicate through the variable
+    # argument of "EarlyStopping()" named "patience", the number of epochs that
+    # you want the training to be stoped if no changes occur in the monitored
+    # variable.
+    callback = EarlyStopping(monitor='loss', patience=3)
+    """
+    # fit the keras model on the dataset
+    # NOTE: The argument variable "batch_size" represents the desired value that
+    #       we want the model to consider before the model updates its weights.
+    # NOTE: The argument variable "verbose" indicates if the user wants Keras
+    #       to display training messages progress in the terminal window (with 1)
+    #       or not (with 0).    
+    model.fit(X, Y, epochs=30863, batch_size=n, verbose=0)
+    #model.fit(X, Y, epochs=50000, batch_size=n, verbose=0, callbacks=callback)
 elapsedTime = time.time() - startingTime
 print("Model training with the tensorflow library elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -168,8 +177,8 @@ plt.ylabel('Dependent variable')
 
 # We display, in console, the coefficient values obtained with the ML method used.
 b = np.zeros((1, m+1))
-b[0][1] = model.get_weights()[1][0]
-b[0][0] = model.get_weights()[0][0][0]
+b[0][1] = model.get_weights()[0][0][0]
+b[0][0] = model.get_weights()[1][0]
 print("b_0 = " + format(b[0][0]))
 print("b_1 = " + format(b[0][1]))
 
@@ -187,3 +196,5 @@ for currentRow in range(0, len(idealCoefficients)):
         break
 if (isMatch == 1):
     print("The coefficients obtained in the Python Library matched the ideal coefficient values !!!.")
+    
+print("The program has finished successfully.")

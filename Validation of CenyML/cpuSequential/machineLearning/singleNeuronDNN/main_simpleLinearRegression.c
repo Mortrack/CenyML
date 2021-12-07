@@ -18,7 +18,8 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
@@ -148,7 +149,7 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML predictions with the model that was obtained ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the prediction with the model that was obtained.
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
-	double *Y_hat = (double *) malloc(neuron1.n*neuron1.p*sizeof(double));
+	double *Y_hat = (double *) malloc(neuron1.n*sizeof(double));
 	// We obtain the predicted values with the machine learning model that was obtained.
 	predictSingleNeuronDNN(&neuron1, Y_hat);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
@@ -158,9 +159,9 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML mean squared error metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the mean squared error metric between "neuron1.Y" and "Y_hat".
 	// Allocate the memory required for the variable "MSE" (which will contain the results of the mean squared error metric between "neuron1.Y" and "Y_hat").
-	double *MSE = (double *) calloc(neuron1.p, sizeof(double));
+	double *MSE = (double *) calloc(1, sizeof(double));
 	// We apply the mean squared error metric between "neuron1.Y" and "Y_hat".
-	getMeanSquaredError(neuron1.Y, Y_hat, neuron1.n, neuron1.m, neuron1.p, -neuron1.m, MSE);
+	getMeanSquaredError(neuron1.Y, Y_hat, neuron1.n, neuron1.m, -neuron1.m, MSE);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the mean squared error metric between "neuron1.Y" and "Y_hat".
 	printf("CenyML mean squared error metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -168,9 +169,9 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML coefficient of determination metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the coefficient of determination metric between "neuron1.Y" and "Y_hat".
 	// Allocate the memory required for the variable "Rsquared" (which will contain the results of the coefficient of determination metric between "neuron1.Y" and "Y_hat").
-	double *Rsquared = (double *) calloc(neuron1.p, sizeof(double));
+	double *Rsquared = (double *) calloc(1, sizeof(double));
 	// We apply the coefficient of determination metric between "neuron1.Y" and "Y_hat".
-	getCoefficientOfDetermination(neuron1.Y, Y_hat, neuron1.n, neuron1.p, Rsquared);
+	getCoefficientOfDetermination(neuron1.Y, Y_hat, neuron1.n, Rsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the coefficient of determination metric between "neuron1.Y" and "Y_hat".
 	printf("CenyML coefficient of determination metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -178,9 +179,9 @@ int main(int argc, char **argv) {
 	printf("Initializing CenyML adjusted coefficient of determination metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the adjusted coefficient of determination metric between "neuron1.Y" and "Y_hat".
 	// Allocate the memory required for the variable "adjustedRsquared" (which will contain the results of the adjusted coefficient of determination metric between "neuron1.Y" and "Y_hat").
-	double *adjustedRsquared = (double *) calloc(neuron1.p, sizeof(double));
+	double *adjustedRsquared = (double *) calloc(1, sizeof(double));
 	// We apply the adjusted coefficient of determination metric between "neuron1.Y" and "Y_hat".
-	getAdjustedCoefficientOfDetermination(neuron1.Y, Y_hat, neuron1.n, neuron1.m, neuron1.p, 1, adjustedRsquared);
+	getAdjustedCoefficientOfDetermination(neuron1.Y, Y_hat, neuron1.n, neuron1.m, 1, adjustedRsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the adjusted coefficient of determination metric between "neuron1.Y" and "Y_hat".
 	printf("CenyML adjusted coefficient of determination metric elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -188,7 +189,7 @@ int main(int argc, char **argv) {
 	printf("Initializing single variable that will store all the evaluation metrics done ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the adjusted coefficient of determination metric between "neuron1.Y" and "Y_hat".
 	// Allocate the memory required for the variable "evaluationMetrics" (which will contain all the results of the evaluation metrics that were obtained).
-	double *evaluationMetrics = (double *) malloc(3*neuron1.p*sizeof(double));
+	double *evaluationMetrics = (double *) malloc(3*sizeof(double));
 	evaluationMetrics[0] = MSE[0]; // We add the mean squared error metric.
 	evaluationMetrics[1] = Rsquared[0]; // We add the coefficient of determination metric.
 	evaluationMetrics[2] = adjustedRsquared[0]; // We add the adjusted coefficient of determination metric.
@@ -219,7 +220,7 @@ int main(int argc, char **argv) {
 	char is_nArray2 = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
 	char isInsertId2 = 0; // Indicate through this flag variable that it is not desired that the file to be created automatically adds an "id" to each row.
 	int csvFile_n2 = 1; // This variable is used to indicate the number of rows with data that will be printed in the .csv file to be created.
-	createCsvFile(nameOfTheCsvFile2, csvHeaders2, evaluationMetrics, &csvFile_n2, is_nArray2, 3*neuron1.p, isInsertId2); // We create the desired .csv file.
+	createCsvFile(nameOfTheCsvFile2, csvHeaders2, evaluationMetrics, &csvFile_n2, is_nArray2, 3, isInsertId2); // We create the desired .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .csv file which will store the results calculated.
 	printf("Creation of the .csv file to store the evaluation metrics that were obtained, elapsed %f seconds.\n\n", elapsedTime);
 	

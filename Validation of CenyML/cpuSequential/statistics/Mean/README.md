@@ -15,17 +15,23 @@ For the following, it should be noted that after excecuting all these programs, 
 ### How to compile the CenyML program:
 1. Open the terminal and change its current working directory to the one that contains this README.md file (considering that the CenyML project files have not been changed).
 2. The ".c" program that is contained in the current directory was made with the CenyML library. To compile it, enter the following commands into the terminal:
+
 ```console
 $ make
 ```
-NOTE: After these commands, an excecutable file with the name: "main.x" will be created, which has the same name as its ".c" file but that has the extension ".x" instead.
+
+**NOTE:** After these commands, an excecutable file with the name: "main.x" will be created, which has the same name as its ".c" file but that has the extension ".x" instead.
+
 3. Run the compiled desired program made with the CenyML library with the command in the terminal window:
+
 ```console
 $ ./main.x
 ```
 
+**NOTE:** Do not delete the generated .csv file because it will be used by the Python program for validation purposes.
+
 ### How to compile the NumPy program:
-1. Compile and excecute the "NumPy.py" file, that was made with the NumPy library, with your preferred method (the way I compiled and ran it was through the Spyder IDE).
+4. Compile and excecute the "NumPy.py" file, that was made with the NumPy library, with your preferred method (the way I compiled and ran it was through the Spyder IDE).
 
 ## How to interpret the results obtained
 Read the messages that were displayed on the terminal in which you ran the programs chosen from this folder and analyze the results obtained. Compare the collected information and determine if they are consistent with the database that was used. Also, compare the processing times obtained with each program tested to obtain your own conclusions.

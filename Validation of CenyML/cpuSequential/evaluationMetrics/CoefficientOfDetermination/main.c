@@ -17,7 +17,8 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h" // library to use the regression evaluation metrics of CenyML.
 
@@ -61,7 +62,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 10, 2021
-* LAST UPDATE: NOVEMBER 27, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
@@ -145,7 +146,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "Rsquared" (which will contain the results of the coefficient of determination metric between "Y" and "Y_hat").
 	double *Rsquared = (double *) calloc(p, sizeof(double));
 	// We apply the coefficient of determination metric between "Y" and "Y_hat".
-	getCoefficientOfDetermination(Y, Y_hat, n, p, Rsquared);
+	getCoefficientOfDetermination(Y, Y_hat, n, Rsquared);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the coefficient of determination metric between "Y" and "Y_hat".
 	printf("CenyML coefficient of determination metric elapsed %f seconds.\n\n", elapsedTime);
 	

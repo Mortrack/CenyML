@@ -106,7 +106,7 @@ print("")
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The results will begin their comparation process...")
 startingTime = time.time()
-epsilon = 1e-6
+epsilon = 3.45e-8
 isMatch = 1
 for currentColumn in range(0, p):
     differentiation = abs(dataset_CenyML_getMeanSquaredErrorResults.iloc[0][currentColumn] - Rsquared)

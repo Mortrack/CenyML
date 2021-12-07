@@ -36,7 +36,7 @@ print("")
 # Read the .csv file containing the reference data.
 print("Innitializing data extraction from .csv file containing the reference input data ...")
 startingTime = time.time()
-dataset_mPES100S100SPAPS = pd.read_csv('../../../../databases/regressionDBs/randMultiplePolynomialEquationSystem/100systems_100samplesPerAxisPerSys.csv')
+dataset_mPES100S100SPAPS = pd.read_csv('../../../../databases/regression/randMultiplePolynomialEquationSystem/100systems_100samplesPerAxisPerSys.csv')
 elapsedTime = time.time() - startingTime
 n = len(dataset_mPES100S100SPAPS)
 m = len(dataset_mPES100S100SPAPS.iloc[0])
@@ -73,7 +73,7 @@ print("")
 # ---------------------------------------------------------------- #
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The results will begin their comparation process...")
-epsilon = 1e-6
+epsilon = 2.51e-7
 isMatch = 1
 for currentColumn in range(0, len(dataset_mPES100S100SPAPS.iloc[0]) ):
     differentiation = abs(dataset_CenyML_varianceResults.iloc[0][currentColumn] - variances[currentColumn])
