@@ -1,0 +1,2 @@
+id,getL2Normalization_CenyML,getL2Normalization_scikitLearn,getMinMaxNormalization_CenyML,getMinMaxNormalization_scikitLearn,getZscoreNormalization_CenyML,getZscoreNormalization_scikitLearn
+5.5,0.032117,0.035464,0.03624,0.106325,0.044095,0.179545
