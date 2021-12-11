@@ -1,0 +1,2 @@
+id,accuracy_CenyML,accuracy_scikitLearn,adjRsquared_CenyML,adjRsquared_statsmodels,Rsquared_CenyML,Rsquared_scikitLearn,confusionMatrix_CenyML,confusionMatrix_scikitLearn,crossEntropyError_CenyML,crossEntropyError_scikitLearn,F1score_CenyML,F1score_scikitLearn,meanSquaredError_CenyML,meanSquaredError_scikitLearn,precision_CenyML,precision_scikitLearn,recall_CenyML,recall_scikitLearn
+3.02765,0.000141,0.004504,0.000206,0.00279,0.00026,0.000715,0.00011,0.012302,0.000214,0.003425,0.000143,0.006424,0.000206,0.000402,0.000204,0.006842,0.00013,0.006772

@@ -1,8 +1,3 @@
-/* 
-The author of this library is Dr. Martin F. Johansen and it was downloaded in
-September 22, 2021 from https://github.com/InductiveComputerScience/pbPlots
-*/
-
 #include "supportLib.h"
 
 unsigned char *DoubleArrayToByteArray(double *data, size_t length){

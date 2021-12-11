@@ -1,4 +1,5 @@
 #include "mTimeTer.h"
+#include <windows.h>
 
 /**
 * The "seconds()" function is used to know the current time

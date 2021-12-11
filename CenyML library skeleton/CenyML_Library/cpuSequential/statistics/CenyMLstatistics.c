@@ -56,7 +56,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: SEPTEMBER 23, 2021
-* LAST UPDATE: NOVEMBER 09, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getMean(double *inputMatrix, int n, int m, double *mean) {
 	// We obtain the mean for each of the columns of the input matrix.
@@ -70,6 +70,8 @@ void getMean(double *inputMatrix, int n, int m, double *mean) {
 	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
 		mean[currentColumn] = mean[currentColumn]/n;
 	}
+	
+	return;
 }
 
 
@@ -112,7 +114,7 @@ void getMean(double *inputMatrix, int n, int m, double *mean) {
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 07, 2021
-* LAST UPDATE: NOVEMBER 09, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 //TODO: Test the performance of the "quick sort" method when argumenting the entire matrix in "applyQuickSort()" instead of several vectors, to compare it with the current method.
 void getSort(char desiredSortMethod[], int n, int m, double *inputMatrix) {
@@ -140,6 +142,8 @@ void getSort(char desiredSortMethod[], int n, int m, double *inputMatrix) {
 		// Free the Heap memory used for the currently allocated variables.
 		free(rowsOfCurrentColumn);
 	}
+	
+	return;
 }
 /**
 * The "applyQuickSort()" function is inspired in the code made and
@@ -178,7 +182,7 @@ void getSort(char desiredSortMethod[], int n, int m, double *inputMatrix) {
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 07, 2021
-* LAST UPDATE: NOVEMBER 08, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double *inputVector) {
 	// We will define the local variables to be used in this function.
@@ -216,6 +220,8 @@ static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double *inputVe
 	if (maxIndexLimit > indexOfLeftElement) {
 		applyQuickSort(indexOfLeftElement, maxIndexLimit,inputVector);
 	}
+	
+	return;
 }
 
 
@@ -265,7 +271,7 @@ static void applyQuickSort(int minIndexLimit, int maxIndexLimit, double *inputVe
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 11, 2021
-* LAST UPDATE: NOVEMBER 09, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getMedian(char desiredSortMethod[], double *inputMatrix, int n, int m, double *Q2) {
 	// If the implementer requested the "quick sort" method for the sorting process, then apply it through the following code.
@@ -310,6 +316,8 @@ void getMedian(char desiredSortMethod[], double *inputMatrix, int n, int m, doub
 		// Free the Heap memory used for the currently allocated variables.
 		free(rowsOfCurrentColumn);
 	}
+	
+	return;
 }
 
 
@@ -355,7 +363,7 @@ void getMedian(char desiredSortMethod[], double *inputMatrix, int n, int m, doub
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 17, 2021
-* LAST UPDATE: NOVEMBER 09, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getVariance(double *inputMatrix, int n, int m, int degreesOfFreedom, double *variance) {
 	// We declare and innitialize the variable "mean" with "0"s. The mean for each column will be stored in this variable.
@@ -389,6 +397,8 @@ void getVariance(double *inputMatrix, int n, int m, int degreesOfFreedom, double
 	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
 		variance[currentColumn] = variance[currentColumn]/degreesOfFreedom;
 	}
+	
+	return;
 }
 
 
@@ -439,7 +449,7 @@ void getVariance(double *inputMatrix, int n, int m, int degreesOfFreedom, double
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 18, 2021
-* LAST UPDATE: NOVEMBER 09, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedom, double *standardDeviation) {
 	// We declare and innitialize the variable "mean" with "0"s. The mean for each column will be stored in this variable.
@@ -473,6 +483,8 @@ void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedo
 	for (int currentColumn = 0; currentColumn < m; currentColumn++) {
 		standardDeviation[currentColumn] = sqrt(standardDeviation[currentColumn]/degreesOfFreedom);
 	}
+	
+	return;
 }
 
 
@@ -512,9 +524,9 @@ void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedo
 *					 memory allocated variable in which each "k-th"
 *					 column will store the rows length value of the
 *					 "k-th" column of the argument variable "Mo".
-*					 THIS VARIABLE SHOULD BE ALLOCATED BEFORE CALLING
-*					 THIS FUNCTION WITH A SIZE OF "n" 'DOUBLE' MEMORY
-*					 SPACES.
+*					 THIS VARIABLE SHOULD BE ALLOCATED AND INITIALIZED
+*                    WITH ZEROS BEFORE CALLING THIS FUNCTION WITH A
+*                    SIZE OF "n" 'DOUBLE' MEMORY SPACES.
 *
 * @param double *Mo - This argument will contain the pointer to a
 *					  memory allocated variable in which the sort
@@ -536,7 +548,7 @@ void getStandardDeviation(double *inputMatrix, int n, int m, int degreesOfFreedo
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: OCTOBER 19, 2021
-* LAST UPDATE: NOVEMBER 09, 2021
+* LAST UPDATE: DECEMBER 04, 2021
 */
 //TODO: Test the performance of the "quick sort" method when argumenting the entire matrix in "applyQuickSort()" instead of several vectors, to compare it with the current method.
 void getQuickMode(char desiredSortMethod[], int n, int m, double *inputMatrix, int *Mo_n, double *Mo) {
@@ -595,5 +607,7 @@ void getQuickMode(char desiredSortMethod[], int n, int m, double *inputMatrix, i
 		free(rowsOfCurrentColumn);
 		free(counterOfInputVector);
 	}
+	
+	return;
 }
 

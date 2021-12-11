@@ -28,7 +28,7 @@ struct csvManager {
 };
 
 void getCsvRowsAndColumnsDimensions(struct csvManager *);
-void getCsvFileData(struct csvManager*); //TODO: Add an array type variable to the struct "csvManager" that saves the headers of the file.
+void getCsvFileData(struct csvManager *); //TODO: Add an array type variable to the struct "csvManager" that saves the headers of the file.
 void createCsvFile(char *, char *, double *, int *, char, int, char);
 
 #endif
