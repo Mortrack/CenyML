@@ -72,7 +72,7 @@ Moreover, all the libraries used in C were developed within the framework of the
 3. Copy the files "pbPlots.c", "pbPlots.h", "supportLib.c" and "supportLib.h" and paste them in the directory folder 'CenyML library skeleton/otherLibraries/pbPlots/' (with respect to the root directory of this project). Alternatively, if you download the CenyML project files, the pbPlots library with the right version should already be there.
 
 ## Materials
-All the algorithms made for the CenyML project were executed on a **dedicated computer system** with Ubuntu OS and the following hardware:
+All the algorithms made for this thesis product, were executed on a dedicated computer system with Ubuntu OS v20.04.3 LTS and the following hardware:
 
 - Motherboard: 1 x HUANANZHI X99Dual-F8D.
 - CPU: 2 x Intel(R) Xeon(R) E5-2699V4 @ 2.10GHz.
@@ -81,7 +81,7 @@ All the algorithms made for the CenyML project were executed on a **dedicated co
 - 1 x GeForce GTX 1660 SUPER (connected through Timack 20cm riser PCIe extension cable model B08BR7NB3W).
 - GPU: 4 x Tesla K80 (two of the four physical GPUs are contained in a single enclosure that has one PCI-E connector. In other words, two Tesla K80 GPUs where each one of them has two GPUs inside, making a total of four).
 
-**NOTE:** The CUDA files were excecuted only in the Tesla K80 GPUs which were entirely dedicated to the CenyML project.
+**NOTE:** The CUDA files were executed only in the Tesla K80 GPUs which were entirely dedicated to the CenyML project.
 
 # Cite this project in yours!
 TODO: Place APA citation text.
