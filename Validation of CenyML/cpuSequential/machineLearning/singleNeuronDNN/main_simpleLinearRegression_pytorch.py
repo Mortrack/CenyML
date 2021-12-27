@@ -1,23 +1,8 @@
-"""
-PACKAGE INSTALLATION STEPS:
-    1) Open Anaconda Prompt terminal window.
-    2) Type the command "conda create --name py3_9_7 python=3.9.7"
-    3) Type the command "conda activate py3_9_7"
-    4) Type the command "conda install pip"
-    5) Type the command "pip install tensorflow==2.6"
-    6) Type the command "pip install scikit-learn==1.0.1"
-    7) Type the command "pip install numpy==1.21.2"
-    8) Type the command "pip install matplotlib==3.4.3"
-    9) Type the command "pip install pandas==1.3.3"
-    10) Type the command "pip install spyder" (version installed = 5.2.0)
-    11) Type the command "spyder"
-    12) run the program.
-"""
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
-# COMPLETITION DATE: November 29, 2021.
-# LAST UPDATE: December 27, 2021.
+# COMPLETITION DATE: November XX, 2021.
+# LAST UPDATE: N/A.
 #
 # This code is used to apply the machine learning method known as artificial
 # neural network but with only a single neuron to solve a simple linear
@@ -38,15 +23,9 @@ PACKAGE INSTALLATION STEPS:
 import pandas as pd  # version 1.3.3
 import numpy as np # version 1.21.2
 import time
-from numpy import loadtxt # version 1.21.2
-from keras.models import Sequential # version 2.6.0
-from keras.initializers import Zeros # version 2.6.0
-from keras.layers import Dense # version 2.6.0
-from keras.callbacks import EarlyStopping # version 2.6.0
-from tensorflow.keras.optimizers import SGD # version 2.6.0
+from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error # version 1.0.1
 import matplotlib.pyplot as plt # version 3.4.3
-import tensorflow as tf # version 2.6.0
 
 
 # -------------------------------------------- #
@@ -106,44 +85,14 @@ print("")
 # -------------------------- #
 # ----- Model training ----- #
 # -------------------------- #
-print("Innitializing model training with the tensorflow library ...")
+print("Innitializing model training with the scikit-learn library ...")
 startingTime = time.time()
-# Define the number of threads that are desired to be used (the value of 0
-# makes tensorflow automatically define the most suitable number).
-tf.config.threading.set_intra_op_parallelism_threads(1)
-tf.config.threading.set_inter_op_parallelism_threads(1)
-with tf.device('/CPU:0'): # To define the specific CPU to be used.
-#tf.config.threading.set_intra_op_parallelism_threads(0)
-#tf.config.threading.set_inter_op_parallelism_threads(0)
-#with tf.device('GPU:2'): # To define the specific GPU to be used.
-    model = Sequential()
-    # Load the class that will indicate that the initial weight values are desired
-    # to be zeros.
-    initializer = Zeros()
-    # Create the artificial neuron input layer
-    model.add(Dense(nodes, input_dim=m, activation='linear', kernel_initializer=initializer))
-    # Indicate desired learning rate
-    sgd = SGD(learning_rate=0.0001)
-    # Compile the keras model
-    model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['mse'])
-    """
-    # Define a stop function in which you want the argument variable "loss" of the
-    # class "model.compile()" to be monitored and indicate through the variable
-    # argument of "EarlyStopping()" named "patience", the number of epochs that
-    # you want the training to be stoped if no changes occur in the monitored
-    # variable.
-    callback = EarlyStopping(monitor='loss', patience=3)
-    """
-    # fit the keras model on the dataset
-    # NOTE: The argument variable "batch_size" represents the desired value that
-    #       we want the model to consider before the model updates its weights.
-    # NOTE: The argument variable "verbose" indicates if the user wants Keras
-    #       to display training messages progress in the terminal window (with 1)
-    #       or not (with 0).    
-    model.fit(X, Y, epochs=30863, batch_size=n, verbose=0)
-    #model.fit(X, Y, epochs=50000, batch_size=n, verbose=0, callbacks=callback)
+# NOTE: Hidden layers must be > 0 in scikit-learn and, therefore, no single neuron model can be generated with this library.
+# NOTE: hidden_layer_sizes = ("desired neurons in first hidden layer", "desired neurons in second hidden layer", ..., "desired neurons in last hidden layer")
+MLP = MLPRegressor(hidden_layer_sizes=(1), activation='identity', solver='sgd', learning_rate_init=0.0000000001, max_iter=30863, shuffle=False, random_state=0)
+multiLayerPerceptron = MLP.fit(X, Y)
 elapsedTime = time.time() - startingTime
-print("Model training with the tensorflow library elapsed " + format(elapsedTime) + " seconds.")
+print("Model training with the scikit-learn library elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 
@@ -153,7 +102,7 @@ print("")
 # We obtained the predicted results by the model that was constructed.
 print("Innitializing predictions of the model obtained ...")
 startingTime = time.time()
-Y_hat = model.predict(X)
+Y_hat = multiLayerPerceptron.predict(X)
 elapsedTime = time.time() - startingTime
 print("Model predictions elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -176,9 +125,25 @@ plt.xlabel('Independent variable')
 plt.ylabel('Dependent variable')
 
 # We display, in console, the coefficient values obtained with the ML method used.
-b = np.zeros((1, m+1))
-b[0][1] = model.get_weights()[0][0][0]
-b[0][0] = model.get_weights()[1][0]
+# NOTE: The bias and weight values will be stored in "b" such that each column
+#       will contain the bias and weight values of a certain neuron.
+b = np.zeros((2, m+1))
+# NOTE: For both "multiLayerPerceptron.intercepts_" and
+#       "multiLayerPerceptron.coefs_", it seems that the first array will
+#       always refer to the first defined hidden layer and the last array to
+#       the output layer. In addition and apparently, the input layer either
+#       does not have neurons defined in it or the first defined hidden layer
+#       is considered as the input layer by scikit-learn.
+# NOTE: "multiLayerPerceptron.intercepts_" will display several arrays, each
+#       for a different layer. Within each array/layer, each column will stand
+#       for the bias value of a different neuron.
+b[0][0] = multiLayerPerceptron.intercepts_[0][0]
+b[0][1] = multiLayerPerceptron.intercepts_[1][0]
+# NOTE: "multiLayerPerceptron.coefs_" will display several arrays, each for a
+#       different layer. Within each array/layer, each column will stand for
+#       the weight values of a different neuron.
+b[1][0] = multiLayerPerceptron.coefs_[0][0][0]
+b[1][1] = multiLayerPerceptron.coefs_[1][0][0]
 print("b_0 = " + format(b[0][0]))
 print("b_1 = " + format(b[0][1]))
 
