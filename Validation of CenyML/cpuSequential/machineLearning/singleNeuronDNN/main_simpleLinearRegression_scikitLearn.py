@@ -90,8 +90,8 @@ print("Innitializing model training with the scikit-learn library ...")
 startingTime = time.time()
 # NOTE: Hidden layers must be > 0 in scikit-learn and, therefore, no single neuron model can be generated with this library.
 # NOTE: hidden_layer_sizes = ("desired neurons in first hidden layer", "desired neurons in second hidden layer", ..., "desired neurons in last hidden layer")
-MLP = MLPRegressor(hidden_layer_sizes=(1), activation='identity', solver='sgd', learning_rate_init=0.0000000001, max_iter=30863, shuffle=False, random_state=0)
-multiLayerPerceptron = MLP.fit(X, Y)
+MLP = MLPRegressor(hidden_layer_sizes=(1), activation='identity', solver='sgd', learning_rate_init=0.000000000001, max_iter=30863, shuffle=False, random_state=0)
+multiLayerPerceptron = MLP.fit(X, Y.ravel())
 elapsedTime = time.time() - startingTime
 print("Model training with the scikit-learn library elapsed " + format(elapsedTime) + " seconds.")
 print("")
