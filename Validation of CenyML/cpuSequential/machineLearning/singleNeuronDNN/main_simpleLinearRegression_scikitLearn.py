@@ -36,8 +36,6 @@ m = 1 # This variable is used to define the number of independent variables
       # that the system under study has.
 p = 1 # This variable is used to define the number of dependent variables
       # that the system under study has.
-nodes = 1 # This variable will indicate the number of nodes that are desired
-          # for the artificial neural network to be created.
 idealCoefficients = [[10], [0.8]] # This variable will store the ideal
                                   # coefficient values that it is expected for
                                   # this model to have.
