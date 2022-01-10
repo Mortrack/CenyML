@@ -181,14 +181,13 @@
 *										  1 = Hyperbolic tangent (tanh).
 *										  2 = Logistic function.
 *										  3 = Raise to the 1st power.
-*										  4 = Square root.
-*										  5 = Raise to the 2nd power.
-*										  6 = Raise to the 3rd power.
-*										  7 = Raise to the 4th power.
-*										  8 = Raise to the 5th power.
-*										  9 = Raise to the 6th power.
-*										  10 = 1st order degree exponential.
-*										  11 = 2nd order degree exponential.
+*										  4 = Raise to the 2nd power.
+*										  5 = Raise to the 3rd power.
+*										  6 = Raise to the 4th power.
+*										  7 = Raise to the 5th power.
+*										  8 = Raise to the 6th power.
+*										  9 = 1st order degree exponential.
+*										  10 = 2nd order degree exponential.
 *
 * @param double learningRate - This argument will represent hyperparameter
 *							   value to be used by the learning rate of the
@@ -289,7 +288,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 29, 2021
-* LAST UPDATE: DECEMBER 05, 2021
+* LAST UPDATE: JANUARY 09, 2022
 */
 void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 	// If the machine learning samples are less than value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -389,10 +388,10 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 	// We allocate all the memory that will be required for the training process of the neuron.
 	double *f_x_tilde = (double *) malloc(neuron->n*neuron->p*sizeof(double)); // Allocate the memory required for the variable "f_x_tilde", which will contain the currently predicted output data made by the body of the neuron.
 	// NOTE: "activationFunctions" is a pointer to each of the individual activation functions that were developed as static void functions.
-    static void (*activationFunctions[])(double *, double *, struct singleNeuronDnnStruct *) = {getReluActivation, getTanhActivation, getLogisticActivation, getRaiseToTheFirstPowerActivation, getSquareRootActivation, getRaiseToTheSecondPowerActivation, getRaiseToTheThirdPowerActivation, getRaiseToTheFourthPowerActivation, getRaiseToTheFifthPowerActivation, getRaiseToTheSixthPowerActivation, getFirstOrderDegreeExponentialActivation, getSecondOrderDegreeExponentialActivation};
+    static void (*activationFunctions[])(double *, double *, struct singleNeuronDnnStruct *) = {getReluActivation, getTanhActivation, getLogisticActivation, getRaiseToTheFirstPowerActivation, getRaiseToTheSecondPowerActivation, getRaiseToTheThirdPowerActivation, getRaiseToTheFourthPowerActivation, getRaiseToTheFifthPowerActivation, getRaiseToTheSixthPowerActivation, getFirstOrderDegreeExponentialActivation, getSecondOrderDegreeExponentialActivation};
     double *A_u = (double *) malloc(neuron->n*neuron->p*sizeof(double)); // Allocate the memory required for the variable "A_u", which will contain the currently predicted output data made by the neuron.
     // NOTE: "derivateOfActivationFunctions" is a pointer to each of the individual derivatives of the activation functions that were developed as static void functions.
-	static void (*derivateOfActivationFunctions[])(double *, double *, double *, struct singleNeuronDnnStruct *) = {getDerivateReluActivation, getDerivateTanhActivation, getDerivateLogisticActivation, getDerivateRaiseToTheFirstPowerActivation, getDerivateSquareRootActivation, getDerivateRaiseToTheSecondPowerActivation, getDerivateRaiseToTheThirdPowerActivation, getDerivateRaiseToTheFourthPowerActivation, getDerivateRaiseToTheFifthPowerActivation, getDerivateRaiseToTheSixthPowerActivation, getDerivateFirstOrderDegreeExponentialActivation, getDerivateSecondOrderDegreeExponentialActivation};
+	static void (*derivateOfActivationFunctions[])(double *, double *, double *, struct singleNeuronDnnStruct *) = {getDerivateReluActivation, getDerivateTanhActivation, getDerivateLogisticActivation, getDerivateRaiseToTheFirstPowerActivation, getDerivateRaiseToTheSecondPowerActivation, getDerivateRaiseToTheThirdPowerActivation, getDerivateRaiseToTheFourthPowerActivation, getDerivateRaiseToTheFifthPowerActivation, getDerivateRaiseToTheSixthPowerActivation, getDerivateFirstOrderDegreeExponentialActivation, getDerivateSecondOrderDegreeExponentialActivation};
     double *dA_u = (double *) malloc(neuron->n*neuron->p*sizeof(double)); // Allocate the memory required for the variable "dA_u", which will contain the derivative of A(u).
     double currentAccuracy = 0; // Declare the variable "currentAccuracy", which will contain the current accuracy of the neuron.
     double *w_old = (double *) malloc((neuron->m+1)*neuron->p*sizeof(double)); // Allocate the memory required for the variable "w_old", which will contain the previous weight values that were obtained with respect to the current ones.
@@ -406,6 +405,19 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 		// ----- CLASSIFICATION MODEL SELECTED ----- //
 		// ----------------------------------------- //
 		
+		
+		// ----------- ADDITIONAL PREPROCESSING NEEDED WHEN A CLASSIFICATION MODEL IS REQUESTED ----------- //
+		// We temporarily manage group 1 with output values of "1" and the group 2 with output values of "0" so that the accuracy can be properly measured by the neuron.
+		for (int currentRow=0; currentRow<neuron->n; currentRow++) {
+			if (neuron->Y[currentRow] == neuron->desiredValueForGroup1) {
+				neuron->Y[currentRow] = 1;
+			} else if (neuron->Y[currentRow] == neuron->desiredValueForGroup2) {
+				neuron->Y[currentRow] = 0;
+			} else {
+				printf("\nERROR: From the singleNeuronDnnStruct structure variable that was used to train a deep learning model, the value from the row %d of the allocated variable \"Y\" did not matched any of the specified values in the variables \"desiredValueForGroup1\" and \"desiredValueForGroup2\".\n");
+				exit(1);
+			}
+		}
 		
 		// ----------- EVALUATION OF THE INITIAL WEIGHT VALUES ----------- //
 		// We calculate the currently predicted output data made by the body of the neuron and store it in "f_x_tilde".
@@ -427,7 +439,7 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 		
 		// We apply the threshold define by the implementer in order to obtain a classification output and store it in "A_u".
 		for (int currentRow=0; currentRow<neuron->n; currentRow++) {
-			if (A_u[currentRow > neuron->threshold]) { // For performance purposes and compatibility with the accuracy method to be used, the classification output results will be either 1 or 0.
+			if (A_u[currentRow] > neuron->threshold) { // For performance purposes and compatibility with the accuracy method to be used, the classification output results will be either 1 or 0.
 				A_u[currentRow] = 1;
 			} else {
 				A_u[currentRow] = 0;
@@ -440,8 +452,18 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 		
 		// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
 		if (currentAccuracy > neuron->stopAboveThisAccuracy) {
-			printf("\nThe accuracy of the neuron has achieved a higher one with respect to the one that was specified as a goal the very first instant it was created.\n");
+			printf("\nThe accuracy (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal the very first instant it was created.\n", currentAccuracy);
 			
+			// ----------- ADDITIONAL POSTPROCESSING NEEDED WHEN A CLASSIFICATION MODEL IS REQUESTED ----------- //
+			// We restore the original output values defined for group 1 and group 2.
+			for (int currentRow=0; currentRow<neuron->n; currentRow++) {
+				if (neuron->Y[currentRow] == 1) {
+					neuron->Y[currentRow] = neuron->desiredValueForGroup1;
+				} else {
+					neuron->Y[currentRow] = neuron->desiredValueForGroup2;
+				}
+			}
+		
 			// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
 			free(TransposeOf_X_tilde);
 			free(f_x_tilde);
@@ -495,7 +517,7 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 			
 			// We apply the threshold define by the implementer in order to obtain a classification output and store it in "A_u".
 			for (int currentRow=0; currentRow<neuron->n; currentRow++) {
-				if (A_u[currentRow > neuron->threshold]) { // For performance purposes and compatibility with the accuracy method to be used, the classification output results will be either 1 or 0.
+				if (A_u[currentRow] > neuron->threshold) { // For performance purposes and compatibility with the accuracy method to be used, the classification output results will be either 1 or 0.
 					A_u[currentRow] = 1;
 				} else {
 					A_u[currentRow] = 0;
@@ -506,13 +528,6 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 			currentAccuracy = 0; // We reset the value of this variable in order to recalculate it.
 			getNeuronAccuracy(neuron->Y, A_u, neuron->n, &currentAccuracy); // We calculate the current accuracy of the neuron.
 			
-			// Determine whether it was requested that the neuron reports its learning progress or not.
-			if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
-				if ((currentEpoch % neuron->reportEachSpecifiedEpochs) == 0) { // Make neuron report at each "neuron->reportEachSpecifiedEpochs" epochs.
-		            printf("\nEpoch %d --> single neuron in DNN has achieved an accuracy of %f\n", currentEpoch+1, currentAccuracy);
-		        }
-			}
-			
 			// We compare the accuracy of the currently obtained weight values with respect to the latest best one recorded. If the current one is better than the recorded one, then store the current one in its place and do the same for the best recorded weight values.
 			if ((currentAccuracy) > (neuron->bestAccuracy)) {
 				neuron->bestAccuracy = currentAccuracy; // Pass the value of the current accuracy into "neuron->bestAccuracy".
@@ -521,10 +536,27 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 			    }
 			}
 			
+			// Determine whether it was requested that the neuron reports its learning progress or not.
+			if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
+				if ((currentEpoch % neuron->reportEachSpecifiedEpochs) == 0) { // Make neuron report at each "neuron->reportEachSpecifiedEpochs" epochs.
+		            printf("\nEpoch %d --> single neuron in DNN has achieved an accuracy of %f\n", currentEpoch+1, currentAccuracy);
+		        }
+			}
+			
 			// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
 			if (currentAccuracy > neuron->stopAboveThisAccuracy) {
-				printf("\nThe accuracy of the neuron has achieved a higher one with respect to the one that was specified as a goal when concluding the epoch number %d.\n", currentEpoch);
+				printf("\nThe accuracy (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal when concluding the epoch number %d.\n", currentAccuracy, currentEpoch+1);
 				
+				// ----------- ADDITIONAL POSTPROCESSING NEEDED WHEN A CLASSIFICATION MODEL IS REQUESTED ----------- //
+				// We restore the original output values defined for group 1 and group 2.
+				for (int currentRow=0; currentRow<neuron->n; currentRow++) {
+					if (neuron->Y[currentRow] == 1) {
+						neuron->Y[currentRow] = neuron->desiredValueForGroup1;
+					} else {
+						neuron->Y[currentRow] = neuron->desiredValueForGroup2;
+					}
+				}
+		
 				// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
 				free(TransposeOf_X_tilde);
 				free(f_x_tilde);
@@ -534,6 +566,16 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 				free(errorTerm);
 				free(errorTerm_dot_Xtilde);
 				return;
+			}
+		}
+		
+		// ----------- ADDITIONAL POSTPROCESSING NEEDED WHEN A CLASSIFICATION MODEL IS REQUESTED ----------- //
+		// We restore the original output values defined for group 1 and group 2.
+		for (int currentRow=0; currentRow<neuron->n; currentRow++) {
+			if (neuron->Y[currentRow] == 1) {
+				neuron->Y[currentRow] = neuron->desiredValueForGroup1;
+			} else {
+				neuron->Y[currentRow] = neuron->desiredValueForGroup2;
 			}
 		}
 	} else {
@@ -566,7 +608,7 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 		
 		// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
 		if (currentAccuracy > neuron->stopAboveThisAccuracy) {
-			printf("\nThe adjusted R squared of the neuron has achieved a higher one with respect to the one that was specified as a goal the very first instant it was created.\n");
+			printf("\nThe adjusted R squared (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal the very first instant it was created.\n", currentAccuracy);
 			
 			// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
 			free(TransposeOf_X_tilde);
@@ -623,13 +665,6 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 			currentAccuracy = 0; // We reset the value of this variable in order to recalculate it.
 			getNeuronAdjustedCoefficientOfDetermination(neuron->Y, A_u, neuron->n, neuron->m, 1, &currentAccuracy); // We calculate the current accuracy of the neuron.
 			
-			// Determine whether it was requested that the neuron reports its learning progress or not.
-			if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
-				if ((currentEpoch % neuron->reportEachSpecifiedEpochs) == 0) { // Make neuron report at each "neuron->reportEachSpecifiedEpochs" epochs.
-		            printf("\nEpoch %d --> single neuron in DNN has achieved an adjusted R squared of %f\n", currentEpoch+1, currentAccuracy);
-		        }
-			}
-			
 			// We compare the accuracy of the currently obtained weight values with respect to the latest best one recorded. If the current one is better than the recorded one, then store the current one in its place and do the same for the best recorded weight values.
 			if ((currentAccuracy) > (neuron->bestAccuracy)) {
 				neuron->bestAccuracy = currentAccuracy; // Pass the value of the current accuracy into "neuron->bestAccuracy".
@@ -638,9 +673,16 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 			    }
 			}
 			
+			// Determine whether it was requested that the neuron reports its learning progress or not.
+			if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
+				if ((currentEpoch % neuron->reportEachSpecifiedEpochs) == 0) { // Make neuron report at each "neuron->reportEachSpecifiedEpochs" epochs.
+		            printf("\nEpoch %d --> single neuron in DNN has achieved an adjusted R squared of %f\n", currentEpoch+1, currentAccuracy);
+		        }
+			}
+			
 			// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
 			if (currentAccuracy > neuron->stopAboveThisAccuracy) {
-				printf("\nThe adjusted R squared of the neuron has achieved a higher one with respect to the one that was specified as a goal when concluding the epoch number %d.\n", currentEpoch);
+				printf("\nThe adjusted R squared (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal when concluding the epoch number %d.\n", currentAccuracy, currentEpoch+1);
 				
 				// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
 				free(TransposeOf_X_tilde);
@@ -675,9 +717,9 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 	free(errorTerm_dot_Xtilde);
 	
 	if (neuron->isClassification == 1) {
-		printf("\nThe accuracy of the neuron did not surpased the defined goal but its training process has been successfully concluded.\n");
+		printf("\nThe best accuracy (%f) achieved by the neuron did not surpased the defined goal but its training process has been successfully concluded.\n", neuron->bestAccuracy);
 	} else {
-		printf("\nThe adjusted R squared of the neuron did not surpased the defined goal but its training process has been successfully concluded.\n");
+		printf("\nThe best adjusted R squared (%f) achieved by the neuron did not surpased the defined goal but its training process has been successfully concluded.\n", neuron->bestAccuracy);
 	}
 	return;
 }
@@ -695,14 +737,13 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 * 2) getTanhActivation() --> Applies the tanh activation function.
 * 3) getLogisticActivation() --> Applies the Logistic activation function.
 * 4) getRaiseToTheFirstPowerActivation() --> Applies the raise to the 1st power activation function.
-* 5) getSquareRootActivation() --> Applies the square root activation function.
-* 6) getRaiseToTheSecondPowerActivation() --> Applies the raise to the 2nd power activation function.
-* 7) getRaiseToTheThirdPowerActivation() --> Applies the raise to the 3rd power activation function.
-* 8) getRaiseToTheFourthPowerActivation() --> Applies the raise to the 4th power activation function.
-* 9) getRaiseToTheFifthPowerActivation() --> Applies the raise to the 5th power activation function.
-* 10) getRaiseToTheSixthPowerActivation() --> Applies the raise to the 6th power activation function.
-* 11) getFirstOrderDegreeExponentialActivation() --> Applies the 1st order degree exponential activation function.
-* 12) getSecondOrderDegreeExponentialActivation() --> Applies the 2nd order degree exponential activation function.
+* 5) getRaiseToTheSecondPowerActivation() --> Applies the raise to the 2nd power activation function.
+* 6) getRaiseToTheThirdPowerActivation() --> Applies the raise to the 3rd power activation function.
+* 7) getRaiseToTheFourthPowerActivation() --> Applies the raise to the 4th power activation function.
+* 8) getRaiseToTheFifthPowerActivation() --> Applies the raise to the 5th power activation function.
+* 9) getRaiseToTheSixthPowerActivation() --> Applies the raise to the 6th power activation function.
+* 10) getFirstOrderDegreeExponentialActivation() --> Applies the 1st order degree exponential activation function.
+* 11) getSecondOrderDegreeExponentialActivation() --> Applies the 2nd order degree exponential activation function.
 * For all these functions that apply a derivate, the following will
 * explain how to use their argument variables and what considerations
 * must have be taken into account:
@@ -748,14 +789,13 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 * 2) getDerivateTanhActivation() --> Derivative of tanh activation function.
 * 3) getDerivateLogisticActivation() --> Derivative of Logistic activation function.
 * 4) getDerivateRaiseToTheFirstPowerActivation() --> Derivative of raise to the 1st power activation function.
-* 5) getDerivateSquareRootActivation() --> Derivative of square root activation function.
-* 6) getDerivateRaiseToTheSecondPowerActivation() --> Derivative of raise to the 2nd power activation function.
-* 7) getDerivateRaiseToTheThirdPowerActivation() --> Derivative of raise to the 3rd power activation function.
-* 8) getDerivateRaiseToTheFourthPowerActivation() --> Derivative of raise to the 4th power activation function.
-* 9) getDerivateRaiseToTheFifthPowerActivation() --> Derivative of raise to the 5th power activation function.
-* 10) getDerivateRaiseToTheSixthPowerActivation() --> Derivative of raise to the 6th power activation function.
-* 11) getDerivateFirstOrderDegreeExponentialActivation() --> Derivative of 1st order degree exponential activation function.
-* 12) getDerivateSecondOrderDegreeExponentialActivation() --> Derivative of 2nd order degree exponential activation function.
+* 5) getDerivateRaiseToTheSecondPowerActivation() --> Derivative of raise to the 2nd power activation function.
+* 6) getDerivateRaiseToTheThirdPowerActivation() --> Derivative of raise to the 3rd power activation function.
+* 7) getDerivateRaiseToTheFourthPowerActivation() --> Derivative of raise to the 4th power activation function.
+* 8) getDerivateRaiseToTheFifthPowerActivation() --> Derivative of raise to the 5th power activation function.
+* 9) getDerivateRaiseToTheSixthPowerActivation() --> Derivative of raise to the 6th power activation function.
+* 10) getDerivateFirstOrderDegreeExponentialActivation() --> Derivative of 1st order degree exponential activation function.
+* 11) getDerivateSecondOrderDegreeExponentialActivation() --> Derivative of 2nd order degree exponential activation function.
 * For all these functions that apply a derivate, the following will
 * explain how to use their argument variables and what considerations
 * must have be taken into account:
@@ -857,18 +897,6 @@ static void getRaiseToTheFirstPowerActivation(double *u, double *A_u, struct sin
 static void getDerivateRaiseToTheFirstPowerActivation(double *u, double *A_u, double *dA_u, struct singleNeuronDnnStruct *neuron) {
     for (int currentRow=0; currentRow<neuron->n; currentRow++) {
 		dA_u[currentRow] = 1;
-	}
-}
-
-// --------------- SQUARE ROOT ACTIVATION FUNCTION --------------- //
-static void getSquareRootActivation(double *u, double *A_u, struct singleNeuronDnnStruct *neuron) {
-    for (int currentRow=0; currentRow<neuron->n; currentRow++) {
-		A_u[currentRow] = sqrt(u[currentRow]);
-	}
-}
-static void getDerivateSquareRootActivation(double *u, double *A_u, double *dA_u, struct singleNeuronDnnStruct *neuron) {
-    for (int currentRow=0; currentRow<neuron->n; currentRow++) {
-		dA_u[currentRow] = 1 / (2*A_u[currentRow]);
 	}
 }
 
@@ -1183,7 +1211,7 @@ static void getNeuronAccuracy(double *realOutputMatrix, double *predictedOutputM
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 29, 2021
-* LAST UPDATE: N/A
+* LAST UPDATE: JANUARY 09, 2022
 */
 void predictSingleNeuronDNN(struct singleNeuronDnnStruct *neuron, double *Y_hat) {
 	// If the machine learning samples are less than value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -1226,14 +1254,14 @@ void predictSingleNeuronDNN(struct singleNeuronDnnStruct *neuron, double *Y_hat)
 	// We calculate, in its continous (regression) form, the currently predicted output data made by the neuron and store it in "Y_hat" by applying the desired activation function to "f_x_tilde".
 	// NOTE: Remember that "Y_hat" = A(u) = "A_u".
 	// NOTE: "activationFunctions" is a pointer to each of the individual activation functions that were developed as static void functions.
-    static void (*activationFunctions[])(double *, double *, struct singleNeuronDnnStruct *) = {getReluActivation, getTanhActivation, getLogisticActivation, getRaiseToTheFirstPowerActivation, getSquareRootActivation, getRaiseToTheSecondPowerActivation, getRaiseToTheThirdPowerActivation, getRaiseToTheFourthPowerActivation, getRaiseToTheFifthPowerActivation, getRaiseToTheSixthPowerActivation, getFirstOrderDegreeExponentialActivation, getSecondOrderDegreeExponentialActivation};
+    static void (*activationFunctions[])(double *, double *, struct singleNeuronDnnStruct *) = {getReluActivation, getTanhActivation, getLogisticActivation, getRaiseToTheFirstPowerActivation, getRaiseToTheSecondPowerActivation, getRaiseToTheThirdPowerActivation, getRaiseToTheFourthPowerActivation, getRaiseToTheFifthPowerActivation, getRaiseToTheSixthPowerActivation, getFirstOrderDegreeExponentialActivation, getSecondOrderDegreeExponentialActivation};
 	(*activationFunctions[neuron->activationFunctionToBeUsed])(Y_hat, Y_hat, neuron); // We calculate A(u) and store it in the pointer variable "Y_hat".
 	
 	// Determine if the given model of a single neuron in Deep Neural Network is meant for a classification or for a regression problem to then make the predictions accordingly.
 	if (neuron->isClassification == 1) {
 		// We apply the threshold define by the implementer in order to obtain a classification output and store it in "Y_hat".
-		for (int currentRow=0; currentRow<neuron->n; currentRow++) {
-			if (Y_hat[currentRow > neuron->threshold]) {
+		for (int currentRow=0; currentRow<(neuron->n); currentRow++) {
+			if (Y_hat[currentRow] > neuron->threshold) {
 				Y_hat[currentRow] = neuron->desiredValueForGroup1; // Group 1 has been predicted.
 			} else {
 				Y_hat[currentRow] = neuron->desiredValueForGroup2; // Group 2 has been predicted.

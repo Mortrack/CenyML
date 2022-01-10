@@ -54,8 +54,6 @@ static void getLogisticActivation(double *, double *, struct singleNeuronDnnStru
 static void getDerivateLogisticActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
 static void getRaiseToTheFirstPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
 static void getDerivateRaiseToTheFirstPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
-static void getSquareRootActivation(double *, double *, struct singleNeuronDnnStruct *);
-static void getDerivateSquareRootActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
 static void getRaiseToTheSecondPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
 static void getDerivateRaiseToTheSecondPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
 static void getRaiseToTheThirdPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
