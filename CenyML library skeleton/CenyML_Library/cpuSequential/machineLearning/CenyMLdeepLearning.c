@@ -222,7 +222,7 @@
 *						 its weight values one time.
 *
 * @param char isReportLearningProgress = This argument variable will work as a
-*						  		 		 flag to indicate to the neron if it is
+*						  		 		 flag to indicate to the neuron if it is
 *								 		 desired that it reports its learning
 *										 progress to the user. The following
 *										 will list the possible valid outcomes

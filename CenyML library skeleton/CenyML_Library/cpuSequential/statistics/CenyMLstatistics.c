@@ -611,3 +611,192 @@ void getQuickMode(char desiredSortMethod[], int n, int m, double *inputMatrix, i
 	return;
 }
 
+
+/**
+* The "getMeanIntervals()" function is used to calculate the mean
+* intervals with respect to the given mean(s); standard deviation(s)
+* and; the desired trust interval and, its result is stored in its
+* pointer argument variable "meanIntervals". In addition, the
+* implementer can choose whether to use the standard normal
+* distribution (z distribution) or the t distribution in order to
+* make this function calculate the area under the normal curve
+* with the most convenient option.
+
+* IMPORTANT NOTE: The way the mean intervals are calculated by this
+* function is just as in the book "Probabilidad y estadistica para
+* ingenieria y ciencia 8va edicion (2007)"  of Walpole Myers Myers
+* Ye, as explained in the pages 275, 277 and 279., which is made by
+* using the "A.3" and "A.4" appendix tables of that book.
+*
+* 
+* @param double *mean - This argument will contain the pointer to
+*						a memory allocated variable in which the
+*						mean(s) is(are) expected to be already
+*						stored. In addition, each column of this
+*						variable will be considered as a different
+*						mean. IT IS INDISPENSABLE THAT THIS VARIABLE
+*						IS ALLOCATED BEFORE CALLING THIS FUNCTION AND
+*						INNITIALIZED WITH ITS CORRESPONDING MEAN
+*						VALUES AND A VARIABLE SIZE OF "m" 'DOUBLE'
+*						MEMORY SPACES.
+*
+* @param double *standardDeviation - This argument will contain the
+*						pointer to a memory allocated variable in
+*						which the standard deviation(s) is(are)
+*						expected to be already stored. In addition,
+*						each column of this variable will be
+*						considered as a different standard deviation.
+*						IT IS INDISPENSABLE THAT THIS VARIABLE IS
+*						ALLOCATED BEFORE CALLING THIS FUNCTION AND
+*						INNITIALIZED WITH ITS CORRESPONDING STANDARD
+*						DEVIATION VALUES AND A VARIABLE SIZE OF "m"
+*						'DOUBLE' MEMORY SPACES.
+*
+* @param float desiredTrustInterval - This argument will represent the
+*									  desired trust interval to be
+*									  calculated and used for the
+*									  calculation of the corresponding
+*									  mean intervals.
+*
+* @param char isTdistribution = This argument variable will work as a
+*						  		flag to indicate whether it is desired
+*								to calculate the area under the normal
+*								curve by using the standard normal
+*								distribution (z distribution) or the t
+*								distribution. The following will list
+*								the possible valid outcomes for this
+*								variable:
+*					  		    1) "isTdistribution" = (int) 0:
+*									This function will calculate the
+*									area under a normal curve by using
+*									the standard normal distribution
+*									(z distribution) method. Remember,
+*									that this method is used when the
+*									true standard deviation is known.
+*									However, it is often used when the
+*									true standard deviation is not
+*									known but where the samples used
+*									for its calculation were equal or
+*									greater than 30 (because beyond
+*									that number of samples, the
+*									difference is very little between
+*									the z distribution and the t
+*									distribution).
+*					  		    2) "isTdistribution" = (int) 1:
+*									This function will calculate the
+*									area under a normal curve by using
+*									the t distribution method. Remember,
+*									that this method is used when the
+*									true standard deviation is not known.
+*									IMPORTANT NOTE: FOR NOW, THIS
+*									FUNCTION WILL ONLY BE ABLE TO
+*									CALCULATE UP TO "n=<31" because other
+*									values have yet to be programmed.
+*
+* @param int n - This argument will represent the total number
+*				 of samples (rows) that the input matrix has, with which 
+*				 the output data was obtained.
+*
+* @param int m - This argument will represent the total number
+*				 of features (independent variables) that the input
+*				 matrix has, with which the output data was obtained.
+*
+* @param double *meanIntervals - This argument will contain the pointer
+*					to a memory allocated variable in which we will
+*					store the mean intervals with respect to the values
+*					of each independent variable (column) contained in
+*					the argument variables "mean" and
+*					"standardDeviation". In regards to this, both the
+*					lower and upper mean intervals, corresponding to
+*					the first independent variable from the argument
+*					variables "mean" and "standardDeviation", will be
+*					stored in the row index 0 of the argument variable
+*					"meanIntervals". The lower and upper mean intervals
+*					of the second independent variable of "mean" and
+*					"standardDeviation" will be stored in the row index
+*					1 of "meanIntervals" and so on up until the lower
+*					and upper mean intervals of the last independent
+*					variable of "mean" and "standardDeviation" will be
+*					stored in the row index "m-1" of "meanIntervals".
+*					In addition, for all the rows in "meanIntervals",
+*					the column index 0 will contain the lower mean
+*					interval and its column index 1 will contain the
+*					upper mean interval. FINALLY, IT IS INDISPENSABLE
+*					THAT THIS VARIABLE IS ALLOCATED BEFORE CALLING
+*					THIS FUNCTION WITH A VARIABLE SIZE OF "m" TIMES
+*					"2" 'DOUBLE' MEMORY SPACES.
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
+*       "meanIntervals".
+* 
+* @return void
+*
+* @author Miranda Meza Cesar
+* CREATION DATE: JANUARY 11, 2021
+* LAST UPDATE: N/A
+*/
+void getMeanIntervals(double *mean, double *standardDeviation, float desiredTrustInterval, char isTdistribution, int n, int m, double *meanIntervals) {
+	// If the requested desired trust interval is not within the options that the CenyML library can calculate, then emit an
+	// error message and terminate the program. Otherwise, continue with the program.
+	if ((desiredTrustInterval!=95) && (desiredTrustInterval!=99) && (desiredTrustInterval!=(float)(99.9))) {
+		printf("\nERROR: The requested trust interval has not yet been programmed in this function. Please select one of the available ones: 95, 99 or 99.9.\n");
+		exit(1);
+	}
+	// If the samples are less than value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (n < 2) {
+		printf("\nERROR: The defined samples must be equal or greater than 2 for this particular algorithm.\n");
+		exit(1);
+	}
+	// If the independent variables are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (m < 1) {
+		printf("\nERROR: The independent variables must be equal or greater than 1 for this particular algorithm.\n");
+		exit(1);
+	}
+	// If the "t distribution" method was chosen and "n" is greater than 31, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if ((isTdistribution==1) && (n>31)) {
+		printf("\nERROR: When the t distribution is chosen for this algorithm, then the defined samples must be less than 32. This is because t values with samples equal or greater than 32 have yet to be added into this library.\n");
+		exit(1);
+	}
+	// If "t distribution" is different from "1" or "0", then emit an error message and terminate the program. Otherwise, continue with the program.
+	if ((isTdistribution!=1) && (isTdistribution!=0)) {
+		printf("\nERROR: An invalid value for the argument variable \"isTdistribution\" has been defined. Please store a value of either (int) 1 or (int) 0.\n");
+		exit(1);
+	}
+	
+	// Calculate the area under the normal curve with the requested method.
+	double areaUnderNormalCurve; // This variable will store the area under the normal curve (which will be either with the "z" or the "t" distribution).
+	if (isTdistribution == 1) {
+		// We calculate the t distribution (t_{alpha/2}).
+		if (desiredTrustInterval == 95) { // If the desired trust interval is 95%, then get the following t distribution (t_{alpha/2}).
+			double tValue[] = {12.706,4.303,3.182,2.776,2.571,2.447,2.365,2.306,2.262,2.228,2.201,2.179,2.160,2.145,2.131,2.120,2.110,2.101,2.093,2.086,2.080,2.074,2.069,2.064,2.060,2.056,2.052,2.048,2.045,2.042};
+			areaUnderNormalCurve = tValue[n-2]; // We retrieve and store the corresponding "t" value.
+		} else if (desiredTrustInterval == 99) { // If the desired trust interval is 99%, then get the following t distribution (t_{alpha/2}).
+			double tValue[] = {63.656,9.925,5.841,4.604,4.032,3.707,3.499,3.355,3.250,3.196,3.106,3.055,3.012,2.977,2.947,2.921,2.898,2.878,2.861,2.845,2.831,2.819,2.807,2.797,2.787,2.779,2.771,2.763,2.756,2.750};
+			areaUnderNormalCurve = tValue[n-2]; // We retrieve and store the corresponding "t" value.
+		} else { // If the desired trust interval is 99.9%, then get the following t distribution (t_{alpha/2}).
+			double tValue[] = {636.578,31.600,12.924,8.610,6.869,5.959,5.408,5.041,4.781,4.587,4.437,4.318,4.221,4.140,4.073,4.015,3.965,3.922,3.883,3.850,3.819,3.792,3.768,3.745,3.725,3.707,3.689,3.674,3.660,3.646};
+			areaUnderNormalCurve = tValue[n-2]; // We retrieve and store the corresponding "t" value.
+		}
+	} else {
+		// We calculate the standard normal distribution (z_{alpha/2}}.
+		if (desiredTrustInterval == 95) { // If the desired trust interval is 95%, then get the following z distribution (z_{alpha/2}).
+			areaUnderNormalCurve = 1.96;
+		} else if (desiredTrustInterval == 99) { // If the desired trust interval is 99%, then get the following z distribution (z_{alpha/2}).
+			areaUnderNormalCurve = 2.576;
+		} else { // If the desired trust interval is 99.9%, then get the following z distribution (z_{alpha/2}).
+			areaUnderNormalCurve = 3.29;
+		}
+	}
+	
+	// Calculate the mean intervals.
+	int currentRowTimesTwo; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
+	double squareRootOfN = sqrt(n); // This variable is used to store a repetitively used value, for performance purposes.
+	for (int currentRow=0; currentRow<m; currentRow++) {
+    	currentRowTimesTwo = currentRow * 2;
+		meanIntervals[currentRowTimesTwo] = mean[currentRow] - areaUnderNormalCurve * standardDeviation[currentRow] / squareRootOfN; // We calculate and store the lower mean intervals that were requested.
+    	meanIntervals[1 + currentRowTimesTwo] = mean[currentRow] + areaUnderNormalCurve * standardDeviation[currentRow] / squareRootOfN; // We calculate and store the upper mean intervals that were requested.
+	}
+	
+	return;
+}
+
