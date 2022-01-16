@@ -76,6 +76,9 @@ static void getDerivateSecondOrderDegreeExponentialActivation_parallelCPU(void *
 static void getNeuronAdjustedCoefficientOfDetermination_parallelCPUvoidPart1(void *);
 static void *getNeuronAdjustedCoefficientOfDetermination_parallelCPUvoidPart2(void *);
 static void getNeuronAccuracy_parallelCPU(double *, double *, int, double *);
+
+static void getNeuronAdjustedCoefficientOfDetermination(double *, double *, int, int, int, double *);
+
 void predictSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *, double *);
 
 #endif

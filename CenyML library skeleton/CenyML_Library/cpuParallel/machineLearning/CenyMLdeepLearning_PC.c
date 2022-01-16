@@ -37,7 +37,6 @@ struct cpuParallelData {
 	double *w_old; // Allocate the memory required for the variable "w_old", which will contain the previous weight values that were obtained with respect to the current ones.
 	double *errorTerm; // Allocate the memory required for the variable "errorTerm", which will contain the current error term value to be taken into consideration for the update of the weight values.
 	double *errorTerm_dot_Xtilde; // Allocate the memory required for the variable "errorTerm_dot_Xtilde", which will contain the resulting dot product between the error term and the transpose of "X_tilde".
-	double *thread_w_new; // Allocate the memory required for the variable "thread_w_new", which will contain all the individual results of "w_new" obtained by each thread so that they are summed afterwards and the true "w_new" is obtained.
 };
 
 
@@ -434,10 +433,10 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 	double totalSumOfAccuracyTerm1 = 0; // This variable is used to sum all the contributions of each CPU thread that were made to get the accuracy term 1.
 	double totalSumOfAccuracyTerm2 = 0; // This variable is used to sum all the contributions of each CPU thread that were made to get the accuracy term 2. 
 	double currentAccuracy = 0; // Declare the variable "currentAccuracy", which will contain the current accuracy of the neuron.
-    double *w_old = (double *) malloc((neuron->m+1)*neuron->p*sizeof(double)); // Allocate the memory required for the variable "w_old", which will contain the previous weight values that were obtained with respect to the current ones.
+    double *w_old = (double *) malloc(mPlusOne*neuron->p*sizeof(double)); // Allocate the memory required for the variable "w_old", which will contain the previous weight values that were obtained with respect to the current ones.
 	double *errorTerm = (double *) malloc(neuron->n*neuron->p*sizeof(double)); // Allocate the memory required for the variable "errorTerm", which will contain the current error term value to be taken into consideration for the update of the weight values.
-	double *errorTerm_dot_Xtilde = (double *) malloc((neuron->m+1)*neuron->cpuThreads*sizeof(double)); // Allocate the memory required for the variable "errorTerm_dot_Xtilde", which will contain the resulting dot product between the error term and the transpose of "X_tilde".
-	double *thread_w_new = (double *) malloc((neuron->m+1)*neuron->cpuThreads*sizeof(double)); // Allocate the memory required for the variable "thread_w_new", which will contain all the individual results of "w_new" obtained by each thread so that they are summed afterwards and the true "w_new" is obtained.
+	double *errorTerm_dot_Xtilde = (double *) malloc(mPlusOne*neuron->cpuThreads*sizeof(double)); // Allocate the memory required for the variable "errorTerm_dot_Xtilde", which will contain the resulting dot product between the error term and the transpose of "X_tilde".
+	double totalErrorTerm_dot_Xtilde = 0; // This variable is used to store the sum of each of the error terms that were obtained by each of the CPU threads.
 	int currentRowTimesN; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int currentRowTimesCpuThreads; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	for (int currentThread; currentThread<(neuron->cpuThreads); currentThread++) { // We pass the pointers of all the variables that will be used by the CPU threads to be created.
@@ -448,12 +447,10 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 		threadData[currentThread].w_old = w_old;
 		threadData[currentThread].errorTerm = errorTerm;
 		threadData[currentThread].errorTerm_dot_Xtilde = errorTerm_dot_Xtilde;
-		threadData[currentThread].thread_w_new = thread_w_new;
 	}
 	for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
 		pthread_join(threadId[currentThread], NULL);
 	}
-	
 	
 	// Determine if the requested model to generate is meant for a classification or for a regression problem to then solve it accordingly.
 	if (neuron->isClassification == 1) {/*
@@ -528,7 +525,6 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 			free(w_old);
 			free(errorTerm);
 			free(errorTerm_dot_Xtilde);
-			free(thread_w_new);
 			return;
 		}
 		
@@ -622,7 +618,6 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 				free(w_old);
 				free(errorTerm);
 				free(errorTerm_dot_Xtilde);
-				free(thread_w_new);
 				return;
 			}
 		}
@@ -694,7 +689,6 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 			free(w_old);
 			free(errorTerm);
 			free(errorTerm_dot_Xtilde);
-			free(thread_w_new);
 			return;
 		}
 		
@@ -714,18 +708,51 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 			}
 			
 			// We update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new") by summing all the individual contributions made by the previous parallelization process.
-			for (int currentRow=0; currentRow<(threadData[0].mPlusOne); currentRow++) {
-				neuron->w_new[currentRow] = 0;
+			for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
+				totalErrorTerm_dot_Xtilde = 0;
 				currentRowTimesCpuThreads = currentRow * neuron->cpuThreads;
-				for (int currentThread=0; currentRow<(neuron->cpuThreads); currentRow++) {
-					neuron->w_new[currentRow] += threadData[0].thread_w_new[currentThread + currentRowTimesCpuThreads];
-				}	
+				for (int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) {
+					totalErrorTerm_dot_Xtilde += threadData[0].errorTerm_dot_Xtilde[currentThread + currentRowTimesCpuThreads];
+				}
+				neuron->w_new[currentRow] = w_old[currentRow] + neuron->learningRate * totalErrorTerm_dot_Xtilde;
 			}
 			
-			printf("\n%f, %f\n\n", neuron->w_new[0], neuron->w_new[1]);
 			
 			
+			// TEST TES TEST TEST TEST TES TEST TEST TEST TES TEST TEST TEST TES TEST TEST TEST TES TEST TEST TEST TES TEST TEST TEST TES TEST TEST
 			
+			
+			/*
+			// Calculate the error term obtainable with the current weight values.
+			for (int currentSample=0; currentSample<(neuron->n); currentSample++) {
+				errorTerm[currentSample] = (neuron->Y[currentSample] - A_u[currentSample]) * dA_u[currentSample];
+			}
+			
+			// We update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new").
+			for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
+				errorTerm_dot_Xtilde[currentRow] = 0;
+				currentRowTimesN = currentRow*neuron->n;
+				for (int currentSample=0; currentSample<(neuron->n); currentSample++) {
+					// We first multiply all the samples of the "errorTerm" with all the samples of the transpose of "X_tilde".
+					errorTerm_dot_Xtilde[currentRow] += errorTerm[currentSample] * TransposeOf_X_tilde[currentSample + currentRowTimesN];
+				}
+				// We now multiple the previous result with the learning rate and then update for the current weight value (which is indicated by "currentRow").
+				neuron->w_new[currentRow] = w_old[currentRow] + neuron->learningRate * errorTerm_dot_Xtilde[currentRow];
+			}
+			*/
+			
+			//printf("\nw_0=%.10f, w_1=%.10f\n\n", neuron->w_new[0], neuron->w_new[1]);
+			/*
+			for (int cr=0; cr<(neuron->n); cr++) {
+				for (int cc=0; cc<neuron->p; cc++) {
+					printf("%f, ", dA_u[cc + cr*neuron->p]);
+				}
+				printf("\n");
+			}
+			*/
+			
+			
+			// TEST TES TEST TEST TEST TES TEST TEST TEST TES TEST TEST TEST TES TEST TEST TEST TES TEST TEST TEST TES TEST TEST TEST TES TEST TEST
 			
 			
 			// We recalculate "f_x_tilde", "A(u)", "dA(u)" and "the part 1 of the accuracy terms".
@@ -791,7 +818,6 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 				free(w_old);
 				free(errorTerm);
 				free(errorTerm_dot_Xtilde);
-				free(thread_w_new);
 				return;
 			}
 		}
@@ -815,7 +841,6 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 	free(w_old);
 	free(errorTerm);
 	free(errorTerm_dot_Xtilde);
-	free(thread_w_new);
 	
 	if (neuron->isClassification == 1) {
 		printf("\nThe best accuracy (%f) achieved by the neuron did not surpased the defined goal but its training process has been successfully concluded.\n", neuron->bestAccuracy);
@@ -956,9 +981,28 @@ static void *getErrorAndUpdateWeightValues(void *threadVariable) {
 			// We first multiply all the samples of the "errorTerm" with all the samples of the transpose of "X_tilde".
 			threadData->errorTerm_dot_Xtilde[currentThreadPlusCurrentRowTimesCpuThreads] += threadData->errorTerm[currentSample] * threadData->TransposeOf_X_tilde[currentSample + currentRowTimesN];
 		}
-		// We now multiple the previous result with the learning rate and then update the contribution made by the current CPU thread for the current weight value (which is indicated by "currentRow").
-		threadData->thread_w_new[currentThreadPlusCurrentRowTimesCpuThreads] = threadData->w_old[currentRow] + threadData->neuronData.learningRate * threadData->errorTerm_dot_Xtilde[currentThreadPlusCurrentRowTimesCpuThreads];
 	}
+	
+	
+	
+	// TEST TEST TEST TEST	 TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+	// We update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new").
+	/*
+	for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
+		errorTerm_dot_Xtilde[currentRow] = 0;
+		currentRowTimesN = currentRow*neuron->n;
+		for (int currentSample=0; currentSample<(neuron->n); currentSample++) {
+			// We first multiply all the samples of the "errorTerm" with all the samples of the transpose of "X_tilde".
+			errorTerm_dot_Xtilde[currentRow] += errorTerm[currentSample] * TransposeOf_X_tilde[currentSample + currentRowTimesN];
+		}
+		// We now multiple the previous result with the learning rate and then update for the current weight value (which is indicated by "currentRow").
+		neuron->w_new[currentRow] = w_old[currentRow] + neuron->learningRate * errorTerm_dot_Xtilde[currentRow];
+	}
+	*/
+	// TEST TEST TEST TEST	 TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+	
+	
+	
 	
 	return NULL;
 }

@@ -414,7 +414,7 @@ void getSingleNeuronDNN(struct singleNeuronDnnStruct *neuron) {
 			} else if (neuron->Y[currentRow] == neuron->desiredValueForGroup2) {
 				neuron->Y[currentRow] = 0;
 			} else {
-				printf("\nERROR: From the singleNeuronDnnStruct structure variable that was used to train a deep learning model, the value from the row %d of the allocated variable \"Y\" did not matched any of the specified values in the variables \"desiredValueForGroup1\" and \"desiredValueForGroup2\".\n");
+				printf("\nERROR: From the singleNeuronDnnStruct structure variable that was used to train a deep learning model, the value from the row %d of the allocated variable \"Y\" did not matched any of the specified values in the variables \"desiredValueForGroup1\" and \"desiredValueForGroup2\".\n", currentRow);
 				exit(1);
 			}
 		}

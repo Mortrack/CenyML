@@ -18,8 +18,8 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-//#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
+#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
 	struct singleNeuronDnnStruct_parallelCPU neuron1; // We create a singleNeuronDnnStruct_parallelCPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
-	neuron1.cpuThreads = 12; // This variable will define the number of CPU threads that wants to be used to parallelize the trainings and predictions made by the neuron to be created.
+	neuron1.cpuThreads = 20; // This variable will define the number of CPU threads that wants to be used to parallelize the trainings and predictions made by the neuron to be created.
 	neuron1.m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	neuron1.isInitial_w = 1; // This variable will indicate whether or not initial values will be given by the implementer (with value of 1) or if random ones are going to be used (with value of 0).
@@ -96,6 +96,7 @@ int main(int argc, char **argv) {
 	neuron1.learningRate = 0.0000000001; // This variable stores the desired learning rate for the neuron to be created.
 	neuron1.stopAboveThisAccuracy = 0.99; // The value of this variable is used as a stop function for the single neuron in DNN learning proccess.
 	neuron1.maxEpochs = 50000; // This variable stores the desired value for the maximum permitted epochs for the training process of the neuron.
+	//neuron1.maxEpochs = 30863; // This variable stores the desired value for the maximum permitted epochs for the training process of the neuron.
 	neuron1.isReportLearningProgress = 1; // The value of this variable tells the neuron if it is desired that it reports its learning progress (with a value of 1) or not (with a value of 0).
 	neuron1.reportEachSpecifiedEpochs = neuron1.maxEpochs / 10; // This variable tells the neuron that it has to report each several times, which is defined by the value contained in this variable.
 	double b_ideal[2]; // This variable will be used to contain the ideal coefficient values that the model to be trained should give.
