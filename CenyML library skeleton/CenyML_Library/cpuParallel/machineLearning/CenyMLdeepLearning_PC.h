@@ -48,9 +48,11 @@ struct singleNeuronDnnStruct_parallelCPU {
 };
 
 void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *);
-static void *getTransposeOfInputData(void *);
-static void *getFxTilde_Au_dAu_and_accuracyTermsPart1(void *);
-static void *getErrorAndUpdateWeightValues(void *);
+static void *getTransposeOfInputData_parallelCPU(void *);
+static void *transformOutputValuesToBinary_parallelCPU(void *);
+static void *getFxTilde_Au_dAu_and_accuracyTermsPart1_parallelCPU(void *);
+static void *transformOutputValuesToRequestedOnes_parallelCPU(void *);
+static void *getErrorAndUpdateWeightValues_parallelCPU(void *);
 static void getReluActivation_parallelCPU(void *);
 static void getDerivateReluActivation_parallelCPU(void *);
 static void getTanhActivation_parallelCPU(void *);
@@ -75,11 +77,9 @@ static void getSecondOrderDegreeExponentialActivation_parallelCPU(void *);
 static void getDerivateSecondOrderDegreeExponentialActivation_parallelCPU(void *);
 static void getNeuronAdjustedCoefficientOfDetermination_parallelCPUvoidPart1(void *);
 static void *getNeuronAdjustedCoefficientOfDetermination_parallelCPUvoidPart2(void *);
-static void getNeuronAccuracy_parallelCPU(double *, double *, int, double *);
-
-static void getNeuronAdjustedCoefficientOfDetermination(double *, double *, int, int, int, double *);
-
+static void getNeuronAccuracy_parallelCPU(void *);
 void predictSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *, double *);
+static void *getPredictSingleNeuronDNN_parallelCPU(void *);
 
 #endif
 

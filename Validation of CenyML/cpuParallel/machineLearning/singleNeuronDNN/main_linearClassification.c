@@ -1,16 +1,17 @@
 /*
 * This program will read a .csv file containing the data of a linear
-* equation system to then exctact all its data. Its input data will be
+* equation system to then extract all its data. Its input data will be
 * saved into the matrix "X" and its output data into the matrix "Y".
 * Subsequently, a single neuron in Deep Neural Network will be used to
-* obtain the best fitting coefficient values of such data. Then,
+* obtain the best fitting coefficient values of such data by applying
+* such algorithm with CPU parallelism through POSIX Threads. Then,
 * some evaluation metrics will be applied. Next, two new .csv files
 * will be created to save: 1) the coefficient values that were
 * obtained and 2) the results obtained with the evaluation metrics.
 * Finally, a plot of the predicted data by the obtained model with
 * respect to the actual data, will be plotted and saved into a .png
 * file. Both the .csv files and this .png file will serve for further
-* comparations and validation purposes.
+* comparisons and validation purposes.
 */
 
  // ------------------------------------------------- //
@@ -19,12 +20,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
-//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.h" // library to use the classification evaluation metrics of CenyML.
-#include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h" // library to use the deep learning algorithms of CenyML.
+#include "../../../../CenyML library skeleton/CenyML_Library/cpuParallel/machineLearning/CenyMLdeepLearning_PC.h" // library to use the deep learning algorithms of CenyML with CPU parallelism.
 
 
 // ---------------------------------------------- //
@@ -99,11 +99,12 @@ double *linspace(double startFrom, double endHere, int n) {
 /**
 * This is the main function of the program. Here we will read a .csv file and
 * then apply the single neuron in Deep Neural Network on the input and output
-* data contained in it. In addition, some evaluation metrics will be applied
-* to evaluate the model. Finally, the results will be saved in two new .csv
-* files and in a .png file for further comparation and validation purposes.
+* data contained in it by applying such algorithm with CPU parallelism through
+* POSIX Threads. In addition, some evaluation metrics will be applied to
+* evaluate the model. Finally, the results will be saved in two new .csv
+* files and in a .png file for further comparison and validation purposes.
 *
-* @param int argc - This argument will posses the length number of what is
+* @param int argc - This argument will possess the length number of what is
 *		    contained within the argument "*argv[]".
 *		    NOTE1: This argument will be at least "1" in value because
 *		    its first argument is the title of this program.
@@ -115,7 +116,7 @@ double *linspace(double startFrom, double endHere, int n) {
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 10, 2021
+* CREATION DATE: JANUARY 17, 2021
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
@@ -128,21 +129,22 @@ int main(int argc, char **argv) {
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
-	struct singleNeuronDnnStruct neuron1; // We create a singleNeuronDnnStruct structure variable to manage the data input and output data of the single neuron in DNN that will be created.
+	struct singleNeuronDnnStruct_parallelCPU neuron1; // We create a singleNeuronDnnStruct_parallelCPU_parallelCPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
+	neuron1.cpuThreads = 15; // This variable will define the number of CPU threads that wants to be used to parallelize the training and predictions made by the neuron to be created.
 	neuron1.m = 2; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	neuron1.isInitial_w = 1; // This variable will indicate whether or not initial values will be given by the implementer (with value of 1) or if random ones are going to be used (with value of 0).
 	neuron1.w_first = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_first", which will store the initial coefficient values of the neuron to be created.
 	neuron1.w_first[0] = 0; // We define the customized desired value for the bias of the neuron to be created.
-	neuron1.w_first[1] = 0; // We define the cuztomized desired value for the weight_1 value of the neuron to be created.
-	neuron1.w_first[2] = 0; // We define the cuztomized desired value for the weight_2 value of the neuron to be created.
+	neuron1.w_first[1] = 0; // We define the customized desired value for the weight_1 value of the neuron to be created.
+	neuron1.w_first[2] = 0; // We define the customized desired value for the weight_2 value of the neuron to be created.
 	neuron1.isClassification = 1; // This variable will indicate whether or not it is desired that the neuron considers the input data for a classification (with a vlaue of 1) or a regression problem (with a value of 0).
 	neuron1.threshold = 0; // This variable will be used to store the desired threshold value to be used in classification problems by the neuron to be created.
 	neuron1.desiredValueForGroup1 = 1; // This variable will be used to store the label to be used for the group 1 in classification problems by the neuron to be created.
 	neuron1.desiredValueForGroup2 = -1; // This variable will be used to store the label to be used for the group 2 in classification problems by the neuron to be created.
 	neuron1.activationFunctionToBeUsed = 3; // This variable tells the neuron what activation function to use (see the commented documentation in the function "getSingleNeuronDNN()" for more details).
 	neuron1.learningRate = 0.0000000001; // This variable stores the desired learning rate for the neuron to be created.
-	neuron1.stopAboveThisAccuracy = 0.99; // The value of this variable is used as a stop function for the single neuron in DNN learning proccess.
+	neuron1.stopAboveThisAccuracy = 0.99; // The value of this variable is used as a stop function for the single neuron in DNN learning process.
 	neuron1.maxEpochs = 1000; // This variable stores the desired value for the maximum permitted epochs for the training process of the neuron1.
 	neuron1.isReportLearningProgress = 1; // The value of this variable tells the neuron if it is desired that it reports its learning progress (with a value of 1) or not (with a value of 0).
 	neuron1.reportEachSpecifiedEpochs = neuron1.maxEpochs / 10; // This variable tells the neuron that it has to report each several times, which is defined by the value contained in this variable.
@@ -196,7 +198,7 @@ int main(int argc, char **argv) {
 	neuron1.w_best = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_best", which will store the best coefficient values identified by the neuron to be created, after its training process.
 	neuron1.w_new = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_new", which will store the last coefficient values identified by the neuron to be created, after its training process.
 	// We apply the single neuron in Deep Neural Network algorithm with respect to the input matrix "neuron1.X" and the result is stored in the memory location of the pointer "b".
-	getSingleNeuronDNN(&neuron1);
+	getSingleNeuronDNN_parallelCPU(&neuron1);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the single neuron in Deep Neural Network with the input data (neuron1.X).
 	printf("CenyML single neuron in Deep Neural Network algorithm elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -208,7 +210,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(neuron1.n*sizeof(double));
 	// We obtain the predicted values with the machine learning model that was obtained.
-	predictSingleNeuronDNN(&neuron1, Y_hat);
+	predictSingleNeuronDNN_parallelCPU(&neuron1, Y_hat);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
 	printf("The CenyML predictions with the model that was obtained elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -367,13 +369,14 @@ int main(int argc, char **argv) {
 	double *X1 = linspace(minX1, maxX1, n_ofLinearlySpacedArray);
 	double *X2 = linspace(minX2, maxX2, n_ofLinearlySpacedArray);
 	// In order to continue with the plotting process, we create a new input matrix that contains the data of the vectors that were created, which will be used to create the background of the plot to be created.
-	struct singleNeuronDnnStruct bgNeuron; // We create a singleNeuronDnnStruct structure variable to create/train a neuron to generate the predicted region of the plot chart to be generated.
+	struct singleNeuronDnnStruct_parallelCPU bgNeuron; // We create a singleNeuronDnnStruct_parallelCPU structure variable to create/train a neuron to generate the predicted region of the plot chart to be generated.
+	bgNeuron.cpuThreads = neuron1.cpuThreads; // This variable will contain the number of CPU threads that wants to be used to parallelize the training and predictions made by the neuron to be created.
 	bgNeuron.m = neuron1.m; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	bgNeuron.p = neuron1.p; // This variable will contain the number of outputs that the output matrix is expected to have.
 	bgNeuron.w_best = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "bgNeuron.w_first", which will store the initial coefficient values of the neuron to be created.
 	bgNeuron.w_best[0] = neuron1.w_best[0]; // We define the customized desired value for the bias of the neuron to be created.
-	bgNeuron.w_best[1] = neuron1.w_best[1]; // We define the cuztomized desired value for the weight_1 value of the neuron to be created.
-	bgNeuron.w_best[2] = neuron1.w_best[2]; // We define the cuztomized desired value for the weight_2 value of the neuron to be created.
+	bgNeuron.w_best[1] = neuron1.w_best[1]; // We define the customized desired value for the weight_1 value of the neuron to be created.
+	bgNeuron.w_best[2] = neuron1.w_best[2]; // We define the customized desired value for the weight_2 value of the neuron to be created.
 	bgNeuron.isClassification = neuron1.isClassification; // This variable will indicate whether or not it is desired that the neuron considers the input data for a classification (with a vlaue of 1) or a regression problem (with a value of 0).
 	bgNeuron.threshold = neuron1.threshold; // This variable will be used to store the desired threshold value to be used in classification problems by the neuron to be created.
 	bgNeuron.desiredValueForGroup1 = neuron1.desiredValueForGroup1; // This variable will be used to store the label to be used for the group 1 in classification problems by the neuron to be created.
@@ -391,7 +394,7 @@ int main(int argc, char **argv) {
 	// In order to continue the plotting process, we obtain the output data that will be used to create the background of the plot to be created.
 	double *bg_Y_hat = (double *) malloc((n_ofLinearlySpacedArray*n_ofLinearlySpacedArray)*neuron1.p*sizeof(double));
 	bgNeuron.n = n_ofLinearlySpacedArray*n_ofLinearlySpacedArray;
-	predictSingleNeuronDNN(&bgNeuron, bg_Y_hat);
+	predictSingleNeuronDNN_parallelCPU(&bgNeuron, bg_Y_hat);
 	// In order to continue the plotting process, we determine the number of 1s and 0s that were predicted for the background to be created.
 	int n_of_bg1s = 0; // This variable will be used as a counter to determine the rows length of the pointer variables "bg_X1_1s" and "bg_X2_1s" to be created.
 	int n_of_bg0s = 0; // This variable will be used as a counter to determine the rows length of the pointer variables "bg_X1_0s" and "bg_X2_0s" to be created.
@@ -540,7 +543,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, "\n");
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .png file that will store the results of the predicted and actual data.
-	printf("Innitialization of the creation of the .png file elapsed %f seconds.\n", elapsedTime);
+	printf("Initialization of the creation of the .png file elapsed %f seconds.\n", elapsedTime);
 	printf("NOTE: In regards to the .png image, the horizontal axis stands for the independent variable 1 and the vertical axis for the independent variable 2.\n");
 	printf("In addition, the color green stands for an output value of 1 and the color red for an output value of -1.\n");
 	printf("Finally, while the background color represents the predicted 1s and -1s that were made by the machine learning model that was just trained, the dots/triangles stand for the true behaviour of the system under study.\n\n");
@@ -576,6 +579,7 @@ int main(int argc, char **argv) {
 	free(real_X2_1s);
 	free(real_X1_0s);
 	free(real_X2_0s);
+	free(errorMessage);
 	return (0); // end of program.
 }
 

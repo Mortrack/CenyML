@@ -57,5 +57,8 @@ dkms.conf
 # Other files
 README.md.backup
 Personal Access Tokens.txt
+.settings
+.cproject
+.project
 
 
