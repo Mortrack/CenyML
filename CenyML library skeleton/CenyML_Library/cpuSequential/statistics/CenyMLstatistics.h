@@ -28,6 +28,7 @@ void getMedian(char [], double *, int, int, double *);
 void getVariance(double *, int, int, int, double *);
 void getStandardDeviation(double *, int, int, int, double *);
 void getQuickMode(char [], int, int, double *, int *, double *);
+void getMeanIntervals(double *, double *, float, char, int, int, double *);
 
 #endif
 

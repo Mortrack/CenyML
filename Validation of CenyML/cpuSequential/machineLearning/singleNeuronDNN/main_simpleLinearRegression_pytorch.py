@@ -1,32 +1,17 @@
-"""
-PACKAGE INSTALLATION STEPS:
-    1) Open Anaconda Prompt terminal window.
-    2) Type the command "conda create --name py3_9_7 python=3.9.7"
-    3) Type the command "conda activate py3_9_7"
-    4) Type the command "conda install pip"
-    5) Type the command "pip install tensorflow==2.6"
-    6) Type the command "pip install scikit-learn==1.0.1"
-    7) Type the command "pip install numpy==1.21.2"
-    8) Type the command "pip install matplotlib==3.4.3"
-    9) Type the command "pip install pandas==1.3.3"
-    10) Type the command "pip install spyder" (version installed = 5.2.0)
-    11) Type the command "spyder"
-    12) run the program.
-"""
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # AUTHOR: César Miranda Meza
-# COMPLETITION DATE: November 29, 2021.
-# LAST UPDATE: December 27, 2021.
+# COMPLETITION DATE: December 27, 2021.
+# LAST UPDATE: N/A.
 #
 # This code is used to apply the machine learning method known as artificial
 # neural network but with only a single neuron to solve a simple linear
 # regression problem. This is done with the database used for linear equation
 # systems. In addition, this database has 1'000'000 samples. Moreover, the
-# well known tensorflow library will be used for such machine learning
-# algorithm (https://keras.io/api/). Then, some metrics will be obtained,
-# along with a plot to use these as a comparative evaluation of the results
-# obtained in the CenyML library.
+# well known PyTorch library will be used for such machine learning algorithm
+# (https://bit.ly/3Jm0nzI, https://bit.ly/33Sjr8w and https://bit.ly/3GTz1Q9).
+# Then, some metrics will be obtained, along with a plot to use these as a
+# comparative evaluation of the results obtained in the CenyML library.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # Python version 3.9.7
@@ -38,15 +23,10 @@ PACKAGE INSTALLATION STEPS:
 import pandas as pd  # version 1.3.3
 import numpy as np # version 1.21.2
 import time
-from numpy import loadtxt # version 1.21.2
-from keras.models import Sequential # version 2.6.0
-from keras.initializers import Zeros # version 2.6.0
-from keras.layers import Dense # version 2.6.0
-from keras.callbacks import EarlyStopping # version 2.6.0
-from tensorflow.keras.optimizers import SGD # version 2.6.0
+import torch # version 1.10.1
+import torch.nn as nn # version 1.10.1
 from sklearn.metrics import mean_squared_error # version 1.0.1
 import matplotlib.pyplot as plt # version 3.4.3
-import tensorflow as tf # version 2.6.0
 
 
 # -------------------------------------------- #
@@ -56,8 +36,13 @@ m = 1 # This variable is used to define the number of independent variables
       # that the system under study has.
 p = 1 # This variable is used to define the number of dependent variables
       # that the system under study has.
-nodes = 1 # This variable will indicate the number of nodes that are desired
-          # for the artificial neural network to be created.
+learning_rate = 0.00001 # This variable is used to define the desired
+                       # learning rate for the model to be trained.
+num_epochs = 30863 # This variable is used to define the desired number of
+                   # epochs for the model to be trained.
+desiredNumberOfCpuThreads = 1 # This variable is used to define the desired
+                              # number of CPU threads that wants to be used
+                              # during the training of the deep learning model.
 idealCoefficients = [[10], [0.8]] # This variable will store the ideal
                                   # coefficient values that it is expected for
                                   # this model to have.
@@ -98,6 +83,12 @@ for currentColumn in range(0, m):
     X = np.append(X, temporalRow, axis=1)
     temporalRow = dataset_rLES1000S1000SPS.iloc[:,columnIndexOfOutputDataInCsvFile].values.reshape(n, 1)
     Y = np.append(Y, temporalRow, axis=1)
+# 0) Prepare data for Pytorch model
+# Cast to float Tensor
+X_torch = torch.from_numpy(X.astype(np.float32))
+Y_torch = torch.from_numpy(Y.astype(np.float32))
+Y_torch = Y_torch.view(Y_torch.shape[0], 1)
+n_samples, n_features = X_torch.shape
 elapsedTime = time.time() - startingTime
 print("Input and output data innitialization elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -106,44 +97,29 @@ print("")
 # -------------------------- #
 # ----- Model training ----- #
 # -------------------------- #
-print("Innitializing model training with the tensorflow library ...")
+print("Innitializing model training with the PyTorch library ...")
 startingTime = time.time()
-# Define the number of threads that are desired to be used (the value of 0
-# makes tensorflow automatically define the most suitable number).
-tf.config.threading.set_intra_op_parallelism_threads(1)
-tf.config.threading.set_inter_op_parallelism_threads(1)
-with tf.device('/CPU:0'): # To define the specific CPU to be used.
-#tf.config.threading.set_intra_op_parallelism_threads(0)
-#tf.config.threading.set_inter_op_parallelism_threads(0)
-#with tf.device('GPU:2'): # To define the specific GPU to be used.
-    model = Sequential()
-    # Load the class that will indicate that the initial weight values are desired
-    # to be zeros.
-    initializer = Zeros()
-    # Create the artificial neuron input layer
-    model.add(Dense(nodes, input_dim=m, activation='linear', kernel_initializer=initializer))
-    # Indicate desired learning rate
-    sgd = SGD(learning_rate=0.0001)
-    # Compile the keras model
-    model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['mse'])
-    """
-    # Define a stop function in which you want the argument variable "loss" of the
-    # class "model.compile()" to be monitored and indicate through the variable
-    # argument of "EarlyStopping()" named "patience", the number of epochs that
-    # you want the training to be stoped if no changes occur in the monitored
-    # variable.
-    callback = EarlyStopping(monitor='loss', patience=3)
-    """
-    # fit the keras model on the dataset
-    # NOTE: The argument variable "batch_size" represents the desired value that
-    #       we want the model to consider before the model updates its weights.
-    # NOTE: The argument variable "verbose" indicates if the user wants Keras
-    #       to display training messages progress in the terminal window (with 1)
-    #       or not (with 0).    
-    model.fit(X, Y, epochs=30863, batch_size=n, verbose=0)
-    #model.fit(X, Y, epochs=50000, batch_size=n, verbose=0, callbacks=callback)
+# 1) Define the number of CPU threads to be used
+torch.set_num_threads(desiredNumberOfCpuThreads)
+# 2) Model
+# Linear model f = wx + b
+model = nn.Linear(m, p) # Input and output equal 1 so that only a single neuron is trained.
+# Define initial weight values with zeros
+zeroValue_torch = torch.zeros(1,1)
+model.bias.data = zeroValue_torch[0]
+model.weight.data = zeroValue_torch
+# 3) Loss and optimizer
+criterion = nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)  
+# 4) Training loop
+for epoch in range(num_epochs):
+    optimizer.zero_grad()
+    Y_predicted = model(X_torch)
+    loss = criterion(Y_predicted, Y_torch)
+    loss.backward()
+    optimizer.step()
 elapsedTime = time.time() - startingTime
-print("Model training with the tensorflow library elapsed " + format(elapsedTime) + " seconds.")
+print("Model training with the PyTorch library elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 
@@ -153,7 +129,7 @@ print("")
 # We obtained the predicted results by the model that was constructed.
 print("Innitializing predictions of the model obtained ...")
 startingTime = time.time()
-Y_hat = model.predict(X)
+Y_hat = model(X_torch).detach().numpy()
 elapsedTime = time.time() - startingTime
 print("Model predictions elapsed " + format(elapsedTime) + " seconds.")
 print("")
@@ -168,17 +144,19 @@ print("scikit-learn mean squared error metric elapsed " + format(elapsedTime) + 
 print("")
 
 # We visualize the trainning set results
-X_plot = dataset_rLES1000S1000SPS.independent_variable_1
-plt.scatter(X_plot, Y, color='red')
-plt.plot(X_plot, Y_hat, color='blue')
+plt.scatter(X_torch, Y, color='red')
+plt.plot(X_torch, Y_hat, color='blue')
 plt.title('Simple linear regression with the \"Sequential()\" neural network of tensorflow')
 plt.xlabel('Independent variable')
 plt.ylabel('Dependent variable')
 
 # We display, in console, the coefficient values obtained with the ML method used.
+# NOTE: The bias and weight values will be stored in "b" such that each column
+#       will contain the bias and weight values of a certain neuron.
 b = np.zeros((1, m+1))
-b[0][1] = model.get_weights()[0][0][0]
-b[0][0] = model.get_weights()[1][0]
+# NOTE: ".detach().numpy()" converts a tensor to numpy value
+b[0][0] = model.bias[0].detach().numpy()
+b[0][1] = model.weight[0][0].detach().numpy()
 print("b_0 = " + format(b[0][0]))
 print("b_1 = " + format(b[0][1]))
 
