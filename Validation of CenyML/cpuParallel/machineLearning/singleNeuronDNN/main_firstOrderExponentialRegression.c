@@ -1,16 +1,17 @@
 /*
 * This program will read a .csv file containing the data of a linear
-* equation system to then exctact all its data. Its input data will be
-* saved into the matrix "X" and its output data into the matrix "Y".
-* Subsequently, a single neuron in Deep Neural Network will be used to
-* obtain the best fitting coefficient values of such data. Then,
-* some evaluation metrics will be applied. Next, two new .csv files
-* will be created to save: 1) the coefficient values that were
-* obtained and 2) the results obtained with the evaluation metrics.
-* Finally, a plot of the predicted data by the obtained model with
-* respect to the actual data, will be plotted and saved into a .png
-* file. Both the .csv files and this .png file will serve for further
-* comparations and validation purposes.
+* equation system to then extract all its data. Its input data will be
+* saved into the matrix "X" and then an output data (matrix "Y") will
+* be generated through this program. Subsequently, a single neuron in
+* Deep Neural Network will be used to obtain the best fitting
+* coefficient values of such data by applying such algorithm with CPU
+* parallelism through POSIX Threads. Then, some evaluation metrics will
+* be applied. Next, two new .csv files will be created to save: 1) the
+* coefficient values that were obtained and 2) the results obtained
+* with the evaluation metrics. Finally, a plot of the predicted data
+* by the obtained model with respect to the actual data, will be
+* plotted and saved into a .png file. Both the .csv files and this
+* .png file will serve for further comparisons and validation purposes.
 */
 
  // ------------------------------------------------- //
@@ -18,14 +19,12 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
-//#include "../../../../CenyML library skeleton/otherLibraries/time/mTimeTer.h" // library to count the time elapsed in Cygwin terminal window.
 #include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
 #include "../../../../CenyML library skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
 #include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h" // library to use the regression evaluation metrics of CenyML.
-#include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h" // library to use the deep learning algorithms of CenyML.
+#include "../../../../CenyML library skeleton/CenyML_Library/cpuParallel/machineLearning/CenyMLdeepLearning_PC.h" // library to use the deep learning algorithms of CenyML with CPU parallelism.
 
 
 // ---------------------------------------------- //
@@ -50,10 +49,12 @@
 // ----------------------------------------- //
 /**
 * This is the main function of the program. Here we will read a .csv file and
-* then apply the single neuron in Deep Neural Network on the input and output
-* data contained in it. In addition, some evaluation metrics will be applied
-* to evaluate the model. Finally, the results will be saved in two new .csv
-* files and in a .png file for further comparation and validation purposes.
+* then apply the single neuron in Deep Neural Network on the input data
+* contained in it and a generated output data by applying such algorithm with
+* CPU parallelism through POSIX Threads. In addition, some evaluation metrics
+* will be applied to evaluate the model. Finally, the results will be saved in
+* two new .csv files and in a .png file for further comparison and validation
+* purposes.
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
@@ -67,7 +68,7 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 08, 2021
+* CREATION DATE: JANUARY 17, 2021
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
@@ -80,13 +81,14 @@ int main(int argc, char **argv) {
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
-	struct singleNeuronDnnStruct neuron1; // We create a singleNeuronDnnStruct structure variable to manage the data input and output data of the single neuron in DNN that will be created.
+	struct singleNeuronDnnStruct_parallelCPU neuron1; // We create a singleNeuronDnnStruct_parallelCPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
+	neuron1.cpuThreads = 15; // This variable will define the number of CPU threads that wants to be used to parallelize the training and predictions made by the neuron to be created.
 	neuron1.m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	neuron1.isInitial_w = 1; // This variable will indicate whether or not initial values will be given by the implementer (with value of 1) or if random ones are going to be used (with value of 0).
 	neuron1.w_first = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_first", which will store the initial coefficient values of the neuron to be created.
 	neuron1.w_first[0] = 0; // We define the customized desired value for the bias of the neuron to be created.
-	neuron1.w_first[1] = 0; // We define the cuztomized desired value for the weight_1 value of the neuron to be created.
+	neuron1.w_first[1] = 0; // We define the customized desired value for the weight_1 value of the neuron to be created.
 	neuron1.isClassification = 0; // This variable will indicate whether or not it is desired that the neuron considers the input data for a classification (with a vlaue of 1) or a regression problem (with a value of 0).
 	//neuron1.threshold = 0.5; // This variable will be used to store the desired threshold value to be used in classification problems by the neuron to be created.
 	//neuron1.desiredValueForGroup1 = 1; // This variable will be used to store the label to be used for the group 1 in classification problems by the neuron to be created.
@@ -127,12 +129,12 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "neuron1.X", which will contain the input data of the system under study.
 	neuron1.X = (double *) malloc(neuron1.n*neuron1.m*sizeof(double));
 	// Create the output (neuron1.Y) and input (neuron1.X) data with the same rows as in the reference .csv file and their corresponding number of columns.
-	for (int currentRow=0; currentRow<neuron1.n; currentRow++) { // Since neuron1.m=neuron1.p=1 for this particular ML algorithm, both "neuron1.Y" and "neuron1.X" will be innitialized here.
+	for (int currentRow=0; currentRow<neuron1.n; currentRow++) { // Since neuron1.m=neuron1.p=1 for this particular ML algorithm, both "neuron1.Y" and "neuron1.X" will be initialized here.
 		neuron1.X[currentRow] = csv1.allData[columnIndexOfInputDataInCsvFile + currentRow*databaseColumns1];
 		neuron1.Y[currentRow] = exp(b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]);
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to innitialize the input data to be used.
-	printf("Output and input data innitialization elapsed %f seconds.\n\n", elapsedTime);
+	printf("Output and input data initialization elapsed %f seconds.\n\n", elapsedTime);
 	
 	
 	// ------------------------- DATA MODELING ----------------------- //
@@ -141,7 +143,7 @@ int main(int argc, char **argv) {
 	neuron1.w_best = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_best", which will store the best coefficient values identified by the neuron to be created, after its training process.
 	neuron1.w_new = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_new", which will store the last coefficient values identified by the neuron to be created, after its training process.
 	// We apply the single neuron in Deep Neural Network algorithm with respect to the input matrix "neuron1.X" and the result is stored in the memory location of the pointer "b".
-	getSingleNeuronDNN(&neuron1);
+	getSingleNeuronDNN_parallelCPU(&neuron1);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the single neuron in Deep Neural Network with the input data (neuron1.X).
 	printf("CenyML single neuron in Deep Neural Network algorithm elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -152,7 +154,7 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(neuron1.n*sizeof(double));
 	// We obtain the predicted values with the machine learning model that was obtained.
-	predictSingleNeuronDNN(&neuron1, Y_hat);
+	predictSingleNeuronDNN_parallelCPU(&neuron1, Y_hat);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
 	printf("The CenyML predictions with the model that was obtained elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -195,13 +197,13 @@ int main(int argc, char **argv) {
 	evaluationMetrics[1] = Rsquared[0]; // We add the coefficient of determination metric.
 	evaluationMetrics[2] = adjustedRsquared[0]; // We add the adjusted coefficient of determination metric.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to calculate the adjusted coefficient of determination metric between "neuron1.Y" and "Y_hat".
-	printf("Innitialization of single variable to store all the evaluation metrics elapsed %f seconds.\n\n", elapsedTime);
+	printf("Initialization of single variable to store all the evaluation metrics elapsed %f seconds.\n\n", elapsedTime);
 	
 	// We store the coefficients that were obtained.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the coefficients that were obtained.
 	// Define the desired header names for the new .csv file to be create.
     char csvHeaders1[strlen("coefficients")+1]; // Variable where the following code will store the .csv headers.
-    csvHeaders1[0] = '\0'; // Innitialize this char variable with a null value.
+    csvHeaders1[0] = '\0'; // Initialize this char variable with a null value.
 	strcat(csvHeaders1, "coefficients"); // We add the headers into "csvHeaders".
 	// Create a new .csv file and save the results obtained in it.
 	char is_nArray1 = 0; // Indicate through this flag variable that the variable that indicates the samples (neuron1.n) is not an array because it has the same amount of samples per columns.
@@ -285,7 +287,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, "\n");
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .png file that will store the results of the predicted and actual data.
-	printf("Innitialization of the creation of the .png file elapsed %f seconds.\n\n", elapsedTime);
+	printf("Initialization of the creation of the .png file elapsed %f seconds.\n\n", elapsedTime);
 	
 	// We validate the getSingleNeuronDNN method.
 	printf("Initializing coefficients validation of the CenyML getSingleNeuronDNN method ...\n");
@@ -323,6 +325,7 @@ int main(int argc, char **argv) {
 	free(Rsquared);
 	free(adjustedRsquared);
 	free(evaluationMetrics);
+	free(errorMessage);
 	return (0); // end of program.
 }
 

@@ -69,7 +69,6 @@ static void getDerivateFirstOrderDegreeExponentialActivation(double *, double *,
 static void getSecondOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
 static void getDerivateSecondOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
 static void getNeuronAdjustedCoefficientOfDetermination(double *, double *, int, int, int, double *);
-static void getNeuronAccuracy(double *, double *, int, double *);
 void predictSingleNeuronDNN(struct singleNeuronDnnStruct *, double *);
 
 #endif

@@ -142,8 +142,8 @@ int main(int argc, char **argv) {
 	neuron1.desiredValueForGroup2 = -1; // This variable will be used to store the label to be used for the group 2 in classification problems by the neuron to be created.
 	neuron1.activationFunctionToBeUsed = 3; // This variable tells the neuron what activation function to use (see the commented documentation in the function "getSingleNeuronDNN()" for more details).
 	neuron1.learningRate = 0.0000000001; // This variable stores the desired learning rate for the neuron to be created.
-	neuron1.stopAboveThisAccuracy = 0.99; // The value of this variable is used as a stop function for the single neuron in DNN learning proccess.
-	neuron1.maxEpochs = 1000; // This variable stores the desired value for the maximum permitted epochs for the training process of the neuron1.
+	neuron1.stopAboveThisAccuracy = 0.40; // The value of this variable is used as a stop function for the single neuron in DNN learning proccess.
+	neuron1.maxEpochs = 50000; // This variable stores the desired value for the maximum permitted epochs for the training process of the neuron1.
 	neuron1.isReportLearningProgress = 1; // The value of this variable tells the neuron if it is desired that it reports its learning progress (with a value of 1) or not (with a value of 0).
 	neuron1.reportEachSpecifiedEpochs = neuron1.maxEpochs / 10; // This variable tells the neuron that it has to report each several times, which is defined by the value contained in this variable.
 	

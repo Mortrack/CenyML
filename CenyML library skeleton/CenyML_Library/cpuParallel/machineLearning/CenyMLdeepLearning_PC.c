@@ -119,7 +119,7 @@ struct cpuParallelData {
 *				 features (independent variables) that the input
 *				 matrix has, with which the output data was obtained.
 *
-* @param int p - This argument will represent the total number of 
+* @param int p - This argument will represent the total number of
 *				 outputs that exist in the the output matrix,
 *				 containing the real results of the system under
 *				 study.
@@ -148,7 +148,7 @@ struct cpuParallelData {
 *
 * @param char isClassification = This argument variable will work as a
 *						  		 flag to indicate to the neron if it is
-*								 expected from it to learn from the given
+*								 expected from it to interpret the given
 *								 data of "X" and "Y" as if their were
 *								 meant for a classification problem or not.
 *								 The possible valid values for this flag
@@ -240,14 +240,10 @@ struct cpuParallelData {
 *										that is strictly higher than the one
 *										defined in "stopAboveThisAccuracy", then
 *										the neuron will stop its training process
-*										and the function "getSingleNeuronDNN()"
-*										will end. Note that if "isClassification"
-*										= (int) 1, then the evaluation metric to
-*										be used will be the accuracy (for
-*										classification). Conversely, if
-*										"isClassification" = (int) 0, then the
+*										and this function will end. Note that the
 *										evaluation metric to be used will be the
-*										adjusted R squared (for regression).
+*										adjusted R squared regardless if the data
+*										is for classification or not.
 *
 * @param int maxEpochs - This argument will represent the maximum number of
 *						 epochs that are desired for the training process of the
@@ -435,7 +431,7 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
     double *A_u = (double *) malloc(neuron->n*neuron->p*sizeof(double)); // Allocate the memory required for the variable "A_u", which will contain the currently predicted output data made by the neuron.
     double *dA_u = (double *) malloc(neuron->n*neuron->p*sizeof(double)); // Allocate the memory required for the variable "dA_u", which will contain the derivative of A(u).
 	double totalSumOfAccuracyTerm1 = 0; // This variable is used to sum all the contributions of each CPU thread that were made to get the accuracy term 1.
-	double totalSumOfAccuracyTerm2 = 0; // This variable is used to sum all the contributions of each CPU thread that were made to get the accuracy term 2. 
+	double totalSumOfAccuracyTerm2 = 0; // This variable is used to sum all the contributions of each CPU thread that were made to get the accuracy term 2.
 	double currentAccuracy = 0; // Declare the variable "currentAccuracy", which will contain the current accuracy of the neuron.
     double *w_old = (double *) malloc(mPlusOne*neuron->p*sizeof(double)); // Allocate the memory required for the variable "w_old", which will contain the previous weight values that were obtained with respect to the current ones.
 	double *errorTerm = (double *) malloc(neuron->n*neuron->p*sizeof(double)); // Allocate the memory required for the variable "errorTerm", which will contain the current error term value to be taken into consideration for the update of the weight values.
@@ -456,159 +452,92 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 		pthread_join(threadId[currentThread], NULL);
 	}
 	
-	// Determine if the requested model to generate is meant for a classification or for a regression problem to then solve it accordingly.
-	if (neuron->isClassification == 1) {
-		// ----------------------------------------- //
-		// ----- CLASSIFICATION MODEL SELECTED ----- //
-		// ----------------------------------------- //
+	// ------------------------------------- //
+	// ----- REGRESSION MODEL SELECTED ----- //
+	// ------------------------------------- //
+
+
+	// ----------- EVALUATION OF THE INITIAL WEIGHT VALUES ----------- //
+	// We calculate "f_x_tilde", "A(u)", "dA(u)" and "the part 1 of the accuracy terms".
+	for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
+		pthread_create(&threadId[currentThread], NULL, getFxTilde_Au_dAu_and_accuracyTermsPart1_parallelCPU, &threadData[currentThread]);
+	}
+	for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
+		pthread_join(threadId[currentThread], NULL);
+	}
+
+	// We calculate "the part 1 of the accuracy terms".
+	totalSumOfAccuracyTerm1 = 0; // We reset the value of the accuracy term 1, in which we will store the value of SSE.
+	for (int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) {
+		totalSumOfAccuracyTerm1 += threadData[currentThread].accuracyTerm1; // We sum all the fragments of the SSE that was calculated by the previous parallelization process.
+	}
+	for (int currentThread=1; currentThread<(neuron->cpuThreads); currentThread++) {
+		threadData[0].accuracyTerm2 += threadData[currentThread].accuracyTerm2; // We sum all the fragments of the "real output matrix sum" that was calculated by the previous parallelization process.
+	}
+	threadData[0].accuracyTerm2 = threadData[0].accuracyTerm2 / neuron->n; // We calculate the mean of the "real output matrix".
+	for (int currentThread=1; currentThread<(neuron->cpuThreads); currentThread++) {
+		threadData[currentThread].accuracyTerm2 = threadData[0].accuracyTerm2; // We pass the total mean of the "real output matrix" to all the data of all the CPU threads.
+	}
+
+	// We calculate "the part 2 of the accuracy terms".
+	totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will store the value of SST.
+	for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
+		pthread_create(&threadId[currentThread], NULL, getNeuronAdjustedCoefficientOfDetermination_parallelCPUvoidPart2, &threadData[currentThread]);
+	}
+	for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
+		pthread_join(threadId[currentThread], NULL);
+	}
+	for (int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) {
+		totalSumOfAccuracyTerm2 += threadData[currentThread].accuracyTerm1; // We sum all the fragments of the SST that was calculated by the previous parallelization process.
+	}
+
+	// Finally, we calculate the adjusted coefficient of determination and store its results in the pointer variable "adjustedRsquared".
+	currentAccuracy = 1 - ( (totalSumOfAccuracyTerm1/((neuron->n)-(neuron->m)-1))/(totalSumOfAccuracyTerm2/((neuron->n)-1)) );
+
+	// We pass the current accuracy to the best accuracy record because this is the evaluation of the very first weight values.
+	neuron->bestAccuracy = currentAccuracy;
+
+	// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
+	if (currentAccuracy > neuron->stopAboveThisAccuracy) {
+		printf("\nThe adjusted R squared (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal the very first instant it was created.\n", currentAccuracy);
 		
+		// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
+		free(TransposeOf_X_tilde);
+		free(f_x_tilde);
+		free(A_u);
+		free(dA_u);
+		free(w_old);
+		free(errorTerm);
+		free(errorTerm_dot_Xtilde);
+		return;
+	}
+
+	// -------- BEGINNING OF THE EPOCHS OF THE MODEL ------- //
+	for (int currentEpoch=0; currentEpoch<(neuron->maxEpochs); currentEpoch++) {
+		// Pass the data of "neuron->w_new" to "w_old".
+		for (int currentCoefficient=0; currentCoefficient<mPlusOne; currentCoefficient++) {
+			w_old[currentCoefficient] = neuron->w_new[currentCoefficient];
+		}
 		
-		// ----------- ADDITIONAL PREPROCESSING NEEDED WHEN A CLASSIFICATION MODEL IS REQUESTED ----------- //
-		// We temporarily manage group 1 with output values of "1" and the group 2 with output values of "0" so that the accuracy can be properly measured by the neuron.
+		// Calculate the error term obtainable with the current weight values so that we can later update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new").
 		for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
-			pthread_create(&threadId[currentThread], NULL, transformOutputValuesToBinary_parallelCPU, &threadData[currentThread]);
+			pthread_create(&threadId[currentThread], NULL, getErrorAndUpdateWeightValues_parallelCPU, &threadData[currentThread]);
 		}
 		for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
 			pthread_join(threadId[currentThread], NULL);
 		}
 		
-
-		// ----------- EVALUATION OF THE INITIAL WEIGHT VALUES ----------- //
-		// We calculate "f_x_tilde", "A(u)", "dA(u)" and "currentAccuracy".
-		for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
-			pthread_create(&threadId[currentThread], NULL, getFxTilde_Au_dAu_and_accuracyTermsPart1_parallelCPU, &threadData[currentThread]);
-		}
-		for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
-			pthread_join(threadId[currentThread], NULL);
-		}
-		totalSumOfAccuracyTerm1 = 0; // We reset the variable that stores the sum of all the CPU threads contributions to calculate the true positives of the accuracy method.
-		totalSumOfAccuracyTerm2 = 0; // We reset the variable that stores the sum of all the CPU threads contributions to calculate the true negatives of the accuracy method.
-		for (int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) {
-			totalSumOfAccuracyTerm1 += threadData[currentThread].accuracyTerm1; // We sum all the fragments of the true possitives that was calculated by the previous parallelization process.
-			totalSumOfAccuracyTerm2 += threadData[currentThread].accuracyTerm2; // We sum all the fragments of the true negatives that was calculated by the previous parallelization process.
-		}
-		currentAccuracy = (totalSumOfAccuracyTerm1 + totalSumOfAccuracyTerm2) / neuron->n; // We apply the last procedure to mathematically obtain the accuracy.
-		
-		// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
-		if (currentAccuracy > neuron->stopAboveThisAccuracy) {
-			printf("\nThe accuracy (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal the very first instant it was created.\n", currentAccuracy);
-			
-			// ----------- ADDITIONAL POSTPROCESSING NEEDED WHEN A CLASSIFICATION MODEL IS REQUESTED ----------- //
-			// We restore the original output values defined for group 1 and group 2.
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
-				pthread_create(&threadId[currentThread], NULL, transformOutputValuesToRequestedOnes_parallelCPU, &threadData[currentThread]);
-			}
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
-				pthread_join(threadId[currentThread], NULL);
-			}
-		
-			// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
-			free(TransposeOf_X_tilde);
-			free(f_x_tilde);
-			free(A_u);
-			free(dA_u);
-			free(w_old);
-			free(errorTerm);
-			free(errorTerm_dot_Xtilde);
-			return;
-		}
-		
-		// -------- BEGINNING OF THE EPOCHS OF THE MODEL ------- //
-		for (int currentEpoch=0; currentEpoch<(neuron->maxEpochs); currentEpoch++) {
-			// Pass the data of "neuron->w_new" to "w_old".
-			for (int currentCoefficient=0; currentCoefficient<mPlusOne; currentCoefficient++) {
-				w_old[currentCoefficient] = neuron->w_new[currentCoefficient];
-			}
-			
-			// Calculate the error term obtainable with the current weight values so that we can later update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new").
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
-				pthread_create(&threadId[currentThread], NULL, getErrorAndUpdateWeightValues_parallelCPU, &threadData[currentThread]);
-			}
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
-				pthread_join(threadId[currentThread], NULL);
-			}
-
-			// We update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new") by summing all the individual contributions made by the previous parallelization process.
-			for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
-				totalErrorTerm_dot_Xtilde = 0;
-				currentRowTimesCpuThreads = currentRow * neuron->cpuThreads;
-				for (int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) {
-					totalErrorTerm_dot_Xtilde += errorTerm_dot_Xtilde[currentThread + currentRowTimesCpuThreads];
-				}
-				neuron->w_new[currentRow] = w_old[currentRow] + neuron->learningRate * totalErrorTerm_dot_Xtilde;
-			}
-
-			// We recalculate "f_x_tilde", "A(u)", "dA(u)" and "currentAccuracy".
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
-				pthread_create(&threadId[currentThread], NULL, getFxTilde_Au_dAu_and_accuracyTermsPart1_parallelCPU, &threadData[currentThread]);
-			}
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
-				pthread_join(threadId[currentThread], NULL);
-			}
-			totalSumOfAccuracyTerm1 = 0; // We reset the variable that stores the sum of all the CPU threads contributions to calculate the true positives of the accuracy method.
-			totalSumOfAccuracyTerm2 = 0; // We reset the variable that stores the sum of all the CPU threads contributions to calculate the true negatives of the accuracy method.
+		// We update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new") by summing all the individual contributions made by the previous parallelization process.
+		for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
+			totalErrorTerm_dot_Xtilde = 0;
+			currentRowTimesCpuThreads = currentRow * neuron->cpuThreads;
 			for (int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) {
-				totalSumOfAccuracyTerm1 += threadData[currentThread].accuracyTerm1; // We sum all the fragments of the true possitives that was calculated by the previous parallelization process.
-				totalSumOfAccuracyTerm2 += threadData[currentThread].accuracyTerm2; // We sum all the fragments of the true negatives that was calculated by the previous parallelization process.
+				totalErrorTerm_dot_Xtilde += errorTerm_dot_Xtilde[currentThread + currentRowTimesCpuThreads];
 			}
-			currentAccuracy = (totalSumOfAccuracyTerm1 + totalSumOfAccuracyTerm2) / neuron->n; // We apply the last procedure to mathematically obtain the accuracy.
-
-			// We compare the accuracy of the currently obtained weight values with respect to the latest best one recorded. If the current one is better than the recorded one, then store the current one in its place and do the same for the best recorded weight values.
-			if ((currentAccuracy) > (neuron->bestAccuracy)) {
-				neuron->bestAccuracy = currentAccuracy; // Pass the value of the current accuracy into "neuron->bestAccuracy".
-				for (int current_w=0 ; current_w<mPlusOne; current_w++) { // Pass the values of "neuron->w_new" to "neuron->w_best".
-			        neuron->w_best[current_w] = neuron->w_new[current_w];
-			    }
-			}
-			
-			// Determine whether it was requested that the neuron reports its learning progress or not.
-			if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
-				if ((currentEpoch % neuron->reportEachSpecifiedEpochs) == 0) { // Make neuron report at each "neuron->reportEachSpecifiedEpochs" epochs.
-		            printf("\nEpoch %d --> single neuron in DNN has achieved an accuracy of %f\n", currentEpoch+1, currentAccuracy);
-		        }
-			}
-			
-			// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
-			if (currentAccuracy > neuron->stopAboveThisAccuracy) {
-				printf("\nThe accuracy (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal when concluding the epoch number %d.\n", currentAccuracy, currentEpoch+1);
-				
-				// ----------- ADDITIONAL POSTPROCESSING NEEDED WHEN A CLASSIFICATION MODEL IS REQUESTED ----------- //
-				// We restore the original output values defined for group 1 and group 2.
-				for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
-					pthread_create(&threadId[currentThread], NULL, transformOutputValuesToRequestedOnes_parallelCPU, &threadData[currentThread]);
-				}
-				for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
-					pthread_join(threadId[currentThread], NULL);
-				}
-		
-				// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
-				free(TransposeOf_X_tilde);
-				free(f_x_tilde);
-				free(A_u);
-				free(dA_u);
-				free(w_old);
-				free(errorTerm);
-				free(errorTerm_dot_Xtilde);
-				return;
-			}
+			neuron->w_new[currentRow] = w_old[currentRow] + neuron->learningRate * totalErrorTerm_dot_Xtilde;
 		}
 		
-		// ----------- ADDITIONAL POSTPROCESSING NEEDED WHEN A CLASSIFICATION MODEL IS REQUESTED ----------- //
-		// We restore the original output values defined for group 1 and group 2.
-		for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
-			pthread_create(&threadId[currentThread], NULL, transformOutputValuesToRequestedOnes_parallelCPU, &threadData[currentThread]);
-		}
-		for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
-			pthread_join(threadId[currentThread], NULL);
-		}
-	} else {
-		// ------------------------------------- //
-		// ----- REGRESSION MODEL SELECTED ----- //
-		// ------------------------------------- //
-		
-		
-		// ----------- EVALUATION OF THE INITIAL WEIGHT VALUES ----------- //
-		// We calculate "f_x_tilde", "A(u)", "dA(u)" and "the part 1 of the accuracy terms".
+		// We recalculate "f_x_tilde", "A(u)", "dA(u)" and "the part 1 of the accuracy terms".
 		for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
 			pthread_create(&threadId[currentThread], NULL, getFxTilde_Au_dAu_and_accuracyTermsPart1_parallelCPU, &threadData[currentThread]);
 		}
@@ -616,7 +545,7 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 			pthread_join(threadId[currentThread], NULL);
 		}
 		
-		// We calculate "the part 1 of the accuracy terms".
+		// We recalculate "the part 1 of the accuracy terms".
 		totalSumOfAccuracyTerm1 = 0; // We reset the value of the accuracy term 1, in which we will store the value of SSE.
 		for (int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) {
 			totalSumOfAccuracyTerm1 += threadData[currentThread].accuracyTerm1; // We sum all the fragments of the SSE that was calculated by the previous parallelization process.
@@ -629,7 +558,7 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 			threadData[currentThread].accuracyTerm2 = threadData[0].accuracyTerm2; // We pass the total mean of the "real output matrix" to all the data of all the CPU threads.
 		}
 		
-		// We calculate "the part 2 of the accuracy terms".
+		// We recalculate "the part 2 of the accuracy terms".
 		totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will store the value of SST.
 		for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
 			pthread_create(&threadId[currentThread], NULL, getNeuronAdjustedCoefficientOfDetermination_parallelCPUvoidPart2, &threadData[currentThread]);
@@ -641,15 +570,27 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 			totalSumOfAccuracyTerm2 += threadData[currentThread].accuracyTerm1; // We sum all the fragments of the SST that was calculated by the previous parallelization process.
 		}
 		
-		// Finally, we calculate the adjusted coefficient of determination and store its results in the pointer variable "adjustedRsquared".
+		// Finally, we recalculate the adjusted coefficient of determination and store its results in the pointer variable "adjustedRsquared".
 		currentAccuracy = 1 - ( (totalSumOfAccuracyTerm1/((neuron->n)-(neuron->m)-1))/(totalSumOfAccuracyTerm2/((neuron->n)-1)) );
 		
-		// We pass the current accuracy to the best accuracy record because this is the evaluation of the very first weight values.
-		neuron->bestAccuracy = currentAccuracy;
+		// We compare the accuracy of the currently obtained weight values with respect to the latest best one recorded. If the current one is better than the recorded one, then store the current one in its place and do the same for the best recorded weight values.
+		if ((currentAccuracy) > (neuron->bestAccuracy)) {
+			neuron->bestAccuracy = currentAccuracy; // Pass the value of the current accuracy into "neuron->bestAccuracy".
+			for (int current_w=0 ; current_w<mPlusOne; current_w++) { // Pass the values of "neuron->w_new" to "neuron->w_best".
+			neuron->w_best[current_w] = neuron->w_new[current_w];
+		    }
+		}
+		
+		// Determine whether it was requested that the neuron reports its learning progress or not.
+		if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
+			if ((currentEpoch % neuron->reportEachSpecifiedEpochs) == 0) { // Make neuron report at each "neuron->reportEachSpecifiedEpochs" epochs.
+		    printf("\nEpoch %d --> single neuron in DNN has achieved an adjusted R squared of %f\n", currentEpoch+1, currentAccuracy);
+		}
+		}
 		
 		// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
 		if (currentAccuracy > neuron->stopAboveThisAccuracy) {
-			printf("\nThe adjusted R squared (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal the very first instant it was created.\n", currentAccuracy);
+			printf("\nThe adjusted R squared (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal when concluding the epoch number %d.\n", currentAccuracy, currentEpoch+1);
 			
 			// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
 			free(TransposeOf_X_tilde);
@@ -661,108 +602,12 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 			free(errorTerm_dot_Xtilde);
 			return;
 		}
-		
-		// -------- BEGINNING OF THE EPOCHS OF THE MODEL ------- //
-		for (int currentEpoch=0; currentEpoch<(neuron->maxEpochs); currentEpoch++) {
-			// Pass the data of "neuron->w_new" to "w_old".
-			for (int currentCoefficient=0; currentCoefficient<mPlusOne; currentCoefficient++) {
-				w_old[currentCoefficient] = neuron->w_new[currentCoefficient];
-			}
-			
-			// Calculate the error term obtainable with the current weight values so that we can later update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new").
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
-				pthread_create(&threadId[currentThread], NULL, getErrorAndUpdateWeightValues_parallelCPU, &threadData[currentThread]);
-			}
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
-				pthread_join(threadId[currentThread], NULL);
-			}
-			
-			// We update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new") by summing all the individual contributions made by the previous parallelization process.
-			for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
-				totalErrorTerm_dot_Xtilde = 0;
-				currentRowTimesCpuThreads = currentRow * neuron->cpuThreads;
-				for (int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) {
-					totalErrorTerm_dot_Xtilde += errorTerm_dot_Xtilde[currentThread + currentRowTimesCpuThreads];
-				}
-				neuron->w_new[currentRow] = w_old[currentRow] + neuron->learningRate * totalErrorTerm_dot_Xtilde;
-			}
-			
-			// We recalculate "f_x_tilde", "A(u)", "dA(u)" and "the part 1 of the accuracy terms".
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
-				pthread_create(&threadId[currentThread], NULL, getFxTilde_Au_dAu_and_accuracyTermsPart1_parallelCPU, &threadData[currentThread]);
-			}
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
-				pthread_join(threadId[currentThread], NULL);
-			}
-			
-			// We recalculate "the part 1 of the accuracy terms".
-			totalSumOfAccuracyTerm1 = 0; // We reset the value of the accuracy term 1, in which we will store the value of SSE.
-			for (int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) {
-				totalSumOfAccuracyTerm1 += threadData[currentThread].accuracyTerm1; // We sum all the fragments of the SSE that was calculated by the previous parallelization process.
-			}
-			for (int currentThread=1; currentThread<(neuron->cpuThreads); currentThread++) {
-				threadData[0].accuracyTerm2 += threadData[currentThread].accuracyTerm2; // We sum all the fragments of the "real output matrix sum" that was calculated by the previous parallelization process.
-			}
-			threadData[0].accuracyTerm2 = threadData[0].accuracyTerm2 / neuron->n; // We calculate the mean of the "real output matrix".
-			for (int currentThread=1; currentThread<(neuron->cpuThreads); currentThread++) {
-				threadData[currentThread].accuracyTerm2 = threadData[0].accuracyTerm2; // We pass the total mean of the "real output matrix" to all the data of all the CPU threads.
-			}
-			
-			// We recalculate "the part 2 of the accuracy terms".
-			totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will store the value of SST.
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We create the specified threads and assign them the function they will work with.
-				pthread_create(&threadId[currentThread], NULL, getNeuronAdjustedCoefficientOfDetermination_parallelCPUvoidPart2, &threadData[currentThread]);
-			}
-			for(int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) { // We force the program to wait until all threads have finished their assigned task.
-				pthread_join(threadId[currentThread], NULL);
-			}
-			for (int currentThread=0; currentThread<(neuron->cpuThreads); currentThread++) {
-				totalSumOfAccuracyTerm2 += threadData[currentThread].accuracyTerm1; // We sum all the fragments of the SST that was calculated by the previous parallelization process.
-			}
-			
-			// Finally, we recalculate the adjusted coefficient of determination and store its results in the pointer variable "adjustedRsquared".
-			currentAccuracy = 1 - ( (totalSumOfAccuracyTerm1/((neuron->n)-(neuron->m)-1))/(totalSumOfAccuracyTerm2/((neuron->n)-1)) );
-			
-			// We compare the accuracy of the currently obtained weight values with respect to the latest best one recorded. If the current one is better than the recorded one, then store the current one in its place and do the same for the best recorded weight values.
-			if ((currentAccuracy) > (neuron->bestAccuracy)) {
-				neuron->bestAccuracy = currentAccuracy; // Pass the value of the current accuracy into "neuron->bestAccuracy".
-				for (int current_w=0 ; current_w<mPlusOne; current_w++) { // Pass the values of "neuron->w_new" to "neuron->w_best".
-			        neuron->w_best[current_w] = neuron->w_new[current_w];
-			    }
-			}
-			
-			// Determine whether it was requested that the neuron reports its learning progress or not.
-			if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
-				if ((currentEpoch % neuron->reportEachSpecifiedEpochs) == 0) { // Make neuron report at each "neuron->reportEachSpecifiedEpochs" epochs.
-		            printf("\nEpoch %d --> single neuron in DNN has achieved an adjusted R squared of %f\n", currentEpoch+1, currentAccuracy);
-		        }
-			}
-			
-			// If the desired accuracy has been reached, then conclude the training process of the neuron. Otherwise, continue training it.
-			if (currentAccuracy > neuron->stopAboveThisAccuracy) {
-				printf("\nThe adjusted R squared (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal when concluding the epoch number %d.\n", currentAccuracy, currentEpoch+1);
-				
-				// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
-				free(TransposeOf_X_tilde);
-				free(f_x_tilde);
-				free(A_u);
-				free(dA_u);
-				free(w_old);
-				free(errorTerm);
-				free(errorTerm_dot_Xtilde);
-				return;
-			}
-		}
 	}
 	
 	// Determine whether it was requested that the neuron reports its learning progress or not.
 	if (neuron->isReportLearningProgress == 1) { // If the implementer requested the neuron to report its progress, apply the following code.
 		// Make the neuron report its last progress made.
-		if (neuron->isClassification == 1) {
-			printf("\nEpoch %d --> single neuron in DNN has achieved an accuracy of %f\n", neuron->maxEpochs, currentAccuracy);
-		} else {
-			printf("\nEpoch %d --> single neuron in DNN has achieved an adjusted R squared of %f\n", neuron->maxEpochs, currentAccuracy);
-		}
+		printf("\nEpoch %d --> single neuron in DNN has achieved an adjusted R squared of %f\n", neuron->maxEpochs, currentAccuracy);
 	}
 	
 	// Before terminating this function, we free the Heap memory used for the allocated variables since they will no longer be used.
@@ -774,11 +619,7 @@ void getSingleNeuronDNN_parallelCPU(struct singleNeuronDnnStruct_parallelCPU *ne
 	free(errorTerm);
 	free(errorTerm_dot_Xtilde);
 	
-	if (neuron->isClassification == 1) {
-		printf("\nThe best accuracy (%f) achieved by the neuron did not surpased the defined goal but its training process has been successfully concluded.\n", neuron->bestAccuracy);
-	} else {
-		printf("\nThe best adjusted R squared (%f) achieved by the neuron did not surpased the defined goal but its training process has been successfully concluded.\n", neuron->bestAccuracy);
-	}
+	printf("\nThe best adjusted R squared (%f) achieved by the neuron did not surpased the defined goal but its training process has been successfully concluded.\n", neuron->bestAccuracy);
 	
 	return;
 }
@@ -827,43 +668,6 @@ static void *getTransposeOfInputData_parallelCPU(void *threadVariable) {
 	return NULL;
 }
 /**
-* The "transformOutputValuesToBinary_parallelCPU()" static function is used
-* to obtain and transform the current output data (threadData->neuronData.Y)
-* into a binary output format (integer 0 or integer 1) by applying CPU
-* parallelism.
-*
-* To learn more about the argument cpuParallelData structure variable
-* that is used in this function, read the code comments that are
-* located in first lines written in this file.
-*
-*
-* NOTE: RESULTS ARE STORED IN "threadData->neuronData.Y".
-*
-* @return void
-*
-* @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 17, 2022
-* LAST UPDATE: N/A
-*/
-static void *transformOutputValuesToBinary_parallelCPU(void *threadVariable) {
-	// We create a structure variable to access the data that was assigned for the current CPU thread.
-	struct cpuParallelData* threadData = (struct cpuParallelData*) threadVariable;
-
-	// We temporarily manage group 1 with output values of "1" and the group 2 with output values of "0" so that the accuracy can be properly measured by the neuron.
-	for (int currentRow=(threadData->threadStart); currentRow<(threadData->threadStop); currentRow++) {
-		if (threadData->neuronData.Y[currentRow] == threadData->neuronData.desiredValueForGroup1) {
-			threadData->neuronData.Y[currentRow] = 1;
-		} else if (threadData->neuronData.Y[currentRow] == threadData->neuronData.desiredValueForGroup2) {
-			threadData->neuronData.Y[currentRow] = 0;
-		} else {
-			printf("\nERROR: From the singleNeuronDnnStruct structure variable that was used to train a deep learning model, the value from the row %d of the allocated variable \"Y\" did not matched any of the specified values in the variables \"desiredValueForGroup1\" and \"desiredValueForGroup2\".\n", currentRow);
-			exit(1);
-		}
-	}
-
-	return NULL;
-}
-/**
 * The "getFxTilde_Au_dAu_and_accuracyTermsPart1_parallelCPU()" static
 * function is used to calculate "\tilde{f}_{x}", A(u), dA(u) and the
 * first part of the accuracy terms through the application of CPU
@@ -906,58 +710,8 @@ static void *getFxTilde_Au_dAu_and_accuracyTermsPart1_parallelCPU(void *threadVa
 	(*derivateOfActivationFunctions[threadData->neuronData.activationFunctionToBeUsed])(threadVariable); // We calculate the derivative of A(u) and store it in the pointer variable "dA_u".
 	
 	// We calculate the corresponding evaluation metric with respect to the actual data of the system under study "neuron->Y" and the currently predicted output made by the neuron "A_u".
-	if (threadData->neuronData.isClassification == 1) {
-		// We apply the threshold define by the implementer in order to obtain a classification output and store it in "A_u".
-		for (int currentRow=(threadData->threadStart); currentRow<(threadData->threadStop); currentRow++) {
-			if (threadData->A_u[currentRow] > threadData->neuronData.threshold) { // For performance purposes and compatibility with the accuracy method to be used, the classification output results will be either 1 or 0.
-				threadData->A_u[currentRow] = 1;
-			} else {
-				threadData->A_u[currentRow] = 0;
-			}
-		}
-
-		// We calculate the current accuracy of the neuron.
-		getNeuronAccuracy_parallelCPU(threadVariable);
-	} else {
-		getNeuronAdjustedCoefficientOfDetermination_parallelCPUvoidPart1(threadVariable); // We calculate the part 1 of the calculation of the current adjusted coefficient of determination of the neuron.
-	}
+	getNeuronAdjustedCoefficientOfDetermination_parallelCPUvoidPart1(threadVariable); // We calculate the part 1 of the calculation of the current adjusted coefficient of determination of the neuron.
 	
-	return NULL;
-}
-/**
-* The "transformOutputValuesToRequestedOnes_parallelCPU()" static function is
-* used to obtain and transform the current output data
-* (threadData->neuronData.Y) back into the values that were requested by the
-* implementer, which are stored in
-* "threadData->neuronData.desiredValueForGroup1" and
-* "threadData->neuronData.desiredValueForGroup2".
-*
-* To learn more about the argument cpuParallelData structure variable
-* that is used in this function, read the code comments that are
-* located in first lines written in this file.
-*
-*
-* NOTE: RESULTS ARE STORED IN "threadData->neuronData.Y".
-*
-* @return void
-*
-* @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 17, 2022
-* LAST UPDATE: N/A
-*/
-static void *transformOutputValuesToRequestedOnes_parallelCPU(void *threadVariable) {
-	// We create a structure variable to access the data that was assigned for the current CPU thread.
-	struct cpuParallelData* threadData = (struct cpuParallelData*) threadVariable;
-
-	// We restore the original output values defined for group 1 and group 2.
-	for (int currentRow=(threadData->threadStart); currentRow<(threadData->threadStop); currentRow++) {
-		if (threadData->neuronData.Y[currentRow] == 1) {
-			threadData->neuronData.Y[currentRow] = threadData->neuronData.desiredValueForGroup1;
-		} else {
-			threadData->neuronData.Y[currentRow] = threadData->neuronData.desiredValueForGroup2;
-		}
-	}
-
 	return NULL;
 }
 /**
@@ -1388,45 +1142,6 @@ static void *getNeuronAdjustedCoefficientOfDetermination_parallelCPUvoidPart2(vo
 	}
 	
 	return NULL;
-}
-
-
-/**
-* The "getNeuronAccuracy_parallelCPU()" static function is used to calculate and
-* obtain the classification evaluation metric known as the accuracy.
-* Such method will be applied with respect to the argument pointer
-* variables of the real output matrix (threadData->neuronData.Y) and the predicted output matrix (threadData->A_u)"predictedOutputMatrix". Then, its
-* result will be stored in the argument pointer variable "accuracy".
-* 
-* To learn more about the argument cpuParallelData structure variable
-* that is used in this function, read the code comments that are
-* located in first lines written in this file.
-*
-* NOTE: RESULTS ARE STORED IN THE MEMORY ALLOCATED POINTER VARIABLES
-*       "threadData->accuracyTerm1" AND "threadData->accuracyTerm2".
-* 
-* @return void
-*
-* @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 17, 2022
-* LAST UPDATE: N/A
-*/
-static void getNeuronAccuracy_parallelCPU(void* threadVariable) {
-	// We create a structure variable to access the data that was assigned for the current CPU thread.
-	struct cpuParallelData* threadData = (struct cpuParallelData*) threadVariable;
-
-	// In order to calculate the accuracy, we calculate the true positives and true negatives between the argument pointer variables "realOutputMatrix" and "predictedOutputMatrix".
-	threadData->accuracyTerm1 = 0; // Variable used to store the true positives.
-	threadData->accuracyTerm2 = 0; // Variable used to store the true negatives.
-	for (int currentRow=(threadData->threadStart); currentRow<(threadData->threadStop); currentRow++) {
-		if ((threadData->neuronData.Y[currentRow]==1) && (threadData->A_u[currentRow]==1)) {
-			threadData->accuracyTerm1 += 1; // Increase the true positive counter.
-		} else if ((threadData->neuronData.Y[currentRow]==0) && (threadData->A_u[currentRow]==0)) {
-			threadData->accuracyTerm2 += 1; // Increase the true negative counter.
-		}
-	}
-
-	return;
 }
 
 

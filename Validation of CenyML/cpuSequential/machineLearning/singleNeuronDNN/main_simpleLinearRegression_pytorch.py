@@ -9,9 +9,9 @@
 # regression problem. This is done with the database used for linear equation
 # systems. In addition, this database has 1'000'000 samples. Moreover, the
 # well known PyTorch library will be used for such machine learning algorithm
-# (https://bit.ly/3Jm0nzI and https://bit.ly/33Sjr8w). Then, some metrics will
-# be obtained, along with a plot to use these as a comparative evaluation of
-# the results obtained in the CenyML library.
+# (https://bit.ly/3Jm0nzI, https://bit.ly/33Sjr8w and https://bit.ly/3GTz1Q9).
+# Then, some metrics will be obtained, along with a plot to use these as a
+# comparative evaluation of the results obtained in the CenyML library.
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # Python version 3.9.7
@@ -36,10 +36,13 @@ m = 1 # This variable is used to define the number of independent variables
       # that the system under study has.
 p = 1 # This variable is used to define the number of dependent variables
       # that the system under study has.
-learning_rate = 0.0001 # This variable is used to define the desired
+learning_rate = 0.00001 # This variable is used to define the desired
                        # learning rate for the model to be trained.
 num_epochs = 30863 # This variable is used to define the desired number of
                    # epochs for the model to be trained.
+desiredNumberOfCpuThreads = 1 # This variable is used to define the desired
+                              # number of CPU threads that wants to be used
+                              # during the training of the deep learning model.
 idealCoefficients = [[10], [0.8]] # This variable will store the ideal
                                   # coefficient values that it is expected for
                                   # this model to have.
@@ -94,19 +97,21 @@ print("")
 # -------------------------- #
 # ----- Model training ----- #
 # -------------------------- #
-print("Innitializing model training with the scikit-learn library ...")
+print("Innitializing model training with the PyTorch library ...")
 startingTime = time.time()
-# 1) Model
+# 1) Define the number of CPU threads to be used
+torch.set_num_threads(desiredNumberOfCpuThreads)
+# 2) Model
 # Linear model f = wx + b
 model = nn.Linear(m, p) # Input and output equal 1 so that only a single neuron is trained.
 # Define initial weight values with zeros
 zeroValue_torch = torch.zeros(1,1)
 model.bias.data = zeroValue_torch[0]
 model.weight.data = zeroValue_torch
-# 2) Loss and optimizer
+# 3) Loss and optimizer
 criterion = nn.MSELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)  
-# 3) Training loop
+# 4) Training loop
 for epoch in range(num_epochs):
     optimizer.zero_grad()
     Y_predicted = model(X_torch)
@@ -114,7 +119,7 @@ for epoch in range(num_epochs):
     loss.backward()
     optimizer.step()
 elapsedTime = time.time() - startingTime
-print("Model training with the scikit-learn library elapsed " + format(elapsedTime) + " seconds.")
+print("Model training with the PyTorch library elapsed " + format(elapsedTime) + " seconds.")
 print("")
 
 
