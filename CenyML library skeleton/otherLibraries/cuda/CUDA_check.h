@@ -1,4 +1,5 @@
-#include "check.h"
+#ifndef CUDA_CHECK_H
+#define CUDA_CHECK_H
 
 /**
 * The "CHECK()" function is used so that you can know when there
@@ -30,4 +31,6 @@
         exit(1);                                                            \
     }                                                                       \
 }
+
+#endif
 
