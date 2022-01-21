@@ -15,7 +15,7 @@
 */
 #include "CenyMLdeepLearning_SG.h"
 #include <cuda_runtime.h>
-#include "../../../../CenyML library skeleton/otherLibraries/cuda/CUDA_check.h"
+#include "../../../../CenyML_library_skeleton/otherLibraries/cuda/CUDA_check.h"
 // IMPORTANT NOTE: This library uses the math.h library and therefore,
 //				   remember to use the "-lm" flag when compiling it.
 
