@@ -20,7 +20,7 @@ CenyMLdeepLearning_SG = $(addprefix ../../../../,$(cM)/singleGpu/machineLearning
 # The following variables are to tell the compiler the desired flags for the compilation process.
 OPTIMIZATIONLEVEL = -O3
 SOFTWAREFLAGS = -lm
-DEPENDENCYFLAGS = $(OPTIMIZATIONLEVEL) $(SOFTWAREFLAGS) -c
+DEPENDENCYFLAGS = $(OPTIMIZATIONLEVEL) $(SOFTWAREFLAGS) -dc
 TARGETFLAGS = $(OPTIMIZATIONLEVEL) $(SOFTWAREFLAGS) -o
 
 # Monitor and compile all the files that are required for the target program to function.

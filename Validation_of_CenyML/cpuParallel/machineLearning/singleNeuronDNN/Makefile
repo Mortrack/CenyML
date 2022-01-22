@@ -1,6 +1,6 @@
 # Create the following directory variables.
-oLib = ../../../../"CenyML library skeleton"/otherLibraries
-cM = ../../../../"CenyML library skeleton"/CenyML_Library
+oLib = ../../../../"CenyML_library_skeleton"/otherLibraries
+cM = ../../../../"CenyML_library_skeleton"/CenyML_Library
 time = mTime.c # header file to measure time in Linux Ubuntu
 
 main.x:
@@ -17,3 +17,4 @@ main.x:
 	gcc main_secondOrderExponentialRegression.c $(oLib)/time/$(time) $(oLib)/csv/csvManager.c $(oLib)/pbPlots/pbPlots.c $(oLib)/pbPlots/supportLib.c $(cM)/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.c $(cM)/cpuParallel/machineLearning/CenyMLdeepLearning_PC.c -O3 -o main_secondOrderExponentialRegression.x -lpthread -lm
 	gcc main_linearClassification.c $(oLib)/time/$(time) $(oLib)/csv/csvManager.c $(oLib)/pbPlots/pbPlots.c $(oLib)/pbPlots/supportLib.c $(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.c $(cM)/cpuParallel/machineLearning/CenyMLdeepLearning_PC.c -O3 -o main_linearClassification.x -lpthread -lm
 	gcc main_raisetoTheFirstPowerRegression2.c $(oLib)/time/$(time) $(oLib)/csv/csvManager.c $(oLib)/pbPlots/pbPlots.c $(oLib)/pbPlots/supportLib.c $(cM)/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.c $(cM)/cpuParallel/machineLearning/CenyMLdeepLearning_PC.c -O3 -o main_raisetoTheFirstPowerRegression2.x -lpthread -lm
+
