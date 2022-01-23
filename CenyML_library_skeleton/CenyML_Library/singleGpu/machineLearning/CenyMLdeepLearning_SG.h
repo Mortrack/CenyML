@@ -50,12 +50,14 @@ struct singleNeuronDnnStruct_singleGPU {
 extern "C" void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *);
 extern "C" __global__ static void getTransposeOfInputData_singleGPU(double *, int, int, double *);
 extern "C" __global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_singleGPU(double *, double *, double *, int, int, int, int, double *, double *, double *, double *, double *, double *, double *);
-extern "C" __global__ static void getErrorAndUpdateWeightValues_singleGPU(double *, double *, int, int, int, int, double *, double *, double *, double *);
+extern "C" __global__ static void getErrorAndUpdateWeightValues_singleGPUpart1(double *, double *, int, int, int, double *, double *, double *);
+extern "C"  __global__ static void getErrorAndUpdateWeightValues_singleGPUpart2(double *, int, int, int, double *);
 extern "C" __device__ static void getActivationFunction(int, double *, double *, unsigned int);
 extern "C" __device__ static void getDerivateOfActivationFunction(int, double *, double *, double *, unsigned int);
 extern "C" __device__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUPart1(double *, double *, double *, double *, unsigned int);
-extern "C" __device__ static void getParallelReduction(double *, double *, int, unsigned int);
-extern "C" __global__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2(double *, int, int, double *, double *, double *, double *);
+extern "C" __global__ static void getParallelReduction(double *, double *, int);
+extern "C" __device__ static void getDeviceParallelReduction(double *, double *, int);
+extern "C" __global__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2(double *, int, double *, double *);
 extern "C" void predictSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *, double *);
 extern "C" static void *getPredictSingleNeuronDNN_singleGPU(void *);
 
@@ -95,12 +97,14 @@ struct singleNeuronDnnStruct_singleGPU {
 void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *);
 __global__ static void getTransposeOfInputData_singleGPU(double *, int, int, double *);
 __global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_singleGPU(double *, double *, double *, int, int, int, int, double *, double *, double *, double *, double *, double *, double *);
-__global__ static void getErrorAndUpdateWeightValues_singleGPU(double *, double *, int, int, int, int, double *, double *, double *, double *);
+__global__ static void getErrorAndUpdateWeightValues_singleGPUpart1(double *, double *, int, int, int, double *, double *, double *);
+__global__ static void getErrorAndUpdateWeightValues_singleGPUpart2(double *, int, int, int, double *);
 __device__ static void getActivationFunction(int, double *, double *, unsigned int);
 __device__ static void getDerivateOfActivationFunction(int, double *, double *, double *, unsigned int);
 __device__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUPart1(double *, double *, double *, double *, unsigned int);
-__device__ static void getParallelReduction(double *, double *, int, unsigned int);
-__global__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2(double *, int, int, double *, double *, double *, double *);
+__global__ static void getParallelReduction(double *, double *, int);
+__device__ static void getDeviceParallelReduction(double *, double *, int);
+__global__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2(double *, int, double *, double *);
 void predictSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *, double *);
 static void *getPredictSingleNeuronDNN_singleGPU(void *);
 
