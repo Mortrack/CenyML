@@ -59,7 +59,8 @@ extern "C" __global__ static void getParallelReduction(double *, double *, int, 
 extern "C" __device__ static void getDeviceParallelReduction(double *, double *, int, int);
 extern "C" __global__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2(double *, int, double *, double *);
 extern "C" void predictSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *, double *);
-extern "C" __global__ static void getPredictSingleNeuronDNN_singleGPU(double *, double *, int, int, int, int, double, int, int, double *, double *);
+extern "C" static void *getPredictSingleNeuronDNN_singleGPU(void *);
+
 #else
 
 #include <cuda_runtime.h>
@@ -105,7 +106,7 @@ __global__ static void getParallelReduction(double *, double *, int, int);
 __device__ static void getDeviceParallelReduction(double *, double *, int, int);
 __global__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2(double *, int, double *, double *);
 void predictSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *, double *);
-__global__ static void getPredictSingleNeuronDNN_singleGPU(double *, double *, int, int, int, int, double, int, int, double *, double *);
+static void *getPredictSingleNeuronDNN_singleGPU(void *);
 
 
 #endif

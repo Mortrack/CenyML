@@ -67,7 +67,7 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 24, 2022
+* CREATION DATE: JANUARY 17, 2022
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
@@ -146,15 +146,15 @@ int main(int argc, char **argv) {
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the single neuron in Deep Neural Network with the input data (neuron1.X).
 	printf("CenyML single neuron in Deep Neural Network algorithm elapsed %f seconds.\n\n", elapsedTime);
 
-
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
+	/*
 	// We predict the input values (neuron1.X) with the machine learning model that was obtained.
-	printf("Initializing CenyML predictions with the model that was obtained ...");
+	printf("Initializing CenyML predictions with the model that was obtained ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the prediction with the model that was obtained.
 	// Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
 	double *Y_hat = (double *) malloc(neuron1.n*sizeof(double));
 	// We obtain the predicted values with the machine learning model that was obtained.
-	predictSingleNeuronDNN_singleGPU(&neuron1, Y_hat);
+	predictSingleNeuronDNN_parallelCPU(&neuron1, Y_hat);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
 	printf("The CenyML predictions with the model that was obtained elapsed %f seconds.\n\n", elapsedTime);
 	
@@ -326,5 +326,5 @@ int main(int argc, char **argv) {
 	free(adjustedRsquared);
 	free(evaluationMetrics);
 	free(errorMessage);
-	return (0); // end of program.
+	return (0); // end of program.*/
 }
