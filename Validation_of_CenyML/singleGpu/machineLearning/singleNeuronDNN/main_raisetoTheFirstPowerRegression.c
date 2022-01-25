@@ -1,17 +1,15 @@
 /*
-* This program will read a .csv file containing the data of a linear
-* equation system to then extract all its data. Its input data will be
-* saved into the matrix "X" and its output data into the matrix "Y".
-* Subsequently, a single neuron in Deep Neural Network will be used to
-* obtain the best fitting coefficient values of such data by applying
-* such algorithm with CPU parallelism through POSIX Threads. Then,
-* some evaluation metrics will be applied. Next, two new .csv files
-* will be created to save: 1) the coefficient values that were
-* obtained and 2) the results obtained with the evaluation metrics.
-* Finally, a plot of the predicted data by the obtained model with
-* respect to the actual data, will be plotted and saved into a .png
-* file. Both the .csv files and this .png file will serve for further
-* comparisons and validation purposes.
+* This program will read a .csv file containing the data of a linear equation
+* system to then extract all its data. Its input data will be saved into the
+* matrix "X" and its output data into the matrix "Y". Subsequently, a single
+* neuron in Deep Neural Network will be used to obtain the best fitting
+* coefficient values of such data by applying such algorithm with a single GPU.
+* Then, some evaluation metrics will be applied. Next, two new .csv files will
+* be created to save: 1) the coefficient values that were obtained and 2) the
+* results obtained with the evaluation metrics. Finally, a plot of the predicted
+* data by the obtained model with respect to the actual data, will be plotted
+* and saved into a .png file. Both the .csv files and this .png file will serve
+* for further comparisons and validation purposes.
 */
 
  // ------------------------------------------------- //
@@ -24,7 +22,7 @@
 #include "../../../../CenyML_library_skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
 #include "../../../../CenyML_library_skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
 #include "../../../../CenyML_library_skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h" // library to use the regression evaluation metrics of CenyML.
-#include "../../../../CenyML_library_skeleton/CenyML_Library/singleGpu/machineLearning/CenyMLdeepLearning_SG.h" // library to use the deep learning algorithms of CenyML with CPU parallelism.
+#include "../../../../CenyML_library_skeleton/CenyML_Library/singleGpu/machineLearning/CenyMLdeepLearning_SG.h" // library to use the deep learning algorithms of CenyML with GPU parallelism.
 
 
 // ---------------------------------------------- //
@@ -50,10 +48,10 @@
 /**
 * This is the main function of the program. Here we will read a .csv file and
 * then apply the single neuron in Deep Neural Network on the input and output
-* data contained in it by applying such algorithm with CPU parallelism through
-* POSIX Threads. In addition, some evaluation metrics will be applied to
-* evaluate the model. Finally, the results will be saved in two new .csv
-* files and in a .png file for further comparison and validation purposes.
+* data contained in it by applying such algorithm with a single GPU. In
+* addition, some evaluation metrics will be applied to evaluate the model.
+* Finally, the results will be saved in two new .csv files and in a .png file
+* for further comparison and validation purposes.
 *
 * @param int argc - This argument will possess the length number of what is
 *		    contained within the argument "*argv[]".
@@ -202,8 +200,8 @@ int main(int argc, char **argv) {
 	// We store the coefficients that were obtained.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the coefficients that were obtained.
 	// Define the desired header names for the new .csv file to be create.
-    char csvHeaders1[strlen("coefficients")+1]; // Variable where the following code will store the .csv headers.
-    csvHeaders1[0] = '\0'; // Initialize this char variable with a null value.
+	char csvHeaders1[strlen("coefficients")+1]; // Variable where the following code will store the .csv headers.
+	csvHeaders1[0] = '\0'; // Initialize this char variable with a null value.
 	strcat(csvHeaders1, "coefficients"); // We add the headers into "csvHeaders".
 	// Create a new .csv file and save the results obtained in it.
 	char is_nArray1 = 0; // Indicate through this flag variable that the variable that indicates the samples (neuron1.n) is not an array because it has the same amount of samples per columns.
@@ -216,8 +214,8 @@ int main(int argc, char **argv) {
 	// We store the resulting evaluation metrics that were obtained.
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results of the evaluation metrics that were obtained.
 	// Define the desired header names for the new .csv file to be create.
-    char csvHeaders2[strlen("MSE, Rsquared, adjustedRsquared")+1]; // Variable where the following code will store the .csv headers.
-    csvHeaders2[0] = '\0'; // Initialize this char variable with a null value.
+	char csvHeaders2[strlen("MSE, Rsquared, adjustedRsquared")+1]; // Variable where the following code will store the .csv headers.
+	csvHeaders2[0] = '\0'; // Initialize this char variable with a null value.
 	strcat(csvHeaders2, "MSE, Rsquared, adjustedRsquared"); // We add the headers into "csvHeaders".
 	// Create a new .csv file and save the results obtained in it.
 	char is_nArray2 = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
@@ -232,7 +230,7 @@ int main(int argc, char **argv) {
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .png file that will store the results of the predicted and actual data.
 	// Trying the "pbPlots" library (https://github.com/InductiveComputerScience/pbPlots)
 	_Bool success;
-    StringReference *errorMessage;
+	StringReference *errorMessage;
 	RGBABitmapImageReference *imageReference = CreateRGBABitmapImageReference();
 
 	ScatterPlotSeries *series = GetDefaultScatterPlotSeriesSettings();
@@ -271,20 +269,20 @@ int main(int argc, char **argv) {
 	settings->scatterPlotSeries = s;
 	settings->scatterPlotSeriesLength = 2;
 
-    errorMessage = (StringReference *)malloc(sizeof(StringReference));
+	errorMessage = (StringReference *)malloc(sizeof(StringReference));
 	success = DrawScatterPlotFromSettings(imageReference, settings, errorMessage);
 
-    if(success){
-        size_t length;
-        double *pngdata = ConvertToPNG(&length, imageReference->image);
-        WriteToFile(pngdata, length, "plotOfMachineLearningModel (CenyML).png");
-        DeleteImage(imageReference->image);
+	if(success){
+		size_t length;
+		double *pngdata = ConvertToPNG(&length, imageReference->image);
+		WriteToFile(pngdata, length, "plotOfMachineLearningModel (CenyML).png");
+		DeleteImage(imageReference->image);
 	}else{
-	    fprintf(stderr, "Error: ");
-        for(int i = 0; i < errorMessage->stringLength; i++){
-            fprintf(stderr, "%c", errorMessage->string[i]);
-        }
-        fprintf(stderr, "\n");
+		fprintf(stderr, "Error: ");
+		for(int i = 0; i < errorMessage->stringLength; i++){
+			fprintf(stderr, "%c", errorMessage->string[i]);
+		}
+		fprintf(stderr, "\n");
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to create the .png file that will store the results of the predicted and actual data.
 	printf("Initialization of the creation of the .png file elapsed %f seconds.\n\n", elapsedTime);
