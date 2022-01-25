@@ -2,10 +2,12 @@
 oLib = CenyML_library_skeleton/otherLibraries
 # Directory path from the root of the project to the CenyML library files location.
 cM = CenyML_library_skeleton/CenyML_Library
+# Optimization compilation code request for the Tesla K80 GPU.
+teslaK80_Optimization = -gencode arch=compute_37,code=sm_37
+# Optimization compilation code request for the GeForce GTX 1660 SUPER GPU.
+GeForceGTX1660SUPER_Optimization = -gencode arch=compute_75,code=sm_75
 # Variable that defines the desired GPU optimization compilation.
-# NOTE1: "-gencode arch=compute_37,code=sm_37" = Optimization compilation code request for the Tesla K80 GPU.
-# NOTE2: "-gencode arch=compute_75,code=sm_75" = Optimization compilation code request for the GeForce GTX 1660 SUPER GPU.
-gpuOptimization = -gencode arch=compute_37,code=sm_37
+gpuOptimization = $(teslaK80_Optimization)
 
 # Set project directories for the Makefile to consider them.
 Time_c = $(addprefix ../../../../,$(oLib)/time/mTime.c)
