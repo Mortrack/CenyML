@@ -253,7 +253,7 @@
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: JANUARY 24, 2022
-* LAST UPDATE: N/A
+* LAST UPDATE: JANUARY 25, 2022
 */
 void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron) {
 	// If the requested GPU (device) is less than zero, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -261,9 +261,14 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 		printf("\nERROR: The identifier of the requested GPU (device) must be equal or greater than 0.\n");
 		exit(1);
 	}
-	// If the machine learning samples are less than value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
-	if (neuron->n < 1) {
-		printf("\nERROR: The machine learning samples must be equal or greater than 1 for this particular algorithm.\n");
+	// If the value of "neuron->maxUnrollingLoop" is not in the range of 1 and 10, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if ((neuron->maxUnrollingLoop<1) && (neuron->maxUnrollingLoop>10)) {
+		printf("\nERROR: The defined value for \"maxUnrollingLoop\" in the struct of \"singleNeuronDnnStruct\" that you created can only have a whole value in the range of 1 and 10. Please add a valid value to it.\n");
+		exit(1);
+	}
+	// If the machine learning samples are less than value of two, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (neuron->n < 2) {
+		printf("\nERROR: The machine learning samples must be equal or greater than 2 for this particular algorithm.\n");
 		exit(1);
 	}
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -278,37 +283,37 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 	}
 	// If the identifier assigned to "neuron->activationFunctionToBeUsed" is not in the range of 0 and 11, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if ((neuron->activationFunctionToBeUsed>11) && (neuron->activationFunctionToBeUsed<0)) {
-		printf("\nERROR: The defined activation function identifier assigned to \"activationFunctionToBeUsed\" in the struct of \"singleNeuronDnnStruct\" must be a whole value in the range of 0 to 11. Please add a valid identifier number to it.\n");
+		printf("\nERROR: The defined activation function identifier assigned to \"activationFunctionToBeUsed\" in the struct of \"singleNeuronDnnStruct\" that you created must be a whole value in the range of 0 to 11. Please add a valid identifier number to it.\n");
 		exit(1);
 	}
 	// If the flag "neuron->isClassification" has a value different of 0 and 1, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if ((neuron->isClassification!=0) && (neuron->isClassification!=1)) {
-		printf("\nERROR: The defined value for the flag \"isClassification\" in the struct of \"singleNeuronDnnStruct\" can only have a value of either 0 or 1. Please add a valid value to it.\n");
+		printf("\nERROR: The defined value for the flag \"isClassification\" in the struct of \"singleNeuronDnnStruct\" that you created can only have a value of either 0 or 1. Please add a valid value to it.\n");
 		exit(1);
 	}
 	// If the flag "neuron->isInitial_w" has a value different of 0 and 1, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if ((neuron->isInitial_w!=1) && (neuron->isInitial_w!=0)) {
-		printf("\nERROR: The defined value for the flag \"isInitial_w\" in the struct of \"singleNeuronDnnStruct\" can only have a value of either 0 or 1. Please add a valid value to it.\n");
+		printf("\nERROR: The defined value for the flag \"isInitial_w\" in the struct of \"singleNeuronDnnStruct\" that you created can only have a value of either 0 or 1. Please add a valid value to it.\n");
 		exit(1);
 	}
 	// If the flag "neuron->isReportLearningProgress" has a value different of 0 and 1, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if ((neuron->isReportLearningProgress!=1) && (neuron->isReportLearningProgress!=0)) {
-		printf("\nERROR: The defined value for the flag \"isReportLearningProgress\" in the struct of \"singleNeuronDnnStruct\" can only have a value of either 0 or 1. Please add a valid value to it.\n");
+		printf("\nERROR: The defined value for the flag \"isReportLearningProgress\" in the struct of \"singleNeuronDnnStruct\" that you created can only have a value of either 0 or 1. Please add a valid value to it.\n");
 		exit(1);
 	}
 	// If the requested epochs are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if (neuron->maxEpochs < 1) {
-		printf("\nERROR: The defined value for \"maxEpochs\" in the struct of \"singleNeuronDnnStruct\" must be equal or greater than 1 for this particular algorithm. Please add a valid value to it.\n");
+		printf("\nERROR: The defined value for \"maxEpochs\" in the struct of \"singleNeuronDnnStruct\" that you created must be equal or greater than 1 for this particular algorithm. Please add a valid value to it.\n");
 		exit(1);
 	}
 	// If the "neuron->reportEachSpecifiedEpochs" is less than one and greater than "neuron->maxEpochs", then emit an error message and terminate the program. Otherwise, continue with the program.
 	if ((neuron->reportEachSpecifiedEpochs<1) && (neuron->maxEpochs<neuron->reportEachSpecifiedEpochs)) {
-		printf("\nERROR: The defined value for \"reportEachSpecifiedEpochs\" in the struct of \"singleNeuronDnnStruct\" cannot be less than 1 and cannot be greater than the value of \"maxEpochs\" in the struct of \"singleNeuronDnnStruct\". Please add a valid value to it.\n");
+		printf("\nERROR: The defined value for \"reportEachSpecifiedEpochs\" in the struct of \"singleNeuronDnnStruct\" that you created cannot be less than 1 and cannot be greater than the value of \"maxEpochs\" contained in such struct. Please add a valid value to it.\n");
 		exit(1);
 	}
 	// If the value of "neuron->stopAboveThisAccuracy" is not in the range of 0 and 1, then emit an error message and terminate the program. Otherwise, continue with the program.
 	if ((neuron->stopAboveThisAccuracy<0) && (neuron->stopAboveThisAccuracy>1)) {
-		printf("\nERROR: The defined value for the flag \"stopAboveThisAccuracy\" in the struct of \"singleNeuronDnnStruct\" can only have a value in the range of 0 and 1. Please add a valid value to it.\n");
+		printf("\nERROR: The defined value for the flag \"stopAboveThisAccuracy\" in the struct of \"singleNeuronDnnStruct\" that you created can only have a value in the range of 0 and 1. Please add a valid value to it.\n");
 		exit(1);
 	}
 	
@@ -322,25 +327,25 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 	
 	// Set up the execution configurations that will be assigned to the selected GPU.
 	dim3 block_32x_1y(32, 1); // We define the number of GPU threads per block.
-	dim3 grid_n((neuron->n + block_32x_1y.x - 1) / block_32x_1y.x, 1); // We define the number of blocks that our GPU will manage.
+	dim3 grid_n((neuron->n + block_32x_1y.x - 1) / block_32x_1y.x, 1); // We define the number of blocks that our GPU will manage when the number of samples is "neuron->n".
 	
-	// We determine what number of Unrolling Loop strategy will be applied according to the number of samples given by the implementer/user.
-	int numberOfUnrollingLoop; // Variable used to store the number of unrolling loops that the algorithm will use.
-	for (numberOfUnrollingLoop=10; numberOfUnrollingLoop>0; numberOfUnrollingLoop--) {
+	// We determine what number of Unrolling Loop strategy will be applied according to the number of samples and the value of "neuron->maxUnrollingLoop" that were given by the implementer/user.
+	int numberOfUnrollingLoop1; // Variable used to store the number of unrolling loops that the algorithm will use in the first Unrolling Parallel Reduction strategy that will be applied for each case.
+	for (numberOfUnrollingLoop1=neuron->maxUnrollingLoop; numberOfUnrollingLoop1>0; numberOfUnrollingLoop1--) {
 		// NOTE: The idea in this for-loop is to find the highest number, up to a maximum of 10, that can completely divide the number
 		//	  of blocks defined for the selected GPU. However, because the process of defining the number of blocks is conveniently
 		//	  automated for performance purposes, the implementer can attempt to achieve the highest or a higher unrolling loop if
 		//	  he changes the number of input samples given to this function.
-		if (grid_n.x%numberOfUnrollingLoop == 0) {
-			if (numberOfUnrollingLoop == 1) {
-				printf("This algorithm WILL NOT apply the \"Unrolling Loop Strategy\" due to the number of samples given.\n");
+		if (grid_n.x%numberOfUnrollingLoop1 == 0) {
+			if (numberOfUnrollingLoop1 == 1) {
+				printf("This algorithm WILL NOT apply the \"Unrolling Loop Strategy\" due to the number of samples given and/or the defined maximum unrolling loop.\n");
 			} else {
-				printf("This algorithm will apply the \"Unrolling%d Loop Strategy\" (the maximum possible is 10).\n", numberOfUnrollingLoop);
+				printf("This algorithm will apply the \"Unrolling%d Loop Strategy\" for each case applicable (the current maximum limit is %d).\n", numberOfUnrollingLoop1, neuron->maxUnrollingLoop);
 			}
 			break;
 		}
 	}
-	int unrollingGridSize = grid_n.x/numberOfUnrollingLoop; // This variable is used to store the grid size that will be considered for all the processes that apply the Unrolling Parallel Reduction strategy, for performance purposes.
+	int trueUnrollingSize1 = grid_n.x/numberOfUnrollingLoop1; // This variable is used to store the grid size that will be considered for all the processes that apply the first Unrolling Parallel Reduction strategy for each case, for performance purposes.
 	
 	// We configure the shared memory of the current GPU.
 	cudaSharedMemConfig pConfig = cudaSharedMemBankSizeEightByte; // We create a cudaSharedMemConfig type variable to store in it the configuration of 8-byte mode for shared memory in the GPU.
@@ -365,7 +370,7 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 	// We allocate the required memory in the selected GPU.
 	CHECK(cudaMalloc((void **) &d_X, neuron->n*neuron->m*sizeof(double)));
 	CHECK(cudaMalloc((void **) &d_Y, neuron->n*sizeof(double)));
-	int w_new_Bytes = mPlusOne*sizeof(double);
+	int w_new_Bytes = mPlusOne*sizeof(double); // This variable stores the number of bytes to allocate the new weight values that will be obtained each epoch of the training process, for performance purposes.
 	CHECK(cudaMalloc((void **) &d_w_new, w_new_Bytes));
 	CHECK(cudaMalloc((void **) &d_TransposeOf_X_tilde, mPlusOne*neuron->n*sizeof(double)));
 	CHECK(cudaMalloc((void **) &d_f_x_tilde, neuron->n*sizeof(double)));
@@ -373,11 +378,11 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 	CHECK(cudaMalloc((void **) &d_dA_u, neuron->n*sizeof(double)));
 	CHECK(cudaMalloc((void **) &d_accuracyTerm1, neuron->n*sizeof(double)));
 	CHECK(cudaMalloc((void **) &d_accuracyTerm2, neuron->n*sizeof(double)));
-	int parRed_Bytes = unrollingGridSize*sizeof(double);
+	int parRed_Bytes = trueUnrollingSize1*sizeof(double); // This variable stores the number of bytes to allocate in those variables that will have the Unrolling Parallel Reduction strategy applied once, for performance purposes.
 	CHECK(cudaMalloc((void **) &d_reducedAccuracyTerm1, parRed_Bytes));
 	CHECK(cudaMalloc((void **) &d_reducedAccuracyTerm2, parRed_Bytes));
 	CHECK(cudaMalloc((void **) &d_errorTerm, mPlusOne*neuron->n*sizeof(double)));
-	int errorTerm_dot_Xtilde_Bytes = mPlusOne*unrollingGridSize*sizeof(double);
+	int errorTerm_dot_Xtilde_Bytes = mPlusOne*trueUnrollingSize1*sizeof(double); // This variable stores the number of bytes to allocate the device variable "d_errorTerm_dot_Xtilde", for performance purposes.
 	CHECK(cudaMalloc((void **) &d_errorTerm_dot_Xtilde, errorTerm_dot_Xtilde_Bytes));
 	
 	
@@ -417,14 +422,19 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 	CHECK(cudaMemcpy(d_w_new, neuron->w_new, w_new_Bytes, cudaMemcpyHostToDevice));
 	
 	// We allocate all the memory that will be required in the CPU for the training process of the neuron.
+	int double32_Bytes = 32*sizeof(double); // This variable stores the number of bytes required to store 32 double variable type, for performance purposes.
+	int double64_Bytes = 2*double32_Bytes; // This variable stores the number of bytes required to store 64 double variable type, for performance purposes.
+	int double96_Bytes = 3*double32_Bytes; // This variable stores the number of bytes required to store 96 double variable type, for performance purposes.
+	int double128_Bytes = 2*double64_Bytes; // This variable stores the number of bytes required to store 128 double variable type, for performance purposes.
+	int unrollingTotalBlockSize1 = grid_n.x * block_32x_1y.x; // This variable stores the total number of GPU threads that are to be employed specifically for calling a GPU Kernel to apply the Parallel Reduction strategy to a certain set of data. NOTE: This variable has more application/sense when applying the Parallel Reduction two or more consecutive times.
 	double *h_reducedAccuracyTerm1 = (double *) malloc(parRed_Bytes); // CPU Allocated variable that will contain all the individual contributions made by each thread block in an attemp to apply the parallel reduction strategy to "d_accuracyTerm1".
 	double *h_reducedAccuracyTerm2 = (double *) malloc(parRed_Bytes); // CPU Allocated variable that will contain all the individual contributions made by each thread block in an attemp to apply the parallel reduction strategy to "d_accuracyTerm2".
-	double totalSumOfAccuracyTerm1 = 0; // This variable is used to sum all the contributions of each GPU block that were made to get "d_accuracyTerm1" and that were stored in "h_reducedAccuracyTerm1".
-	double totalSumOfAccuracyTerm2 = 0; // This variable is used to sum all the contributions of each GPU block that were made to get "d_accuracyTerm2" and that were stored in "h_reducedAccuracyTerm2".
+	double totalSumOfAccuracyTerm1 = 0; // This variable is used to sequentially sum all the contributions of each GPU block that were made to get "d_accuracyTerm1" and that were stored in "h_reducedAccuracyTerm1".
+	double totalSumOfAccuracyTerm2 = 0; // This variable is used to sequentially sum all the contributions of each GPU block that were made to get "d_accuracyTerm2" and that were stored in "h_reducedAccuracyTerm2".
 	int nMinusOne = neuron->n-1; // This variable is used to store a repetitive value that is used several times in the program, for performance purposes.
 	double currentAccuracy = 0; // This variable is used to contain the current accuracy of the neuron.
 	double *idata; // This variable is used to convert a pointer of interest to have a new origin from such pointer.
-	double *h_errorTerm_dot_Xtilde = (double *) malloc(errorTerm_dot_Xtilde_Bytes); // CPU Allocated variable that will contain all the individual contributions made by each thread block in an attemp to apply the parallel reduction strategy to "d_errorTerm".
+	double *h_errorTerm_dot_Xtilde = (double *) malloc(errorTerm_dot_Xtilde_Bytes); // CPU allocated variable that will contain all the individual contributions made by each thread block in an attemp to apply the parallel reduction strategy to "d_errorTerm".
 	double totalErrorTerm_dot_Xtilde = 0; // This variable is used to sum all the contributions of each GPU block that were made to get "d_errorTerm" and that were stored in "d_errorTerm_dot_Xtilde".
 	double *w_old = (double *) malloc(w_new_Bytes); // Allocate the memory required for the variable "w_old", which will contain the previous weight values that were obtained with respect to the current ones.
 	
@@ -432,22 +442,20 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 	// ------------------------------------- //
 	// ----- REGRESSION MODEL SELECTED ----- //
 	// ------------------------------------- //
-
+	
 	// ----------- EVALUATION OF THE INITIAL WEIGHT VALUES ----------- //
 	// We calculate "f_x_tilde", "A(u)", "dA(u)" and "the part 1 of the accuracy terms".
-	// TODO: According to my calculations and because the Tesla K80 has 64KB of shared memory per chip, this algorithm could manage processes of weight calculations but up to 18 weights. More than that should make the program crash because of using more of the available shared memory. Therefore, add the functionality of using shared memory whenever the number of weights are 18 or less. Otherwise, operate the way the program is right now.
-	getFxTilde_Au_dAu_and_accuracyTermsPart1_singleGPU <<< grid_n, block_32x_1y, 2*32*sizeof(double) >>> (d_X, d_Y, d_w_new, neuron->n, neuron->m, neuron->activationFunctionToBeUsed, d_f_x_tilde, d_A_u, d_dA_u, d_accuracyTerm1, d_accuracyTerm2);
+	getFxTilde_Au_dAu_and_accuracyTermsPart1_singleGPU <<< grid_n, block_32x_1y, double96_Bytes >>> (d_X, d_Y, d_w_new, neuron->n, neuron->m, neuron->activationFunctionToBeUsed, d_f_x_tilde, d_A_u, d_dA_u, d_accuracyTerm1, d_accuracyTerm2);
 	CHECK(cudaDeviceSynchronize()); // We force the program to wait until all GPU threads have finished the last task they were given.
-	getParallelReduction <<< unrollingGridSize, block_32x_1y, 32*sizeof(double) >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, neuron->n, numberOfUnrollingLoop); // We apply the parallel reduction strategy on "d_accuracyTerm1".
-	getParallelReduction <<< unrollingGridSize, block_32x_1y, 32*sizeof(double) >>> (d_accuracyTerm2, d_reducedAccuracyTerm2, neuron->n, numberOfUnrollingLoop); // We apply the parallel reduction strategy on "d_accuracyTerm2".
+	getParallelReduction <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1".
+	getParallelReduction <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm2, d_reducedAccuracyTerm2, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm2".
 	
-	// We calculate the sequential part of "the part 1 of the accuracy terms" by summing all the contributions made and stored in "d_reducedAccuracyTerm1" and "d_reducedAccuracyTerm2" after having applied the parallel reduction strategy on them.
-	// TODO: In order to increase performance and add more parallelization, add a code that evaluates if it is applicable to apply again the parallel reduction strategy on "d_reducedAccuracyTerm1" and "d_reducedAccuracyTerm2" again. If it is applicable, apply such strategy one more time. Otherwise, proceed with the code as it is made right now.
+	// We calculate the sequential part of "the part 1 of the accuracy terms" by sequentially summing all the contributions made and stored in "d_reducedAccuracyTerm1" and "d_reducedAccuracyTerm2" after having applied the parallel reduction strategy on them.
 	CHECK(cudaMemcpy(h_reducedAccuracyTerm1, d_reducedAccuracyTerm1, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
 	CHECK(cudaMemcpy(h_reducedAccuracyTerm2, d_reducedAccuracyTerm2, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm2" to the CPU through "h_reducedAccuracyTerm2".
 	totalSumOfAccuracyTerm1 = 0; // We reset the value of the accuracy term 1, in which we will store the value of SSE.
 	totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will temporarily store the sum of all the values from the "real output matrix".
-	for (int currentBlock=0; currentBlock<unrollingGridSize; currentBlock++) {
+	for (int currentBlock=0; currentBlock<trueUnrollingSize1; currentBlock++) {
 		totalSumOfAccuracyTerm1 += h_reducedAccuracyTerm1[currentBlock]; // We sum all the fragments of the SSE that was calculated by the previous parallelization process.
 		totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm2[currentBlock]; // We sum all the fragments of the "real output matrix sum" that was calculated by the previous parallelization process.
 	}
@@ -455,13 +463,12 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 	
 	// We calculate "the part 2 of the accuracy terms".
 	CHECK(cudaMemcpy(d_reducedAccuracyTerm2, h_reducedAccuracyTerm2, sizeof(double), cudaMemcpyHostToDevice)); // We pass mean of the "real output matrix" to the GPU, which is contained in the first data location of the pointer variable "h_reducedAccuracyTerm2".
-	getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2 <<< grid_n, block_32x_1y, 2*32*sizeof(double) >>> (d_Y, neuron->n, d_accuracyTerm1, d_reducedAccuracyTerm2);
+	getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2 <<< grid_n, block_32x_1y, double64_Bytes >>> (d_Y, neuron->n, d_accuracyTerm1, d_reducedAccuracyTerm2);
 	CHECK(cudaDeviceSynchronize()); // We force the program to wait until all GPU threads have finished the last task they were given.
-	getParallelReduction <<< unrollingGridSize, block_32x_1y, 32*sizeof(double) >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, neuron->n, numberOfUnrollingLoop); // We apply the parallel reduction strategy on "d_accuracyTerm1", containing the SST data.
+	getParallelReduction <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1", containing the SST data.
 	CHECK(cudaMemcpy(h_reducedAccuracyTerm1, d_reducedAccuracyTerm1, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
-	// TODO: In order to increase performance and add more parallelization, add a code that evaluates if it is applicable to apply again the parallel reduction strategy on "d_reducedAccuracyTerm1". If it is applicable, apply such strategy one more time. Otherwise, proceed with the code as it is made right now.
 	totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will store the value of SST.
-	for (int currentBlock=0; currentBlock<unrollingGridSize; currentBlock++) {
+	for (int currentBlock=0; currentBlock<trueUnrollingSize1; currentBlock++) {
 		totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm1[currentBlock]; // We sum all the fragments of the SST that was calculated by the previous parallelization process.
 	}
 
@@ -504,37 +511,35 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 		}
 		
 		// Calculate the error term obtainable with the current weight values so that we can later update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new").
-		getErrorAndUpdateWeightValues_singleGPUpart1 <<< grid_n, block_32x_1y >>> (d_TransposeOf_X_tilde, d_Y, neuron->n, mPlusOne, d_A_u, d_dA_u, d_errorTerm);
+		getErrorAndUpdateWeightValues_singleGPUpart1 <<< grid_n, block_32x_1y, double128_Bytes >>> (d_TransposeOf_X_tilde, d_Y, neuron->n, mPlusOne, d_A_u, d_dA_u, d_errorTerm);
 		CHECK(cudaDeviceSynchronize()); // We force the program to wait until all GPU threads have finished the last task they were given.
-		getErrorAndUpdateWeightValues_singleGPUpart2 <<< unrollingGridSize, block_32x_1y, 32*sizeof(double) >>> (d_errorTerm, neuron->n, mPlusOne, unrollingGridSize, numberOfUnrollingLoop, d_errorTerm_dot_Xtilde);
+		getErrorAndUpdateWeightValues_singleGPUpart2 <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_errorTerm, neuron->n, mPlusOne, trueUnrollingSize1, unrollingTotalBlockSize1, numberOfUnrollingLoop1, d_errorTerm_dot_Xtilde);
 		CHECK(cudaMemcpy(h_errorTerm_dot_Xtilde, d_errorTerm_dot_Xtilde, errorTerm_dot_Xtilde_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_errorTerm_dot_Xtilde" to the CPU through "h_errorTerm_dot_Xtilde".
 		
-		// We update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new") by summing all the individual contributions made after having applied the parallel reduction strategy on "d_errorTerm", whose result was stored in "h_errorTerm_dot_Xtilde".
+		// We update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new") by sequentially summing all the individual contributions made after having applied the parallel reduction strategy on "d_errorTerm", whose result was stored in "h_errorTerm_dot_Xtilde".
 		idata = h_errorTerm_dot_Xtilde; // We convert the pointer of interest from "h_errorTerm_dot_Xtilde" to be the origin pointer of "idata".
 		for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
 			totalErrorTerm_dot_Xtilde = 0; // We reset the value of "totalErrorTerm_dot_Xtilde" to sum the contributed error values for the next weight.
-			for (int currentBlock=0; currentBlock<unrollingGridSize; currentBlock++) {
+			for (int currentBlock=0; currentBlock<trueUnrollingSize1; currentBlock++) {
 				totalErrorTerm_dot_Xtilde += idata[currentBlock];
 			}
 			neuron->w_new[currentRow] = w_old[currentRow] + neuron->learningRate * totalErrorTerm_dot_Xtilde; // We update the current weight value.
-			idata += unrollingGridSize; // We mode the pointer of "h_errorTerm_dot_Xtilde" to the next row/weight.
+			idata += trueUnrollingSize1; // We mode the pointer of "h_errorTerm_dot_Xtilde" to the next row/weight.
 		}
 		CHECK(cudaMemcpy(d_w_new, neuron->w_new, w_new_Bytes, cudaMemcpyHostToDevice)); // We pass the values of "neuron->w_new" to the GPU, through its pointer variable "d_w_new".
 		
 		// We recalculate "f_x_tilde", "A(u)", "dA(u)" and "the part 1 of the accuracy terms".
-		// TODO: According to my calculations and because the Tesla K80 has 64KB of shared memory per chip, this algorithm could manage processes of weight calculations but up to 18 weights. More than that should make the program crash because of using more of the available shared memory. Therefore, add the functionality of using shared memory whenever the number of weights are 18 or less. Otherwise, operate the way the program is right now.
-		getFxTilde_Au_dAu_and_accuracyTermsPart1_singleGPU <<< grid_n, block_32x_1y, 2*32*sizeof(double) >>> (d_X, d_Y, d_w_new, neuron->n, neuron->m, neuron->activationFunctionToBeUsed, d_f_x_tilde, d_A_u, d_dA_u, d_accuracyTerm1, d_accuracyTerm2);
+		getFxTilde_Au_dAu_and_accuracyTermsPart1_singleGPU <<< grid_n, block_32x_1y, double96_Bytes >>> (d_X, d_Y, d_w_new, neuron->n, neuron->m, neuron->activationFunctionToBeUsed, d_f_x_tilde, d_A_u, d_dA_u, d_accuracyTerm1, d_accuracyTerm2);
 		CHECK(cudaDeviceSynchronize()); // We force the program to wait until all GPU threads have finished the last task they were given.
-		getParallelReduction <<< unrollingGridSize, block_32x_1y, 32*sizeof(double) >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, neuron->n, numberOfUnrollingLoop); // We apply the parallel reduction strategy on "d_accuracyTerm1".
-		getParallelReduction <<< unrollingGridSize, block_32x_1y, 32*sizeof(double) >>> (d_accuracyTerm2, d_reducedAccuracyTerm2, neuron->n, numberOfUnrollingLoop); // We apply the parallel reduction strategy on "d_accuracyTerm2".
+		getParallelReduction <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1".
+		getParallelReduction <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm2, d_reducedAccuracyTerm2, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm2".
 		
-		// We recalculate the sequential part of "the part 1 of the accuracy terms" by summing all the contributions made and stored in "d_reducedAccuracyTerm1" and "d_reducedAccuracyTerm2" after having applied the parallel reduction strategy on them.
-		// TODO: In order to increase performance and add more parallelization, add a code that evaluates if it is applicable to apply again the parallel reduction strategy on "d_reducedAccuracyTerm1" and "d_reducedAccuracyTerm2" again. If it is applicable, apply such strategy one more time. Otherwise, proceed with the code as it is made right now.
+		// We recalculate the sequential part of "the part 1 of the accuracy terms" by sequentially summing all the contributions made and stored in "d_reducedAccuracyTerm1" and "d_reducedAccuracyTerm2" after having applied the parallel reduction strategy on them.
 		CHECK(cudaMemcpy(h_reducedAccuracyTerm1, d_reducedAccuracyTerm1, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
 		CHECK(cudaMemcpy(h_reducedAccuracyTerm2, d_reducedAccuracyTerm2, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm2" to the CPU through "h_reducedAccuracyTerm2".
 		totalSumOfAccuracyTerm1 = 0; // We reset the value of the accuracy term 1, in which we will store the value of SSE.
 		totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will temporarily store the sum of all the values from the "real output matrix".
-		for (int currentBlock=0; currentBlock<unrollingGridSize; currentBlock++) {
+		for (int currentBlock=0; currentBlock<trueUnrollingSize1; currentBlock++) {
 			totalSumOfAccuracyTerm1 += h_reducedAccuracyTerm1[currentBlock]; // We sum all the fragments of the SSE that was calculated by the previous parallelization process.
 			totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm2[currentBlock]; // We sum all the fragments of the "real output matrix sum" that was calculated by the previous parallelization process.
 		}
@@ -542,13 +547,12 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 		
 		// We recalculate "the part 2 of the accuracy terms".
 		CHECK(cudaMemcpy(d_reducedAccuracyTerm2, h_reducedAccuracyTerm2, sizeof(double), cudaMemcpyHostToDevice)); // We pass mean of the "real output matrix" to the GPU, which is contained in the first data location of the pointer variable "h_reducedAccuracyTerm2".
-		getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2 <<< grid_n, block_32x_1y, 2*32*sizeof(double) >>> (d_Y, neuron->n, d_accuracyTerm1, d_reducedAccuracyTerm2);
+		getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2 <<< grid_n, block_32x_1y, double64_Bytes >>> (d_Y, neuron->n, d_accuracyTerm1, d_reducedAccuracyTerm2);
 		CHECK(cudaDeviceSynchronize()); // We force the program to wait until all GPU threads have finished the last task they were given.
-		getParallelReduction <<< unrollingGridSize, block_32x_1y, 32*sizeof(double) >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, neuron->n, numberOfUnrollingLoop); // We apply the parallel reduction strategy on "d_accuracyTerm1", containing the SST data.
+		getParallelReduction <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1", containing the SST data.
 		CHECK(cudaMemcpy(h_reducedAccuracyTerm1, d_reducedAccuracyTerm1, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
-		// TODO: In order to increase performance and add more parallelization, add a code that evaluates if it is applicable to apply again the parallel reduction strategy on "d_reducedAccuracyTerm1". If it is applicable, apply such strategy one more time. Otherwise, proceed with the code as it is made right now.
 		totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will store the value of SST.
-		for (int currentBlock=0; currentBlock<unrollingGridSize; currentBlock++) {
+		for (int currentBlock=0; currentBlock<trueUnrollingSize1; currentBlock++) {
 			totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm1[currentBlock]; // We sum all the fragments of the SST that was calculated by the previous parallelization process.
 		}
 
@@ -784,23 +788,17 @@ __global__ static void getTransposeOfInputData_singleGPU(double *X, int n, int m
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: JANUARY 23, 2022
-* LAST UPDATE: N/A
+* LAST UPDATE: JANUARY 25, 2022
 */
 __global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_singleGPU(double *X, double *Y, double *w_new, int n, int m, int activationFunctionToBeUsed, double *f_x_tilde, double *A_u, double *dA_u, double *accuracyTerm1, double *accuracyTerm2) {
-	// We obtain the GPU thread global coordinate.
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	// We obtain the GPU thread coordinates.
+	int idx = threadIdx.x + blockIdx.x * blockDim.x; // We obtain the GPU thread global coordinate.
+	int tid = threadIdx.x; // We obtain the GPU thread local coordinate
 	
 	// If the current GPU thread is within boundary, then proceed to work with the task. Otherwise, conclude your operation.
 	if (idx < n) {
-		// We calculate the values of "f_x_tilde".
-		double *idata_X = X; // We convert the pointer of interest from "X" to be the origin pointer of "idata".
-		double *idata_w_new = w_new; // We convert the pointer of interest from "w_new" to be the origin pointer of "idata".
-		f_x_tilde[idx] = idata_w_new[0]; // We get the bias value of the body of the neuron.
-		idata_w_new++; // We move the origin pointer of the argument variable "w_new" to the location of the next weight value, for performance purposes.
-		idata_X += idx * m; // We move the origin pointer of the argument variable "X" to the location of the row of interest for the current GPU thread, for performance purposes.
-		for (int currentColumn=0; currentColumn<m; currentColumn++) {
-			f_x_tilde[idx] += idata_w_new[currentColumn] * idata_X[currentColumn]; // We calculate the remaining dentrite values of the body of the neuron.
-		}
+		// We calculate the values of "f(x_tilde)".
+		getFxTilde(X, w_new, m, f_x_tilde, tid, idx);
 		
 		// We calculate the currently predicted output data made by the neuron and store it in "A_u" by applying the desired activation function to "f_x_tilde".
 		getActivationFunction(activationFunctionToBeUsed, f_x_tilde, A_u, idx); // We calculate A(u) and store it in the pointer variable "A_u".
@@ -812,6 +810,109 @@ __global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_singleGPU(double
 		// We calculate the part 1 of the corresponding evaluation metric with respect to the actual data of the system under study "Y" and the currently predicted output made by the neuron "A_u".
 		getNeuronAdjustedCoefficientOfDetermination_singleGPUPart1(Y, A_u, accuracyTerm1, accuracyTerm2, idx); // We calculate the part 1 of the calculation of the current adjusted coefficient of determination of the neuron.
 	}
+	
+	return;
+}
+/**
+* The "getFxTilde()" device static function is used to apply a single
+* GPU to calculate and store the f(x_tilde) value, which stands for the output
+* of the body of the single neuron in DNN.
+*
+*
+* @param double *X - This argument will contain the pointer to a memory
+*		allocated input matrix, from which the desired machine learning
+*		algorithm will be calculated. THIS VARIABLE SHOULD BE ALLOCATED
+* 		AND INITIALIZED BEFORE CALLING THIS FUNCTION WITH A SIZE OF "n"
+* 		TIMES "m" 'DOUBLE' MEMORY SPACES.
+*
+* @param double *Y - This argument will contain the pointer to a memory
+* 		allocated output matrix, representing the real data of the
+*		system under study. THIS VARIABLE SHOULD BE ALLOCATED AND
+* 		INITIALIZED BEFORE CALLING THIS FUNCTION WITH A SIZE OF "n"
+* 		TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+* 
+* @param double *w_new - This argument will contain the pointer to a memory
+*			allocated variable in which we will store the last
+*			identified coefficient values for the model of a single
+* 			neuron in Deep Neural Network. These coefficients will
+* 			each be stored in the same row but under different
+* 			columns where the first coefficient (b_0) will be stored
+* 			in the column with index 0; the second coefficient (w_1)
+* 			will be stored in the column index 1 and; the last
+* 			coefficient (w_m) will be stored in the column index m.
+* 			IT IS INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED AND
+* 			INITIALIZED BEFORE CALLING THIS FUNCTION WITH A VARIABLE
+* 			SIZE OF "1" TIMES "m+1" 'DOUBLE' MEMORY SPACES.
+* 
+* @param int n - This argument will represent the total number of samples (rows)
+* 		that the input matrix has, with which the output data was
+*		obtained.
+*
+* @param int m - This argument will represent the total number of features
+* 		(independent variables) that the input matrix has, with which
+* 		the output data was obtained.
+*
+* @param int activationFunctionToBeUsed - This argument will represent the
+* 					identifier of the desired activation
+* 					function to be used by the neuron during
+* 					its training process. Its possible valid
+* 					values are the following:
+*					0 = Rectified Linear Units (ReLU).
+*					1 = Hyperbolic tangent (tanh).
+*					2 = Logistic function.
+*					3 = Raise to the 1st power.
+*					4 = Raise to the 2nd power.
+*					5 = Raise to the 3rd power.
+*					6 = Raise to the 4th power.
+*					7 = Raise to the 5th power.
+*					8 = Raise to the 6th power.
+*					9 = 1st order degree exponential.
+*					10 = 2nd order degree exponential.
+*
+* @param double *f_x_tilde - This argument will contain the pointer to a memory
+* 			allocated matrix that is used to store the output of the
+* 			body of the neuron in the selected GPU. IT IS
+* 			INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED BEFORE
+* 			CALLING THIS FUNCTION WITH A VARIABLE SIZE OF "n" TIMES
+* 			"1" 'DOUBLE' MEMORY SPACES.
+*
+* @param int tid - This argument will contain the value of the GPU thread local
+* 		coordinate.
+*
+* @param int idx - This argument will contain the value of the GPU thread global
+* 		coordinate.
+*
+*
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE "f_x_tilde".
+* 
+* @return void
+* 
+* @author Miranda Meza Cesar
+* CREATION DATE: JANUARY 25, 2022
+* LAST UPDATE: N/A
+*/
+__device__ static void getFxTilde(double *X, double *w_new, int m, double *f_x_tilde, int tid, int idx) {
+	// We declare and initialize the shared memory of the GPU that will be used.
+	extern __shared__ double sharedMem[]; // We declare the shared memory that we will use for each block.
+	// NOTE: Each GPU thread is storing data such that their local address (tid) will represent the identifier of the row number in which they will write data in the shared memory. Moreover, each thread will have assigned 3 columns per row.
+	
+	// We calculate the values of "f(x_tilde)".
+	double *idata_X = X; // We convert the pointer of interest from "X" to be the origin pointer of "idata".
+	double *idata_w_new = w_new; // We convert the pointer of interest from "w_new" to be the origin pointer of "idata".
+	int tidTimesThree = tid*3; // This variable is used to store a repetitive value that is used several times in the program, for performance purposes.
+	int currentRowColumn1 = tidTimesThree; // This variable is used to store a repetitive value that is used several times in the program, for performance purposes.
+	int currentRowColumn2 = 1 + currentRowColumn1; // This variable is used to store a repetitive value that is used several times in the program, for performance purposes.
+	sharedMem[tidTimesThree] = idata_w_new[0]; // This memory address of the shared memory is where we will store the value of "f(x_tilde)". To begin with such process, we get the bias value of the body of the neuron.
+	idata_w_new++; // We move the origin pointer of the argument variable "w_new" to the location of the next weight value, for performance purposes.
+	idata_X += idx * m; // We move the origin pointer of the argument variable "X" to the location of the row of interest for the current GPU thread, for performance purposes.
+	for (int currentColumn=0; currentColumn<m; currentColumn++) {
+		currentRowColumn1++;
+		currentRowColumn2++;
+		sharedMem[currentRowColumn1] = idata_w_new[currentColumn]; // We pass the current weight value to the shared memory corresponding address.
+		sharedMem[currentRowColumn2] = idata_X[currentColumn]; // We pass the current input data to the shared memory corresponding address.
+		sharedMem[tidTimesThree] += sharedMem[currentRowColumn1] * sharedMem[currentRowColumn2]; // We multiply the current weight value with the current input data and store it in the address of the shared memory in which we will store the value of "f(x_tilde)".
+	}
+	f_x_tilde[idx] = sharedMem[tidTimesThree]; // We transfer the result of "f(x_tilde)" from the shared memory to the pointer variable "f_x_tilde".
 	
 	return;
 }
@@ -878,8 +979,8 @@ __global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_singleGPU(double
 * LAST UPDATE: N/A
 */
 __global__ static void getErrorAndUpdateWeightValues_singleGPUpart1(double *TransposeOf_X_tilde, double *Y, int n, int mPlusOne, double *A_u, double *dA_u, double *errorTerm) {
-	// We obtain the GPU thread global coordinate.
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	// We obtain the GPU thread coordinates.
+	int idx = threadIdx.x + blockIdx.x * blockDim.x; // We obtain the GPU thread global coordinate.
 	
 	// If the current GPU thread is within boundary, then proceed to work with the task. Otherwise, conclude your operation.
 	if (idx < n) {
@@ -929,9 +1030,14 @@ __global__ static void getErrorAndUpdateWeightValues_singleGPUpart1(double *Tran
 *		features (independent variables) that the input matrix has plus
 * 		one.
 *
-* @param int iBlockSize - This argument is used to represent the grid size that
-* 		will be considered for all the GPU Kernels that apply the
-* 		Unrolling Parallel Reduction strategy, for performance purposes.
+* @param int trueUnrollingSize - This argument is used to represent the true
+* 			number of samples that are expected to be obtained after
+* 			having applied the Parallel Reduction strategy.
+*
+* @param int unrollingGridSize - This argument is used to represent the grid
+*		size that will be considered for all the GPU Kernels that apply
+* 		the Unrolling Parallel Reduction strategy, for performance
+* 		purposes.
 *
 * @param int numberOfUnrollingLoop - This argument is used to represent the
 * 				number of unrolling loops that the algorithm will
@@ -955,14 +1061,14 @@ __global__ static void getErrorAndUpdateWeightValues_singleGPUpart1(double *Tran
 * CREATION DATE: JANUARY 23, 2022
 * LAST UPDATE: N/A
 */
-__global__ static void getErrorAndUpdateWeightValues_singleGPUpart2(double *errorTerm, int n, int mPlusOne, int iBlockSize, int numberOfUnrollingLoop, double *errorTerm_dot_Xtilde) {
+__global__ static void getErrorAndUpdateWeightValues_singleGPUpart2(double *errorTerm, int n, int mPlusOne, int trueUnrollingSize, int unrollingGridSize, int numberOfUnrollingLoop, double *errorTerm_dot_Xtilde) {
 	// We apply the parallel reduction strategy to all the individual error term contributions made for each weight available.
 	double *idata2 = errorTerm; // We convert the pointer of interest from "errorTerm" to be the origin pointer of "idata".
 	double *odata2 = errorTerm_dot_Xtilde; // We convert the pointer of interest from "errorTerm_dot_Xtilde" to be the origin pointer of "odata".
 	for (int currentWeight=0; currentWeight<mPlusOne; currentWeight++) {
-		getDeviceParallelReduction(idata2, odata2, n, numberOfUnrollingLoop); // We apply the parallel reduction strategy on "errorTerm".
+		getDeviceParallelReduction(idata2, odata2, unrollingGridSize, numberOfUnrollingLoop); // We apply the parallel reduction strategy on "errorTerm".
 		idata2 += n;
-		odata2 += iBlockSize;
+		odata2 += trueUnrollingSize;
 	}
 	
 	return;
@@ -1017,6 +1123,7 @@ __global__ static void getErrorAndUpdateWeightValues_singleGPUpart2(double *erro
 */
 __device__ static void getActivationFunction(int activationFunctionToBeUsed, double *u, double *A_u, int idx) {
 	// Determine and apply the activation function that was chosen by the implementer.
+	// TODO: Use shared memory within the processes of this switch-case but only in the cases in which there is at least a mathematical operation to do. If you use shared memory only to transfer data like in "case 3", you will not obtain better performance results.
 	double squareThisValue; // Variable used to store the value that wants to be squared, for performance purposes.
 	switch (activationFunctionToBeUsed) {
 		case 0: // Rectified Linear Units (ReLU).
@@ -1128,6 +1235,7 @@ __device__ static void getActivationFunction(int activationFunctionToBeUsed, dou
 */
 __device__ static void getDerivateOfActivationFunction(int activationFunctionToBeUsed, double *u, double *A_u, double *dA_u, int idx) {
 	// Determine and apply the derivate of the activation function that was chosen by the implementer.
+	// TODO: Use shared memory within the processes of this switch-case but only in the cases in which there is at least a mathematical operation to do. If you use shared memory only to transfer data like in "case 3", you will not obtain better performance results.
 	double squareThisValue; // Variable used to store the value that wants to be squared, for performance purposes.
 	switch (activationFunctionToBeUsed) {
 		case 0: // Rectified Linear Units (ReLU).
@@ -1233,7 +1341,7 @@ __device__ static void getDerivateOfActivationFunction(int activationFunctionToB
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: JANUARY 24, 2022
-* LAST UPDATE: N/A
+* LAST UPDATE: JANUARY 25, 2022
 */
 __device__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUPart1(double *Y, double *A_u, double *accuracyTerm1, double *accuracyTerm2, int idx) {
 	// We obtain the GPU thread local coordinate.
@@ -1241,7 +1349,7 @@ __device__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUPart
 	
 	// We declare and initialize the shared memory of the GPU that will be used.
 	extern __shared__ double sharedMem[]; // We declare the shared memory that we will use for each block.
-	// NOTE: Each GPU thread is storing data such that their local address (tid) will represent the row number in which they will write data in the shared memory. Moreover, each thread will have assigned two columns per row.
+	// NOTE: Each GPU thread is storing data such that their local address (tid) will represent the identifier of the row number in which they will write data in the shared memory. Moreover, each thread will have assigned 2 columns per row.
 	int column1 = tid * 2;
 	int column2 = 1 + column1;
 	sharedMem[column1] = Y[idx];
@@ -1435,7 +1543,7 @@ __global__ static void getParallelReduction(double *termToBeReduced, double *red
 			idata = termToBeReduced + 3*blockIdx.x*blockDim.x;
 		break;
 		
-		default: // "Unrolling2 Strategy": Unrolling 2 times, but only with the GPU threads that are within the boundary.
+		case 2: // "Unrolling2 Strategy": Unrolling 2 times, but only with the GPU threads that are within the boundary.
 			idx = threadIdx.x + 2*blockIdx.x*blockDim.x;
 			idata = termToBeReduced + 2*blockIdx.x*blockDim.x;
 			if ((idx + blockDim.x) < n) {
@@ -1443,6 +1551,11 @@ __global__ static void getParallelReduction(double *termToBeReduced, double *red
 				unroll2 = termToBeReduced[idx + blockDim.x];
 				termToBeReduced[idx] = unroll1 + unroll2;
 			}
+		break;
+		
+		default: // No "Unrolling Strategy" will be applied.
+			idx = threadIdx.x + blockIdx.x*blockDim.x;
+			idata = termToBeReduced + blockIdx.x*blockDim.x;
 	}
 	__syncthreads(); // We synchronize all threads within the same block.
 	
@@ -1457,7 +1570,8 @@ __global__ static void getParallelReduction(double *termToBeReduced, double *red
 		sharedMem[tid] += sharedMem[tid+2];__syncthreads(); // We synchronize all threads within the same block.
 		sharedMem[tid] += sharedMem[tid+1];__syncthreads(); // We synchronize all threads within the same block.
 	}
-
+	
+	// Store the final result corresponding to the current block.
 	if (tid == 0) reducedAccuracyTerm[blockIdx.x] = sharedMem[0];
 	
 	return;
@@ -1640,7 +1754,7 @@ __device__ static void getDeviceParallelReduction(double *termToBeReduced, doubl
 			idata = termToBeReduced + 3*blockIdx.x*blockDim.x;
 		break;
 		
-		default: // "Unrolling2 Strategy": Unrolling 2 times, but only with the GPU threads that are within the boundary.
+		case 2: // "Unrolling2 Strategy": Unrolling 2 times, but only with the GPU threads that are within the boundary.
 			idx = threadIdx.x + 2*blockIdx.x*blockDim.x;
 			idata = termToBeReduced + 2*blockIdx.x*blockDim.x;
 			if ((idx + blockDim.x) < n) {
@@ -1648,6 +1762,11 @@ __device__ static void getDeviceParallelReduction(double *termToBeReduced, doubl
 				unroll2 = termToBeReduced[idx + blockDim.x];
 				termToBeReduced[idx] = unroll1 + unroll2;
 			}
+		break;
+		
+		default: // No "Unrolling Strategy" will be applied.
+			idx = threadIdx.x + blockIdx.x*blockDim.x;
+			idata = termToBeReduced + blockIdx.x*blockDim.x;
 	}
 	__syncthreads(); // We synchronize all threads within the same block.
 	
@@ -1663,7 +1782,7 @@ __device__ static void getDeviceParallelReduction(double *termToBeReduced, doubl
 		sharedMem[tid] += sharedMem[tid+1];__syncthreads(); // We synchronize all threads within the same block.
 	}
 	
-	// Store the results corresponding to the current block.
+	// Store the final result corresponding to the current block.
 	if (tid == 0) reducedAccuracyTerm[blockIdx.x] = sharedMem[0];
 	
 	return;
@@ -1710,7 +1829,7 @@ __device__ static void getDeviceParallelReduction(double *termToBeReduced, doubl
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: JANUARY 24, 2022
-* LAST UPDATE: N/A
+* LAST UPDATE: JANUARY 25, 2022
 */
 __global__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUvoidPart2(double *Y, int n, double *accuracyTerm1, double *reducedAccuracyTerm2) {
 	// We obtain the GPU threads coordinates.
@@ -1721,7 +1840,7 @@ __global__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUvoid
 	if (idx < n) {
 		// We declare and initialize the shared memory of the GPU that will be used.
 		extern __shared__ double sharedMem[]; // We declare the shared memory that we will use for each block.
-		// NOTE: Each GPU thread is storing data such that their local address (tid) will represent the row number in which they will write data in the shared memory. Moreover, each thread will have assigned two columns per row.
+		// NOTE: Each GPU thread is storing data such that their local address (tid) will represent the identifier of the row number in which they will write data in the shared memory. Moreover, each thread will have assigned 2 columns per row.
 		int column1 = tid * 2;
 		int column2 = 1 + column1;
 		sharedMem[column1] = Y[idx];
@@ -1762,14 +1881,13 @@ __global__ static void getNeuronAdjustedCoefficientOfDetermination_singleGPUvoid
 * 			that the first sample will be stored in the row with
 * 			index "0" and the last sample in the row with index "n".
 *
-* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
-*		"Y_hat".
+* NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE "Y_hat".
 * 
 * @return void
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: JANUARY 24, 2022
-* LAST UPDATE: N/A
+* LAST UPDATE: JANUARY 25, 2022
 */
 void predictSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron, double *Y_hat) {
 	// If the requested GPU (device) is less than zero, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -1815,6 +1933,10 @@ void predictSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *ne
 	dim3 block_32x_1y(32, 1); // We define the number of GPU threads per block.
 	dim3 grid_n((neuron->n + block_32x_1y.x - 1) / block_32x_1y.x, 1); // We define the number of blocks that our GPU will manage.
 	
+	// We configure the shared memory of the current GPU.
+	cudaSharedMemConfig pConfig = cudaSharedMemBankSizeEightByte; // We create a cudaSharedMemConfig type variable to store in it the configuration of 8-byte mode for shared memory in the GPU.
+	cudaDeviceSetSharedMemConfig(pConfig); // We set the 8-byte mode for shared memory in the selected GPU.
+	
 	
 	// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
 	// We create the pointers to the data that the selected GPU will require.
@@ -1824,9 +1946,9 @@ void predictSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *ne
 	double *d_A_u; // This pointer variable is used to store the output of the application of the chosen activation function in the selected GPU.
 	
 	// We allocate the required memory in the selected GPU.
-	int nDoubles_Bytes = neuron->n*sizeof(double);
+	int nDoubles_Bytes = neuron->n*sizeof(double); // This variable stores the number of bytes to allocate "n" bytes of double type, for performance purposes.
 	CHECK(cudaMalloc((void **) &d_X, neuron->m*nDoubles_Bytes));
-	int w_new_Bytes = (neuron->m+1)*sizeof(double);
+	int w_new_Bytes = (neuron->m+1)*sizeof(double); // This variable stores the number of bytes to allocate the new weight values that will be obtained each epoch of the training process, for performance purposes.
 	CHECK(cudaMalloc((void **) &d_w_new, w_new_Bytes));
 	CHECK(cudaMalloc((void **) &d_f_x_tilde, nDoubles_Bytes));
 	CHECK(cudaMalloc((void **) &d_A_u, nDoubles_Bytes));
@@ -1838,7 +1960,7 @@ void predictSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *ne
 	
 	// --------------- DATA PREDICTION PROCESS --------------- //
 	// We obtain the requested predictions from the artificial neuron model.
-	getPredictSingleNeuronDNN_singleGPU <<< grid_n, block_32x_1y >>> (d_X, d_w_new, neuron->n, neuron->m, neuron->activationFunctionToBeUsed, neuron->isClassification, neuron->threshold, neuron->desiredValueForGroup1, neuron->desiredValueForGroup2, d_f_x_tilde, d_A_u);
+	getPredictSingleNeuronDNN_singleGPU <<< grid_n, block_32x_1y, (3*32*sizeof(double)) >>> (d_X, d_w_new, neuron->n, neuron->m, neuron->activationFunctionToBeUsed, neuron->isClassification, neuron->threshold, neuron->desiredValueForGroup1, neuron->desiredValueForGroup2, d_f_x_tilde, d_A_u);
 	
 	// We transfer the predicted data from the GPU to the CPU, to the argument variable "Y_hat".
 	CHECK(cudaMemcpy(Y_hat, d_A_u, nDoubles_Bytes, cudaMemcpyDeviceToHost));
@@ -1975,23 +2097,17 @@ void predictSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *ne
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: JANUARY 24, 2022
-* LAST UPDATE: N/A
+* LAST UPDATE: JANUARY 25, 2022
 */
 __global__ static void getPredictSingleNeuronDNN_singleGPU(double *X, double *w_new, int n, int m, int activationFunctionToBeUsed, int isClassification, double threshold, int desiredValueForGroup1, int desiredValueForGroup2, double *f_x_tilde, double *A_u) {
-	// We obtain the GPU thread global coordinate.
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	// We obtain the GPU thread coordinates.
+	int idx = threadIdx.x + blockIdx.x * blockDim.x; // We obtain the GPU thread global coordinate.
+	int tid = threadIdx.x; // We obtain the GPU thread local coordinate
 	
 	// If the current GPU thread is within boundary, then proceed to work with the task. Otherwise, conclude your operation.
 	if (idx < n) {
-		// We calculate the values of "f_tilde".
-		double *idata_X = X; // We convert the pointer of interest from "X" to be the origin pointer of "idata".
-		double *idata_w_new = w_new; // We convert the pointer of interest from "w_new" to be the origin pointer of "idata".
-		f_x_tilde[idx] = idata_w_new[0]; // We get the bias value of the body of the neuron.
-		idata_w_new++; // We move the origin pointer of the argument variable "w_new" to the location of the next weight value, for performance purposes.
-		idata_X += idx * m; // We move the origin pointer of the argument variable "X" to the location of the row of interest for the current GPU thread, for performance purposes.
-		for (int currentColumn=0; currentColumn<m; currentColumn++) {
-			f_x_tilde[idx] += idata_w_new[currentColumn] * idata_X[currentColumn]; // We calculate the remaining dentrites values of the body of the neuron.
-		}
+		// We calculate the values of "f(x_tilde)".
+		getFxTilde(X, w_new, m, f_x_tilde, tid, idx);
 		
 		// We calculate the currently predicted output data made by the neuron and store it in "A_u" by applying the desired activation function to "f_x_tilde".
 		getActivationFunction(activationFunctionToBeUsed, f_x_tilde, A_u, idx); // We calculate A(u) and store it in the pointer variable "A_u".

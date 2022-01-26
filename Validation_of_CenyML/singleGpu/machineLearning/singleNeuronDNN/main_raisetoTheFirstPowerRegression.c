@@ -80,6 +80,7 @@ int main(int argc, char **argv) {
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
 	struct singleNeuronDnnStruct_singleGPU neuron1; // We create a singleNeuronDnnStruct_singleGPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
 	neuron1.gpuDevice = 2; // This variable will define the identifier of the GPU device that wants to be used with respect to the computer system in which this program is executed.
+	neuron1.maxUnrollingLoop = 10; // This variable will define the desired maximum Unrolling Loop strategy that wants to be applied within the Parallel Reduction and Unrolling Warp strategies (these are applied in the single neuron in DNN algorithm).
 	neuron1.m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	neuron1.isInitial_w = 1; // This variable will indicate whether or not initial values will be given by the implementer (with value of 1) or if random ones are going to be used (with value of 0).

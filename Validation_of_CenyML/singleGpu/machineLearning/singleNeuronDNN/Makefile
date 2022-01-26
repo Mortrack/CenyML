@@ -11,13 +11,21 @@ gpuOptimization = $(teslaK80_Optimization)
 
 # Set project directories for the Makefile to consider them.
 Time_c = $(addprefix ../../../../,$(oLib)/time/mTime.c)
+Time_h = $(addprefix ../../../../,$(oLib)/time/mTime.h)
 csvManager_c = $(addprefix ../../../../,$(oLib)/csv/csvManager.c)
+csvManager_h = $(addprefix ../../../../,$(oLib)/csv/csvManager.h)
 pbPlots_c = $(addprefix ../../../../,$(oLib)/pbPlots/pbPlots.c)
+pbPlots_h = $(addprefix ../../../../,$(oLib)/pbPlots/pbPlots.h)
 supportLib_c = $(addprefix ../../../../,$(oLib)/pbPlots/supportLib.c)
-CUDA_check_c = $(addprefix ../../../../,$(oLib)/cuda/CUDA_check.cu)
+supportLib_h = $(addprefix ../../../../,$(oLib)/pbPlots/supportLib.h)
+CUDA_check_cu = $(addprefix ../../../../,$(oLib)/cuda/CUDA_check.cu)
+CUDA_check_h = $(addprefix ../../../../,$(oLib)/cuda/CUDA_check.h)
 CenyMLregressionEvalMet_c = $(addprefix ../../../../,$(cM)/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.c)
+CenyMLregressionEvalMet_h = $(addprefix ../../../../,$(cM)/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h)
 CenyMLclassificationEvalMet_c = $(addprefix ../../../../,$(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.c)
-CenyMLdeepLearning_SG = $(addprefix ../../../../,$(cM)/singleGpu/machineLearning/CenyMLdeepLearning_SG.cu)
+CenyMLclassificationEvalMet_h = $(addprefix ../../../../,$(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.h)
+CenyMLdeepLearning_SG_cu = $(addprefix ../../../../,$(cM)/singleGpu/machineLearning/CenyMLdeepLearning_SG.cu)
+CenyMLdeepLearning_SG_h = $(addprefix ../../../../,$(cM)/singleGpu/machineLearning/CenyMLdeepLearning_SG.h)
 
 # The following variables are to tell the compiler the desired flags for the compilation process.
 OPTIMIZATIONLEVEL = -O3
@@ -85,29 +93,29 @@ main_simpleLinearRegressionWithRelu.o: main_simpleLinearRegressionWithRelu.c
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) main_simpleLinearRegressionWithRelu.c
 	
 # ----- THESE ARE THE COMMANDS THAT MONITOR ANY CHANGES TO ANY INCLUDED FILE ----- #
-Time.o: $(Time_c)
+Time.o: $(Time_c) $(Time_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(Time_c)
 
-csvManager.o: $(csvManager_c)
+csvManager.o: $(csvManager_c) $(csvManager_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(csvManager_c)
 
-pbPlots.o: $(pbPlots_c)
+pbPlots.o: $(pbPlots_c) $(pbPlots_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(pbPlots_c)
 
-supportLib.o: $(supportLib_c)
+supportLib.o: $(supportLib_c) $(supportLib_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(supportLib_c)
 
-CUDA_check.o: $(CUDA_check_c)
-	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CUDA_check_c)
+CUDA_check.o: $(CUDA_check_cu) $(CUDA_check_h)
+	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CUDA_check_cu)
 
-CenyMLregressionEvalMet.o: $(CenyMLregressionEvalMet_c)
+CenyMLregressionEvalMet.o: $(CenyMLregressionEvalMet_c) $(CenyMLregressionEvalMet_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLregressionEvalMet_c)
 
-CenyMLclassificationEvalMet.o: $(CenyMLclassificationEvalMet_c)
+CenyMLclassificationEvalMet.o: $(CenyMLclassificationEvalMet_c) $(CenyMLclassificationEvalMet_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLclassificationEvalMet_c)
 	
-CenyMLdeepLearning_SG.o: $(CenyMLdeepLearning_SG)
-	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLdeepLearning_SG)
+CenyMLdeepLearning_SG.o: $(CenyMLdeepLearning_SG_cu) $(CenyMLdeepLearning_SG_h)
+	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLdeepLearning_SG_cu)
 
 # ----- THIS COMMAND IS USED TO CLEAN/REMOVE ALL THE COMPILATION GENERATED FILES ----- #
 clean:
