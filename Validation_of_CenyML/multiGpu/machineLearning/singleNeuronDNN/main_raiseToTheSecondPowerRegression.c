@@ -72,8 +72,8 @@
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "../../../../databases/regression/linearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile1[] = "CenyML_raiseToFifthPowerRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
-	char nameOfTheCsvFile2[] = "CenyML_raiseToFifthPowerRegression_EvalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
+	char nameOfTheCsvFile1[] = "CenyML_raiseToSecondPowerRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
+	char nameOfTheCsvFile2[] = "CenyML_raiseToSecondPowerRegression_EvalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
@@ -81,7 +81,6 @@ int main(int argc, char **argv) {
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
 	struct singleNeuronDnnStruct_singleGPU neuron1; // We create a singleNeuronDnnStruct_singleGPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
 	neuron1.gpuDevice = 2; // This variable will define the identifier of the GPU device that wants to be used with respect to the computer system in which this program is executed.
-	neuron1.maxUnrollingLoop = 10; // This variable will define the desired maximum Unrolling Loop strategy that wants to be applied within the Parallel Reduction and Unrolling Warp strategies (these are applied in the single neuron in DNN algorithm).
 	neuron1.m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	neuron1.isInitial_w = 1; // This variable will indicate whether or not initial values will be given by the implementer (with value of 1) or if random ones are going to be used (with value of 0).
@@ -92,9 +91,9 @@ int main(int argc, char **argv) {
 	//neuron1.threshold = 0.5; // This variable will be used to store the desired threshold value to be used in classification problems by the neuron to be created.
 	//neuron1.desiredValueForGroup1 = 1; // This variable will be used to store the label to be used for the group 1 in classification problems by the neuron to be created.
 	//neuron1.desiredValueForGroup2 = -1; // This variable will be used to store the label to be used for the group 2 in classification problems by the neuron to be created.
-	neuron1.activationFunctionToBeUsed = 7; // This variable tells the neuron what activation function to use (see the commented documentation in the function "getSingleNeuronDNN()" for more details).
-	neuron1.learningRate = 0.00000000000000000000000000001; // This variable stores the desired learning rate for the neuron to be created.
-	neuron1.stopAboveThisAccuracy = 0.97; // The value of this variable is used as a stop function for the single neuron in DNN learning procces.
+	neuron1.activationFunctionToBeUsed = 4; // This variable tells the neuron what activation function to use (see the commented documentation in the function "getSingleNeuronDNN()" for more details).
+	neuron1.learningRate = 0.00000000000001; // This variable stores the desired learning rate for the neuron to be created.
+	neuron1.stopAboveThisAccuracy = 0.985; // The value of this variable is used as a stop function for the single neuron in DNN learning procces.
 	neuron1.maxEpochs = 1000; // This variable stores the desired value for the maximum permitted epochs for the training process of the neuron.
 	neuron1.isReportLearningProgress = 1; // The value of this variable tells the neuron if it is desired that it reports its learning progress (with a value of 1) or not (with a value of 0).
 	neuron1.reportEachSpecifiedEpochs = neuron1.maxEpochs / 10; // This variable tells the neuron that it has to report each several times, which is defined by the value contained in this variable.
@@ -130,7 +129,7 @@ int main(int argc, char **argv) {
 	// Create the output (neuron1.Y) and input (neuron1.X) data with the same rows as in the reference .csv file and their corresponding number of columns.
 	for (int currentRow=0; currentRow<neuron1.n; currentRow++) { // Since neuron1.m=neuron1.p=1 for this particular ML algorithm, both "neuron1.Y" and "neuron1.X" will be innitialized here.
 		neuron1.X[currentRow] = csv1.allData[columnIndexOfInputDataInCsvFile + currentRow*databaseColumns1];
-		neuron1.Y[currentRow] = (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]) * (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]) * (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]) * (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]) * (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]);
+		neuron1.Y[currentRow] = (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]) * (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]);
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to initialize the input data to be used.
 	printf("Output and input data initialization elapsed %f seconds.\n\n", elapsedTime);
@@ -216,7 +215,7 @@ int main(int argc, char **argv) {
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to create the .csv file which will store the results of the evaluation metrics that were obtained.
 	// Define the desired header names for the new .csv file to be create.
     char csvHeaders2[strlen("MSE, Rsquared, adjustedRsquared")+1]; // Variable where the following code will store the .csv headers.
-    csvHeaders2[0] = '\0'; // Initialize this char variable with a null value.
+    csvHeaders2[0] = '\0'; // Innitialize this char variable with a null value.
 	strcat(csvHeaders2, "MSE, Rsquared, adjustedRsquared"); // We add the headers into "csvHeaders".
 	// Create a new .csv file and save the results obtained in it.
 	char is_nArray2 = 0; // Indicate through this flag variable that the variable that indicates the samples (1) is not an array because it has the same amount of samples per columns.
@@ -293,7 +292,7 @@ int main(int argc, char **argv) {
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to validate the getSingleNeuronDNN method.
 	double differentiation; // Variable used to store the error obtained for a certain value.
 	double epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
-	char isMatch = 1; // Variable used as a flag to indicate if the current comparation of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
+	char isMatch = 1; // Variable used as a flag to indicate if the current comparison of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
 	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
 	for (int currentRow=0; currentRow<neuron1.m+1; currentRow++) {
 		differentiation = fabs(neuron1.w_best[currentRow] - b_ideal[currentRow]);

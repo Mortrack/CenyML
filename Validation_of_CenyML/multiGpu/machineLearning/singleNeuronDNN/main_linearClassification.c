@@ -129,7 +129,6 @@ int main(int argc, char **argv) {
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
 	struct singleNeuronDnnStruct_singleGPU neuron1; // We create a singleNeuronDnnStruct_singleGPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
 	neuron1.gpuDevice = 2; // This variable will define the identifier of the GPU device that wants to be used with respect to the computer system in which this program is executed.
-	neuron1.maxUnrollingLoop = 10; // This variable will define the desired maximum Unrolling Loop strategy that wants to be applied within the Parallel Reduction and Unrolling Warp strategies (these are applied in the single neuron in DNN algorithm).
 	neuron1.m = 2; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	neuron1.isInitial_w = 1; // This variable will indicate whether or not initial values will be given by the implementer (with value of 1) or if random ones are going to be used (with value of 0).
@@ -370,7 +369,6 @@ int main(int argc, char **argv) {
 	// In order to continue with the plotting process, we create a new input matrix that contains the data of the vectors that were created, which will be used to create the background of the plot to be created.
 	struct singleNeuronDnnStruct_singleGPU bgNeuron; // We create a singleNeuronDnnStruct_singleGPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
 	bgNeuron.gpuDevice = neuron1.gpuDevice; // This variable will contain the number of CPU threads that wants to be used to parallelize the training and predictions made by the neuron to be created.
-	bgNeuron.maxUnrollingLoop = neuron1.maxUnrollingLoop; // This variable will define the desired maximum Unrolling Loop strategy that wants to be applied within the Parallel Reduction and Unrolling Warp strategies (these are applied in the single neuron in DNN algorithm).
 	bgNeuron.m = neuron1.m; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	bgNeuron.p = neuron1.p; // This variable will contain the number of outputs that the output matrix is expected to have.
 	bgNeuron.w_best = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "bgNeuron.w_first", which will store the initial coefficient values of the neuron to be created.

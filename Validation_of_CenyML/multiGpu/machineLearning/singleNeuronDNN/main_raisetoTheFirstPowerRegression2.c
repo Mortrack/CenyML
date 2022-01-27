@@ -54,7 +54,7 @@
 * the model. Finally, the results will be saved in two new .csv files and in a
 * .png file for further comparison and validation purposes.
 *
-* @param int argc - This argument will posses the length number of what is
+* @param int argc - This argument will possess the length number of what is
 *		    contained within the argument "*argv[]".
 *		    NOTE1: This argument will be at least "1" in value because
 *		    its first argument is the title of this program.
@@ -66,14 +66,14 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 17, 2021
+* CREATION DATE: JANUARY 17, 2022
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
 	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	char csv1Directory[] = "../../../../databases/regression/linearEquationSystem/1000systems_1000samplesPerSys.csv"; // Directory of the reference .csv file
-	char nameOfTheCsvFile1[] = "CenyML_raiseToFifthPowerRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
-	char nameOfTheCsvFile2[] = "CenyML_raiseToFifthPowerRegression_EvalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
+	char nameOfTheCsvFile1[] = "CenyML_simpleLinearRegression_Coefficients.csv"; // Name the .csv file that will store the resulting coefficient values.
+	char nameOfTheCsvFile2[] = "CenyML_simpleLinearRegression_EvalMetrics.csv"; // Name the .csv file that will store the resulting evaluation metrics for the ML model to be obtained.
 	struct csvManager csv1; // We create a csvManager structure variable to manage the desired .csv file (which is declared in "csvManager.h").
 	csv1.fileDirectory = csv1Directory; // We save the directory path of the desired .csv file into the csvManager structure variable.
 	csv1.maxRowChars = 150; // We define the expected maximum number of characters the can be present for any of the rows contained in the target .csv file.
@@ -81,23 +81,23 @@ int main(int argc, char **argv) {
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
 	struct singleNeuronDnnStruct_singleGPU neuron1; // We create a singleNeuronDnnStruct_singleGPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
 	neuron1.gpuDevice = 2; // This variable will define the identifier of the GPU device that wants to be used with respect to the computer system in which this program is executed.
-	neuron1.maxUnrollingLoop = 10; // This variable will define the desired maximum Unrolling Loop strategy that wants to be applied within the Parallel Reduction and Unrolling Warp strategies (these are applied in the single neuron in DNN algorithm).
 	neuron1.m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	neuron1.isInitial_w = 1; // This variable will indicate whether or not initial values will be given by the implementer (with value of 1) or if random ones are going to be used (with value of 0).
 	neuron1.w_first = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_first", which will store the initial coefficient values of the neuron to be created.
 	neuron1.w_first[0] = 0; // We define the customized desired value for the bias of the neuron to be created.
-	neuron1.w_first[1] = 1; // We define the customized desired value for the weight_1 value of the neuron to be created.
-	neuron1.isClassification = 0; // This variable will indicate whether or not it is desired that the neuron considers the input data for a classification (with a vlaue of 1) or a regression problem (with a value of 0).
+	neuron1.w_first[1] = 0; // We define the customized desired value for the weight_1 value of the neuron to be created.
+	neuron1.isClassification = 0; // This variable will indicate whether or not it is desired that the neuron considers the input data for a classification (with a value of 1) or a regression problem (with a value of 0).
 	//neuron1.threshold = 0.5; // This variable will be used to store the desired threshold value to be used in classification problems by the neuron to be created.
 	//neuron1.desiredValueForGroup1 = 1; // This variable will be used to store the label to be used for the group 1 in classification problems by the neuron to be created.
 	//neuron1.desiredValueForGroup2 = -1; // This variable will be used to store the label to be used for the group 2 in classification problems by the neuron to be created.
-	neuron1.activationFunctionToBeUsed = 7; // This variable tells the neuron what activation function to use (see the commented documentation in the function "getSingleNeuronDNN()" for more details).
-	neuron1.learningRate = 0.00000000000000000000000000001; // This variable stores the desired learning rate for the neuron to be created.
-	neuron1.stopAboveThisAccuracy = 0.97; // The value of this variable is used as a stop function for the single neuron in DNN learning procces.
-	neuron1.maxEpochs = 1000; // This variable stores the desired value for the maximum permitted epochs for the training process of the neuron.
+	neuron1.activationFunctionToBeUsed = 3; // This variable tells the neuron what activation function to use (see the commented documentation in the function "getSingleNeuronDNN()" for more details).
+	neuron1.learningRate = 0.000000000000001; // This variable stores the desired learning rate for the neuron to be created.
+	neuron1.stopAboveThisAccuracy = 0.99; // The value of this variable is used as a stop function for the single neuron in DNN learning process.
+	neuron1.maxEpochs = 10; // This variable stores the desired value for the maximum permitted epochs for the training process of the neuron.
 	neuron1.isReportLearningProgress = 1; // The value of this variable tells the neuron if it is desired that it reports its learning progress (with a value of 1) or not (with a value of 0).
 	neuron1.reportEachSpecifiedEpochs = neuron1.maxEpochs / 10; // This variable tells the neuron that it has to report each several times, which is defined by the value contained in this variable.
+	int multiplySamplesBy = 400; // This variable will indicate the number of times that the input data base will be duplicated.
 	double b_ideal[2]; // This variable will be used to contain the ideal coefficient values that the model to be trained should give.
 	b_ideal[0] = 10;
 	b_ideal[1] = 0.8;
@@ -110,14 +110,14 @@ int main(int argc, char **argv) {
 	csv1.rowsAndColumnsDimensions = (int *) malloc(2*sizeof(int)); // We initialize the variable that will store the rows & columns dimensions.
 	getCsvRowsAndColumnsDimensions(&csv1); // We input the memory location of the "csv1" into the argument of this function to get the rows & columns dimensions.
 	// We save the rows and columns dimensions obtained in some variables that relate to the mathematical symbology according to the documentation of the method to be validated.
-	neuron1.n = csv1.rowsAndColumnsDimensions[0]; // total number of rows of the input matrix (neuron1.X)
+	neuron1.n = multiplySamplesBy * csv1.rowsAndColumnsDimensions[0]; // total number of rows of the input matrix (neuron1.X)
 	int databaseColumns1 = csv1.rowsAndColumnsDimensions[1]; // total number of columns of the database that was opened.
 	// From the structure variable "csv1", we allocate the memory required for the variable (csv1.allData) so that we can store the data of the .csv file in it.
-	csv1.allData = (double *) malloc(neuron1.n*databaseColumns1*sizeof(double));
+	csv1.allData = (double *) malloc(neuron1.n/multiplySamplesBy*databaseColumns1*sizeof(double));
 	// We retrieve the data contained in the reference .csv file.
 	getCsvFileData(&csv1); // We input the memory location of the "csv1" into the argument of this function to get all the data contained in the .csv file.
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the data from the reference .csv file.
-	printf("Data extraction from .csv file containing %d samples for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", neuron1.n, databaseColumns1, (neuron1.n*databaseColumns1), elapsedTime);
+	printf("Data extraction from .csv file containing %d samples for each of the %d columns (total samples = %d), elapsed %f seconds.\n\n", neuron1.n/multiplySamplesBy, databaseColumns1, (neuron1.n/multiplySamplesBy*databaseColumns1), elapsedTime);
 	
 	
 	// ------------------ PREPROCESSING OF THE DATA ------------------ //
@@ -128,9 +128,11 @@ int main(int argc, char **argv) {
 	// Allocate the memory required for the variable "neuron1.X", which will contain the input data of the system under study.
 	neuron1.X = (double *) malloc(neuron1.n*neuron1.m*sizeof(double));
 	// Create the output (neuron1.Y) and input (neuron1.X) data with the same rows as in the reference .csv file and their corresponding number of columns.
-	for (int currentRow=0; currentRow<neuron1.n; currentRow++) { // Since neuron1.m=neuron1.p=1 for this particular ML algorithm, both "neuron1.Y" and "neuron1.X" will be innitialized here.
-		neuron1.X[currentRow] = csv1.allData[columnIndexOfInputDataInCsvFile + currentRow*databaseColumns1];
-		neuron1.Y[currentRow] = (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]) * (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]) * (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]) * (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]) * (b_ideal[0] + b_ideal[1] * neuron1.X[currentRow]);
+	for (int currentSampleDuplication=0; currentSampleDuplication<multiplySamplesBy; currentSampleDuplication++) {
+		for (int currentRow=0; currentRow<(neuron1.n/multiplySamplesBy); currentRow++) { // Since neuron1.m=neuron1.p=1 for this particular ML algorithm, both "neuron1.Y" and "neuron1.X" will be initialized here.
+			neuron1.Y[currentRow + currentSampleDuplication * (neuron1.n/multiplySamplesBy)] = csv1.allData[columnIndexOfOutputDataInCsvFile + currentRow*databaseColumns1];
+			neuron1.X[currentRow + currentSampleDuplication * (neuron1.n/multiplySamplesBy)] = csv1.allData[columnIndexOfInputDataInCsvFile + currentRow*databaseColumns1];
+		}
 	}
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to initialize the input data to be used.
 	printf("Output and input data initialization elapsed %f seconds.\n\n", elapsedTime);
@@ -145,7 +147,7 @@ int main(int argc, char **argv) {
 	getSingleNeuronDNN_singleGPU(&neuron1);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the single neuron in Deep Neural Network with the input data (neuron1.X).
 	printf("CenyML single neuron in Deep Neural Network algorithm elapsed %f seconds.\n\n", elapsedTime);
-	
+
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
 	// We predict the input values (neuron1.X) with the machine learning model that was obtained.
 	printf("Initializing CenyML predictions with the model that was obtained ...\n");
@@ -327,4 +329,3 @@ int main(int argc, char **argv) {
 	free(errorMessage);
 	return (0); // end of program.
 }
-
