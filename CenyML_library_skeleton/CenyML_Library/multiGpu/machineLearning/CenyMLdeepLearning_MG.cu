@@ -24,11 +24,10 @@ struct mGpuConfig {
 	cudaDeviceProp gpuProperties; // Variable used to store the CUDA properties of the current GPU to be handled.
 	cudaSharedMemConfig pConfig; // We create a cudaSharedMemConfig type variable to store in it the configuration of 8-byte mode for shared memory for the current GPU to be handled.
 	int gpuStart; // Variable used to store the starting working points for the current GPU to be handled.
-	int gpuStop; // Variable used to store the working points at which the current GPU to be handled will stop.
 	int iSize; // Variable used to store the number of samples that will be given to the current GPU.
 	size_t iBytes; // Variable used to store the number of bytes that the current GPU will allocate with respect to the input data given to it.
 	int numberOfUnrollingLoop1; // Variable used to store the number of unrolling loops that the algorithm will use in the first Unrolling Parallel Reduction strategy that will be applied for with respect to the current GPU.
-	size_t trueUnrollingSize1;  // This variable is used to store the grid size that will be considered for all the processes that apply the first Unrolling Parallel Reduction strategy for each case, for performance purposes.
+	int trueUnrollingSize1;  // This variable is used to store the grid size that will be considered for all the processes that apply the first Unrolling Parallel Reduction strategy for each case, for performance purposes.
 	size_t parRed_Bytes; // This variable stores the number of bytes to allocate in those variables that will have the Unrolling Parallel Reduction strategy applied once, for performance purposes.
 	size_t errorTerm_dot_Xtilde_Bytes; // This variable stores the number of bytes to allocate the device variable "d_errorTerm_dot_Xtilde", for performance purposes.
 	int unrollingTotalBlockSize1; // This variable stores the total number of GPU threads that are to be employed specifically for calling a Kernel in the current GPU in order to apply the Parallel Reduction strategy to a certain set of data. NOTE: This variable has more application/sense when applying the Parallel Reduction two or more consecutive times.
@@ -57,6 +56,24 @@ struct mGpuConfig {
 * @param int lastGpuDevice - This argument will represent the last GPU
 * 			(device) identifier with which the implementer wants this
 * 			algorithm to be parallelized with multiple GPU.
+*
+* @param int maxUnrollingLoop - This argument will contain the desired maximum
+* 			number of times that it is desired to apply the unrolling
+* 			process of the "Unrolling Loop Strategy", which has te be
+* 			defined by the implementer before calling this function.
+* 			This is necessary because this algorithm of the single
+* 			neuron in DNN applies this strategy in several occasions.
+* 			Nonetheless, it is possible that the algorithm selects a
+* 			different number for the "Unrolling Loop Strategy"
+* 			because the highest one defined in "maxUnrollingLoop" may
+* 			not be applicable for the currently defined number of
+* 			samples ("n") and the total number of GPUs employed
+* 			("firstGpuDevice" and "lastGpuDevice"). Despite that,
+* 			this algorithm will give priority in applying the highest
+* 			number of Unrolling Loops as possible according to the
+* 			maximum limit defined in "maxUnrollingLoop". However,
+* 			have in mind that the permitted values for
+* 			"maxUnrollingLoop" are whole numbers between 1 and 15.
 *
 * @param double *X - This argument will contain the pointer to a memory
 * 		allocated input matrix, from which the desired machine learning
@@ -272,8 +289,8 @@ struct mGpuConfig {
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 24, 2022
-* LAST UPDATE: JANUARY 25, 2022
+* CREATION DATE: JANUARY 28, 2022
+* LAST UPDATE: N/A
 */
 void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) {
 	// If the requested first GPU (device) is less than zero, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -291,9 +308,9 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 		printf("\nERROR: The identifier of the first GPU (\"firstGpuDevice\" variable from the struct \"singleNeuronDnnStruct\") that is requested for multiple GPU parallelization must be lower than the last one (\"lastGpuDevice\" variable from the struct \"singleNeuronDnnStruct\").\n");
 		exit(1);
 	}
-	// If the value of "neuron->maxUnrollingLoop" is not in the range of 1 and 10, then emit an error message and terminate the program. Otherwise, continue with the program.
-	if ((neuron->maxUnrollingLoop<1) && (neuron->maxUnrollingLoop>10)) {
-		printf("\nERROR: The defined value for \"maxUnrollingLoop\" in the struct of \"singleNeuronDnnStruct\" that you created can only have a whole value in the range of 1 and 10. Please add a valid value to it.\n");
+	// If the value of "neuron->maxUnrollingLoop" is not in the range of 1 and 15, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if ((neuron->maxUnrollingLoop<1) && (neuron->maxUnrollingLoop>15)) {
+		printf("\nERROR: The defined value for \"maxUnrollingLoop\" in the struct of \"singleNeuronDnnStruct\" that you created can only have a whole value in the range of 1 and 15. Please add a valid value to it.\n");
 		exit(1);
 	}
 	// If the machine learning samples are less than the substraction of "neuron->lastGpuDevice" and "neuron->firstGpuDevice" plus one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -362,14 +379,14 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 	// Set up the execution configurations that will be assigned to the selected GPU.
 	dim3 block[ngpus];
 	dim3 grid[ngpus];
-	int mPlusOne = neuron->m + 1; // This value is repetitively used and strategically stored here for performance purposes.
+	int mPlusOne = neuron->m+1; // This value is repetitively used and strategically stored here for performance purposes.
 	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
 		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We select the current GPU.
 		mGpuConf[currentGpu].pConfig = cudaSharedMemBankSizeEightByte; // We store the configuration of 8-byte mode for shared memory for the current GPU.
 		cudaDeviceSetSharedMemConfig(mGpuConf[currentGpu].pConfig); // We set the 8-byte mode for shared memory in the selected GPU.
 		mGpuConf[currentGpu].gpuStart = currentGpu * neuron->n / ngpus; // We set the start point from which the current GPU will extract data from the input data given to this function.
-		mGpuConf[currentGpu].gpuStop = (currentGpu + 1) * neuron->n / ngpus; // We set the value that if reduced by 1, it will stand for the last identifier point from which the current GPU will extract data from the input data given to this function.
-		mGpuConf[currentGpu].iSize = mGpuConf[currentGpu].gpuStop - mGpuConf[currentGpu].gpuStart; // We set number of samples that the current GPU will extract data from the input data given to this function.
+		mGpuConf[currentGpu].iSize = ((currentGpu+1)*neuron->n/ngpus) - mGpuConf[currentGpu].gpuStart; // We set number of samples that the current GPU will extract data from the input data given to this function.
+		// NOTE: "((currentGpu+1)*neuron->n/ngpus)" = gpuStop.
 		mGpuConf[currentGpu].iBytes = mGpuConf[currentGpu].iSize * sizeof(double); // We set the number of bytes that will be required to allocate in the current GPU with respect to the input data given to this function.
 		
 		// We set the values of the blocks and grids for the current GPU kernels.
@@ -382,24 +399,24 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 		
 		// We determine what number of Unrolling Loop strategy will be applied according to the number of samples; the number of GPUs requested to be used and; the value of "neuron->maxUnrollingLoop" that were given by the implementer/user.
 		for (mGpuConf[currentGpu].numberOfUnrollingLoop1=neuron->maxUnrollingLoop; mGpuConf[currentGpu].numberOfUnrollingLoop1>0; mGpuConf[currentGpu].numberOfUnrollingLoop1--) {
-			// NOTE: The idea in this for-loop is to find the highest number, up to a maximum of 10, that can completely divide the number
+			// NOTE: The idea in this for-loop is to find the highest number, up to a maximum of 15, that can completely divide the number
 			//	  of blocks defined for each selected GPU. However, because the process of defining the number of blocks is conveniently
 			//	  automated for performance purposes, the implementer can attempt to achieve the highest or a higher unrolling loop if
 			//	  he changes the number of input samples given to this function and/or the number of GPUs to be used.
-			if (grid[currentGpu].x%mGpuConf[currentGpu].numberOfUnrollingLoop1 == 0) {
+			if ((grid[currentGpu].x / mGpuConf[currentGpu].numberOfUnrollingLoop1) > 1) {
 				if (mGpuConf[currentGpu].numberOfUnrollingLoop1 == 1) {
-					printf("The device %d WILL NOT apply the \"Unrolling Loop Strategy\" due to the number of samples given; number of gpus chosen and/or the defined maximum unrolling loop.\n", mGpuConf[currentGpu].deviceId);
+					printf("The device %d WILL NOT apply the \"Unrolling Loop Strategy\" due to the number of samples given; number of gpus chosen and/or the defined maximum unrolling loop. Please assign a higher number of samples and/or decrease the number of selected gpus so that (\"samples\"/((\"number of gpus\")(\"number of unrolling loop\")) >= 2. \n", mGpuConf[currentGpu].deviceId);
 				} else {
 					printf("The device %d will apply the \"Unrolling%d Loop Strategy\" for each case applicable (the current maximum limit is %d).\n", mGpuConf[currentGpu].deviceId, mGpuConf[currentGpu].numberOfUnrollingLoop1, neuron->maxUnrollingLoop);
 				}
 				break;
 			}
 		}
-		mGpuConf[currentGpu].trueUnrollingSize1 = grid[currentGpu].x/mGpuConf[currentGpu].numberOfUnrollingLoop1; // We store the grid size that will be considered for all the processes that apply the first Unrolling Parallel Reduction strategy for each case, for performance purposes.
+		mGpuConf[currentGpu].trueUnrollingSize1 = (grid[currentGpu].x + mGpuConf[currentGpu].numberOfUnrollingLoop1 - 1)/(mGpuConf[currentGpu].numberOfUnrollingLoop1); // We store the grid size that will be considered for all the processes that apply the first Unrolling Parallel Reduction strategy for each case, for performance purposes.
 		
 		// We determine the following number of bytes that will be repetitively used along the program, for performance purposes.
 		mGpuConf[currentGpu].parRed_Bytes = mGpuConf[currentGpu].trueUnrollingSize1*sizeof(double);
-		mGpuConf[currentGpu].errorTerm_dot_Xtilde_Bytes = mPlusOne*mGpuConf[currentGpu].trueUnrollingSize1*sizeof(double);
+		mGpuConf[currentGpu].errorTerm_dot_Xtilde_Bytes = mPlusOne*mGpuConf[currentGpu].parRed_Bytes;
 		mGpuConf[currentGpu].unrollingTotalBlockSize1 = grid[currentGpu].x * block[currentGpu].x; // We store the total number of GPU threads that are to be employed specifically for calling a GPU Kernel to apply the Parallel Reduction strategy to a certain set of data.
 	}
 	
@@ -428,13 +445,13 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 	int double128_Bytes = 2*double64_Bytes; // This variable stores the number of bytes required to store 128 double variable type, for performance purposes.
 	double **h_reducedAccuracyTerm1 = (double **) malloc(ngpus * sizeof(double)); // CPU Allocated variable that will contain all the individual contributions made by each thread block in an attemp to apply the parallel reduction strategy to "d_accuracyTerm1".
 	double **h_reducedAccuracyTerm2 = (double **) malloc(ngpus * sizeof(double)); // CPU Allocated variable that will contain all the individual contributions made by each thread block in an attemp to apply the parallel reduction strategy to "d_accuracyTerm2".
-	double totalSumOfAccuracyTerm1[ngpus]; // This variable is used to sequentially sum all the contributions of each GPU block that were made to get "d_accuracyTerm1" and that were stored in "h_reducedAccuracyTerm1".
-	double totalSumOfAccuracyTerm2[ngpus]; // This variable is used to sequentially sum all the contributions of each GPU block that were made to get "d_accuracyTerm2" and that were stored in "h_reducedAccuracyTerm2".
+	double totalSumOfAccuracyTerm1; // This variable is used to sequentially sum all the contributions of each GPU block that were made to get "d_accuracyTerm1" and that were stored in "h_reducedAccuracyTerm1".
+	double totalSumOfAccuracyTerm2; // This variable is used to sequentially sum all the contributions of each GPU block that were made to get "d_accuracyTerm2" and that were stored in "h_reducedAccuracyTerm2".
 	int nMinusOne = neuron->n-1; // This variable is used to store a repetitive value that is used several times in the program, for performance purposes.
 	double currentAccuracy = 0; // This variable is used to contain the current accuracy of the neuron.
 	double *idata; // This variable is used to convert a pointer of interest to have a new origin from such pointer.
 	double **h_errorTerm_dot_Xtilde = (double **) malloc(ngpus * sizeof(double)); // CPU allocated variable that will contain all the individual contributions made by each thread block in an attemp to apply the parallel reduction strategy to "d_errorTerm".
-	double totalErrorTerm_dot_Xtilde = 0; // This variable is used to sum all the contributions of each GPU block that were made to get "d_errorTerm" and that were stored in "d_errorTerm_dot_Xtilde".
+	double *totalErrorTerm_dot_Xtilde = (double *) malloc(mPlusOne * sizeof(double)); // CPU allocated variable that is used to sum all the contributions of each GPU block that were made to get "d_errorTerm" and that were stored in "d_errorTerm_dot_Xtilde".
 	double *w_old = (double *) malloc(w_new_Bytes); // Allocate the memory required for the variable "w_old", which will contain the previous weight values that were obtained with respect to the current ones.
 	
 	// We allocate the required memory in all the selected GPU.
@@ -473,12 +490,11 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId));
 		
 		// We transfer the input data that the neuron will need into the selected GPU.
-		//CHECK(cudaMemcpy(d_X[currentGpu], neuron->X, neuron->n*neuron->m*sizeof(double), cudaMemcpyHostToDevice)); //TODO: This is a test line of code. Delete it.
 		CHECK(cudaMemcpyAsync(d_X[currentGpu], neuron->X, (neuron->n*neuron->m*sizeof(double)), cudaMemcpyHostToDevice, stream[currentGpu]));
 		CHECK(cudaMemcpyAsync(d_Y[currentGpu], &neuron->Y[mGpuConf[currentGpu].gpuStart], mGpuConf[currentGpu].iBytes, cudaMemcpyHostToDevice, stream[currentGpu]));
 		
 		// We execute the Kernel.
-		getTransposeOfInputData_multiGPU <<< grid[currentGpu], block[currentGpu] >>> (d_X[currentGpu], neuron->n, mGpuConf[currentGpu].iSize, mPlusOne, mGpuConf[currentGpu].gpuStart, d_TransposeOf_X_tilde[currentGpu]);
+		getTransposeOfInputData_multiGPU <<< grid[currentGpu], block[currentGpu], 0, stream[currentGpu] >>> (d_X[currentGpu], neuron->n, neuron->m, mGpuConf[currentGpu].iSize, mPlusOne, mGpuConf[currentGpu].gpuStart, d_TransposeOf_X_tilde[currentGpu]);
 	}
 	
 		
@@ -514,67 +530,59 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 		CHECK(cudaMemcpyAsync(d_w_new[currentGpu], neuron->w_new, w_new_Bytes, cudaMemcpyHostToDevice, stream[currentGpu]));
 	}
 	
-	// We synchronize all the GPU streams.
-	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
-		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We select the current GPU.
-		CHECK(cudaStreamSynchronize(stream[currentGpu])); // We synchronize the CPU with the current GPU stream.
-	}
 	
-	
-	
-	
-	
-	
-	// TODO: This is where i left.
-	
-	/*
-	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {		//TODO: This is a test line of code. Delete it.
-		printf("\n\n");						//TODO: This is a test line of code. Delete it.
-		for (int cr=0; cr<neuron->m+1; cr++) {			//TODO: This is a test line of code. Delete it.+) {
-			for (int cc=0; cc<mGpuConf[currentGpu].iSize; cc++) { //TODO: This is a test line of code. Delete it.
-				printf("%f, ", h_trasnposed[currentGpu][cc + cr*mGpuConf[currentGpu].iSize]);//TODO: This is a test line of code. Delete it.
-			}							//TODO: This is a test line of code. Delete it.
-			printf("\n");						//TODO: This is a test line of code. Delete it.
-		}								//TODO: This is a test line of code. Delete it.
-		printf("\n\n");						//TODO: This is a test line of code. Delete it.
-	}									//TODO: This is a test line of code. Delete it.
-	*/
-	
-	return; // TODO: This line of code was placed for a test. Delete it!.
-	/*
 	// ------------------------------------- //
 	// ----- REGRESSION MODEL SELECTED ----- //
 	// ------------------------------------- //
 	
 	// ----------- EVALUATION OF THE INITIAL WEIGHT VALUES ----------- //
 	// We calculate "f_x_tilde", "A(u)", "dA(u)" and "the part 1 of the accuracy terms".
-	getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU <<< grid_n, block_32x_1y, double96_Bytes >>> (d_X, d_Y, d_w_new, neuron->n, neuron->m, neuron->activationFunctionToBeUsed, d_f_x_tilde, d_A_u, d_dA_u, d_accuracyTerm1, d_accuracyTerm2);
-	CHECK(cudaDeviceSynchronize()); // We force the program to wait until all GPU threads have finished the last task they were given.
-	getParallelReduction_multiGPU <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1".
-	getParallelReduction_multiGPU <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm2, d_reducedAccuracyTerm2, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm2".
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We set the current GPU.
+		getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU <<< grid[currentGpu], block[currentGpu], double96_Bytes, stream[currentGpu] >>> (d_X[currentGpu], d_Y[currentGpu], d_w_new[currentGpu], mGpuConf[currentGpu].iSize, neuron->m, mGpuConf[currentGpu].gpuStart, neuron->activationFunctionToBeUsed, d_f_x_tilde[currentGpu], d_A_u[currentGpu], d_dA_u[currentGpu], d_accuracyTerm1[currentGpu], d_accuracyTerm2[currentGpu]);
+		getParallelReduction_multiGPU <<< mGpuConf[currentGpu].trueUnrollingSize1, block[currentGpu], double32_Bytes, stream[currentGpu] >>> (d_accuracyTerm1[currentGpu], d_reducedAccuracyTerm1[currentGpu], mGpuConf[currentGpu].iSize, mGpuConf[currentGpu].unrollingTotalBlockSize1, mGpuConf[currentGpu].numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1".
+		getParallelReduction_multiGPU <<< mGpuConf[currentGpu].trueUnrollingSize1, block[currentGpu], double32_Bytes, stream[currentGpu] >>> (d_accuracyTerm2[currentGpu], d_reducedAccuracyTerm2[currentGpu], mGpuConf[currentGpu].iSize, mGpuConf[currentGpu].unrollingTotalBlockSize1, mGpuConf[currentGpu].numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm2".
+		CHECK(cudaMemcpyAsync(h_reducedAccuracyTerm1[currentGpu], d_reducedAccuracyTerm1[currentGpu], mGpuConf[currentGpu].parRed_Bytes, cudaMemcpyDeviceToHost, stream[currentGpu])); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
+		CHECK(cudaMemcpyAsync(h_reducedAccuracyTerm2[currentGpu], d_reducedAccuracyTerm2[currentGpu], mGpuConf[currentGpu].parRed_Bytes, cudaMemcpyDeviceToHost, stream[currentGpu])); // We transfer the GPU data from "d_reducedAccuracyTerm2" to the CPU through "h_reducedAccuracyTerm2".
+	}
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) { // We synchronize all the GPU streams.
+		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We select the current GPU.
+		CHECK(cudaStreamSynchronize(stream[currentGpu])); // We synchronize the CPU with the current GPU stream.
+	}
 	
 	// We calculate the sequential part of "the part 1 of the accuracy terms" by sequentially summing all the contributions made and stored in "d_reducedAccuracyTerm1" and "d_reducedAccuracyTerm2" after having applied the parallel reduction strategy on them.
-	CHECK(cudaMemcpy(h_reducedAccuracyTerm1, d_reducedAccuracyTerm1, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
-	CHECK(cudaMemcpy(h_reducedAccuracyTerm2, d_reducedAccuracyTerm2, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm2" to the CPU through "h_reducedAccuracyTerm2".
 	totalSumOfAccuracyTerm1 = 0; // We reset the value of the accuracy term 1, in which we will store the value of SSE.
 	totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will temporarily store the sum of all the values from the "real output matrix".
-	for (int currentBlock=0; currentBlock<trueUnrollingSize1; currentBlock++) {
-		totalSumOfAccuracyTerm1 += h_reducedAccuracyTerm1[currentBlock]; // We sum all the fragments of the SSE that was calculated by the previous parallelization process.
-		totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm2[currentBlock]; // We sum all the fragments of the "real output matrix sum" that was calculated by the previous parallelization process.
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		for (int currentBlock=0; currentBlock<mGpuConf[currentGpu].trueUnrollingSize1; currentBlock++) {
+			totalSumOfAccuracyTerm1 += h_reducedAccuracyTerm1[currentGpu][currentBlock]; // We sum all the fragments of the SSE that was calculated by the previous parallelization process.
+			totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm2[currentGpu][currentBlock]; // We sum all the fragments of the "real output matrix sum" that was calculated by the previous parallelization process.
+		}
 	}
-	h_reducedAccuracyTerm2[0] = totalSumOfAccuracyTerm2 / neuron->n; // We calculate the mean of the values contained in the "real output matrix".
+	h_reducedAccuracyTerm2[0][0] = totalSumOfAccuracyTerm2 / neuron->n; // We calculate the mean of the values contained in the "real output matrix".
+	for (int currentGpu=1; currentGpu<ngpus; currentGpu++) {
+		h_reducedAccuracyTerm2[currentGpu][0] = h_reducedAccuracyTerm2[0][0]; // We pass the calculatd mean of the values contained in the "real output matrix" to the first data identifier of the pointer variable "h_reducedAccuracyTerm2" for each GPU.
+	}
 	
 	// We calculate "the part 2 of the accuracy terms".
-	CHECK(cudaMemcpy(d_reducedAccuracyTerm2, h_reducedAccuracyTerm2, sizeof(double), cudaMemcpyHostToDevice)); // We pass mean of the "real output matrix" to the GPU, which is contained in the first data location of the pointer variable "h_reducedAccuracyTerm2".
-	getNeuronAdjustedCoefficientOfDetermination_multiGPUvoidPart2 <<< grid_n, block_32x_1y, double64_Bytes >>> (d_Y, neuron->n, d_accuracyTerm1, d_reducedAccuracyTerm2);
-	CHECK(cudaDeviceSynchronize()); // We force the program to wait until all GPU threads have finished the last task they were given.
-	getParallelReduction_multiGPU <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1", containing the SST data.
-	CHECK(cudaMemcpy(h_reducedAccuracyTerm1, d_reducedAccuracyTerm1, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
-	totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will store the value of SST.
-	for (int currentBlock=0; currentBlock<trueUnrollingSize1; currentBlock++) {
-		totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm1[currentBlock]; // We sum all the fragments of the SST that was calculated by the previous parallelization process.
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We set the current GPU.
+		CHECK(cudaMemcpyAsync(d_reducedAccuracyTerm2[currentGpu], h_reducedAccuracyTerm2[currentGpu], sizeof(double), cudaMemcpyHostToDevice, stream[currentGpu])); // We pass mean of the "real output matrix" to the GPU, which is contained in the first data location of the pointer variable "h_reducedAccuracyTerm2".
+		getNeuronAdjustedCoefficientOfDetermination_multiGPUvoidPart2 <<< grid[currentGpu], block[currentGpu], double64_Bytes, stream[currentGpu] >>> (d_Y[currentGpu], mGpuConf[currentGpu].iSize, d_accuracyTerm1[currentGpu], d_reducedAccuracyTerm2[currentGpu]);
+		getParallelReduction_multiGPU <<< mGpuConf[currentGpu].trueUnrollingSize1, block[currentGpu], double32_Bytes, stream[currentGpu] >>> (d_accuracyTerm1[currentGpu], d_reducedAccuracyTerm1[currentGpu], mGpuConf[currentGpu].iSize, mGpuConf[currentGpu].unrollingTotalBlockSize1, mGpuConf[currentGpu].numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1", containing the SST data.
+		CHECK(cudaMemcpyAsync(h_reducedAccuracyTerm1[currentGpu], d_reducedAccuracyTerm1[currentGpu], mGpuConf[currentGpu].parRed_Bytes, cudaMemcpyDeviceToHost, stream[currentGpu])); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
 	}
-
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) { // We synchronize all the GPU streams.
+		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We select the current GPU.
+		CHECK(cudaStreamSynchronize(stream[currentGpu])); // We synchronize the CPU with the current GPU stream.
+	}
+	totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will store the value of SST.
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		for (int currentBlock=0; currentBlock<mGpuConf[currentGpu].trueUnrollingSize1; currentBlock++) {
+			totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm1[currentGpu][currentBlock]; // We sum all the fragments of the SST that was calculated by the previous parallelization process.
+		}
+	}
+	
 	// Finally, we calculate the adjusted coefficient of determination and store its results in the variable "currentAccuracy".
 	currentAccuracy = 1 - ( (totalSumOfAccuracyTerm1/(nMinusOne-(neuron->m)))/(totalSumOfAccuracyTerm2 / nMinusOne) );
 	
@@ -586,22 +594,53 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 		printf("\nThe adjusted R squared (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal the very first instant it was created.\n", currentAccuracy);
 		
 		// Before terminating this function, we free the GPU and CPU allocated memory since they will no longer be used.
-		CHECK(cudaFree(d_X));
-		CHECK(cudaFree(d_Y));
-		CHECK(cudaFree(d_w_new));
-		CHECK(cudaFree(d_TransposeOf_X_tilde));
-		CHECK(cudaFree(d_f_x_tilde));
-		CHECK(cudaFree(d_A_u));
-		CHECK(cudaFree(d_dA_u));
-		CHECK(cudaFree(d_accuracyTerm1));
-		CHECK(cudaFree(d_accuracyTerm2));
-		CHECK(cudaFree(d_reducedAccuracyTerm1));
-		CHECK(cudaFree(d_reducedAccuracyTerm2));
-		CHECK(cudaFree(d_errorTerm));
-		CHECK(cudaFree(d_errorTerm_dot_Xtilde));
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+			// We set the current GPU.
+			CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId));
+			
+			// We free the following GPU memory.
+			CHECK(cudaFree(d_X[currentGpu]));
+			CHECK(cudaFree(d_Y[currentGpu]));
+			CHECK(cudaFree(d_w_new[currentGpu]));
+			CHECK(cudaFree(d_TransposeOf_X_tilde[currentGpu]));
+			CHECK(cudaFree(d_f_x_tilde[currentGpu]));
+			CHECK(cudaFree(d_A_u[currentGpu]));
+			CHECK(cudaFree(d_dA_u[currentGpu]));
+			CHECK(cudaFree(d_accuracyTerm1[currentGpu]));
+			CHECK(cudaFree(d_accuracyTerm2[currentGpu]));
+			CHECK(cudaFree(d_reducedAccuracyTerm1[currentGpu]));
+			CHECK(cudaFree(d_reducedAccuracyTerm2[currentGpu]));
+			CHECK(cudaFree(d_errorTerm[currentGpu]));
+			CHECK(cudaFree(d_errorTerm_dot_Xtilde[currentGpu]));
+			
+			// We free the following CPU page locked memory.
+			CHECK(cudaFreeHost(h_reducedAccuracyTerm1[currentGpu]));
+			CHECK(cudaFreeHost(h_reducedAccuracyTerm2[currentGpu]));
+			CHECK(cudaFreeHost(h_errorTerm_dot_Xtilde[currentGpu]));
+			
+			// We destroy the destroy and clean up the current GPU stream.
+			CHECK(cudaStreamDestroy(stream[currentGpu]));
+		}
+		
+		// We free the remaining CPU allocated memory.
+		free(d_X);
+		free(d_Y);
+		free(d_w_new);
+		free(d_TransposeOf_X_tilde);
+		free(d_f_x_tilde);
+		free(d_A_u);
+		free(d_dA_u);
+		free(d_accuracyTerm1);
+		free(d_accuracyTerm2);
+		free(d_reducedAccuracyTerm1);
+		free(d_reducedAccuracyTerm2);
+		free(d_errorTerm);
+		free(d_errorTerm_dot_Xtilde);
 		free(h_reducedAccuracyTerm1);
 		free(h_reducedAccuracyTerm2);
 		free(h_errorTerm_dot_Xtilde);
+		free(stream);
+		free(totalErrorTerm_dot_Xtilde);
 		free(w_old);
 		return;
 	}
@@ -614,51 +653,85 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 		}
 		
 		// Calculate the error term obtainable with the current weight values so that we can later update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new").
-		getErrorAndUpdateWeightValues_multiGPUpart1 <<< grid_n, block_32x_1y, double128_Bytes >>> (d_TransposeOf_X_tilde, d_Y, neuron->n, mPlusOne, d_A_u, d_dA_u, d_errorTerm);
-		CHECK(cudaDeviceSynchronize()); // We force the program to wait until all GPU threads have finished the last task they were given.
-		getErrorAndUpdateWeightValues_multiGPUpart2 <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_errorTerm, neuron->n, mPlusOne, trueUnrollingSize1, unrollingTotalBlockSize1, numberOfUnrollingLoop1, d_errorTerm_dot_Xtilde);
-		CHECK(cudaMemcpy(h_errorTerm_dot_Xtilde, d_errorTerm_dot_Xtilde, errorTerm_dot_Xtilde_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_errorTerm_dot_Xtilde" to the CPU through "h_errorTerm_dot_Xtilde".
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+			CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We set the current GPU.
+			getErrorAndUpdateWeightValues_multiGPUpart1 <<< grid[currentGpu], block[currentGpu], double128_Bytes, stream[currentGpu] >>> (d_TransposeOf_X_tilde[currentGpu], d_Y[currentGpu], mGpuConf[currentGpu].iSize, mPlusOne, d_A_u[currentGpu], d_dA_u[currentGpu], d_errorTerm[currentGpu]);
+			getErrorAndUpdateWeightValues_multiGPUpart2 <<< mGpuConf[currentGpu].trueUnrollingSize1, block[currentGpu], double32_Bytes, stream[currentGpu] >>> (d_errorTerm[currentGpu], mGpuConf[currentGpu].iSize, mPlusOne, mGpuConf[currentGpu].trueUnrollingSize1, mGpuConf[currentGpu].unrollingTotalBlockSize1, mGpuConf[currentGpu].numberOfUnrollingLoop1, d_errorTerm_dot_Xtilde[currentGpu]);
+			CHECK(cudaMemcpyAsync(h_errorTerm_dot_Xtilde[currentGpu], d_errorTerm_dot_Xtilde[currentGpu], mGpuConf[currentGpu].errorTerm_dot_Xtilde_Bytes, cudaMemcpyDeviceToHost, stream[currentGpu])); // We transfer the GPU data from "d_errorTerm_dot_Xtilde" to the CPU through "h_errorTerm_dot_Xtilde".
+		}
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) { // We synchronize all the GPU streams.
+			CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We select the current GPU.
+			CHECK(cudaStreamSynchronize(stream[currentGpu])); // We synchronize the CPU with the current GPU stream.
+		}
 		
 		// We update the current weight values ("w_old") in order to obtain the new ones ("neuron->w_new") by sequentially summing all the individual contributions made after having applied the parallel reduction strategy on "d_errorTerm", whose result was stored in "h_errorTerm_dot_Xtilde".
-		idata = h_errorTerm_dot_Xtilde; // We convert the pointer of interest from "h_errorTerm_dot_Xtilde" to be the origin pointer of "idata".
-		for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
-			totalErrorTerm_dot_Xtilde = 0; // We reset the value of "totalErrorTerm_dot_Xtilde" to sum the contributed error values for the next weight.
-			for (int currentBlock=0; currentBlock<trueUnrollingSize1; currentBlock++) {
-				totalErrorTerm_dot_Xtilde += idata[currentBlock];
-			}
-			neuron->w_new[currentRow] = w_old[currentRow] + neuron->learningRate * totalErrorTerm_dot_Xtilde; // We update the current weight value.
-			idata += trueUnrollingSize1; // We mode the pointer of "h_errorTerm_dot_Xtilde" to the next row/weight.
+		for (int currentWeight=0; currentWeight<mPlusOne; currentWeight++) {
+			totalErrorTerm_dot_Xtilde[currentWeight] = 0; // We reset the value of "totalErrorTerm_dot_Xtilde" to sum the contributed error values for the next weight.
 		}
-		CHECK(cudaMemcpy(d_w_new, neuron->w_new, w_new_Bytes, cudaMemcpyHostToDevice)); // We pass the values of "neuron->w_new" to the GPU, through its pointer variable "d_w_new".
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+			idata = h_errorTerm_dot_Xtilde[currentGpu]; // We convert the pointer of interest from "h_errorTerm_dot_Xtilde" to be the origin pointer of "idata".
+			for (int currentRow=0; currentRow<mPlusOne; currentRow++) {
+				for (int currentBlock=0; currentBlock<mGpuConf[currentGpu].trueUnrollingSize1; currentBlock++) {
+					totalErrorTerm_dot_Xtilde[currentRow] += idata[currentBlock];
+				}
+				idata += mGpuConf[currentGpu].trueUnrollingSize1; // We mode the pointer of "h_errorTerm_dot_Xtilde" to the next row/weight.
+			}
+		}
+		for (int currentWeight=0; currentWeight<mPlusOne; currentWeight++) {
+			neuron->w_new[currentWeight] = w_old[currentWeight] + neuron->learningRate * totalErrorTerm_dot_Xtilde[currentWeight]; // We update the current weight value.
+		}
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+			CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We set the current GPU.
+			CHECK(cudaMemcpyAsync(d_w_new[currentGpu], neuron->w_new, w_new_Bytes, cudaMemcpyHostToDevice, stream[currentGpu])); // We pass the values of "neuron->w_new" to the GPU, through its pointer variable "d_w_new".
+		}
 		
 		// We recalculate "f_x_tilde", "A(u)", "dA(u)" and "the part 1 of the accuracy terms".
-		getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU <<< grid_n, block_32x_1y, double96_Bytes >>> (d_X, d_Y, d_w_new, neuron->n, neuron->m, neuron->activationFunctionToBeUsed, d_f_x_tilde, d_A_u, d_dA_u, d_accuracyTerm1, d_accuracyTerm2);
-		CHECK(cudaDeviceSynchronize()); // We force the program to wait until all GPU threads have finished the last task they were given.
-		getParallelReduction_multiGPU <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1".
-		getParallelReduction_multiGPU <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm2, d_reducedAccuracyTerm2, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm2".
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+			CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We set the current GPU.
+			getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU <<< grid[currentGpu], block[currentGpu], double96_Bytes, stream[currentGpu] >>> (d_X[currentGpu], d_Y[currentGpu], d_w_new[currentGpu], mGpuConf[currentGpu].iSize, neuron->m, mGpuConf[currentGpu].gpuStart, neuron->activationFunctionToBeUsed, d_f_x_tilde[currentGpu], d_A_u[currentGpu], d_dA_u[currentGpu], d_accuracyTerm1[currentGpu], d_accuracyTerm2[currentGpu]);
+			getParallelReduction_multiGPU <<< mGpuConf[currentGpu].trueUnrollingSize1, block[currentGpu], double32_Bytes, stream[currentGpu] >>> (d_accuracyTerm1[currentGpu], d_reducedAccuracyTerm1[currentGpu], mGpuConf[currentGpu].iSize, mGpuConf[currentGpu].unrollingTotalBlockSize1, mGpuConf[currentGpu].numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1".
+			getParallelReduction_multiGPU <<< mGpuConf[currentGpu].trueUnrollingSize1, block[currentGpu], double32_Bytes, stream[currentGpu] >>> (d_accuracyTerm2[currentGpu], d_reducedAccuracyTerm2[currentGpu], mGpuConf[currentGpu].iSize, mGpuConf[currentGpu].unrollingTotalBlockSize1, mGpuConf[currentGpu].numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm2".
+			CHECK(cudaMemcpyAsync(h_reducedAccuracyTerm1[currentGpu], d_reducedAccuracyTerm1[currentGpu], mGpuConf[currentGpu].parRed_Bytes, cudaMemcpyDeviceToHost, stream[currentGpu])); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
+			CHECK(cudaMemcpyAsync(h_reducedAccuracyTerm2[currentGpu], d_reducedAccuracyTerm2[currentGpu], mGpuConf[currentGpu].parRed_Bytes, cudaMemcpyDeviceToHost, stream[currentGpu])); // We transfer the GPU data from "d_reducedAccuracyTerm2" to the CPU through "h_reducedAccuracyTerm2".
+		}
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) { // We synchronize all the GPU streams.
+			CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We select the current GPU.
+			CHECK(cudaStreamSynchronize(stream[currentGpu])); // We synchronize the CPU with the current GPU stream.
+		}
 		
 		// We recalculate the sequential part of "the part 1 of the accuracy terms" by sequentially summing all the contributions made and stored in "d_reducedAccuracyTerm1" and "d_reducedAccuracyTerm2" after having applied the parallel reduction strategy on them.
-		CHECK(cudaMemcpy(h_reducedAccuracyTerm1, d_reducedAccuracyTerm1, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
-		CHECK(cudaMemcpy(h_reducedAccuracyTerm2, d_reducedAccuracyTerm2, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm2" to the CPU through "h_reducedAccuracyTerm2".
 		totalSumOfAccuracyTerm1 = 0; // We reset the value of the accuracy term 1, in which we will store the value of SSE.
 		totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will temporarily store the sum of all the values from the "real output matrix".
-		for (int currentBlock=0; currentBlock<trueUnrollingSize1; currentBlock++) {
-			totalSumOfAccuracyTerm1 += h_reducedAccuracyTerm1[currentBlock]; // We sum all the fragments of the SSE that was calculated by the previous parallelization process.
-			totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm2[currentBlock]; // We sum all the fragments of the "real output matrix sum" that was calculated by the previous parallelization process.
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+			for (int currentBlock=0; currentBlock<mGpuConf[currentGpu].trueUnrollingSize1; currentBlock++) {
+				totalSumOfAccuracyTerm1 += h_reducedAccuracyTerm1[currentGpu][currentBlock]; // We sum all the fragments of the SSE that was calculated by the previous parallelization process.
+				totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm2[currentGpu][currentBlock]; // We sum all the fragments of the "real output matrix sum" that was calculated by the previous parallelization process.
+			}
 		}
-		h_reducedAccuracyTerm2[0] = totalSumOfAccuracyTerm2 / neuron->n; // We calculate the mean of the values contained in the "real output matrix".
+		h_reducedAccuracyTerm2[0][0] = totalSumOfAccuracyTerm2 / neuron->n; // We calculate the mean of the values contained in the "real output matrix".
+		for (int currentGpu=1; currentGpu<ngpus; currentGpu++) {
+			h_reducedAccuracyTerm2[currentGpu][0] = h_reducedAccuracyTerm2[0][0]; // We pass the calculatd mean of the values contained in the "real output matrix" to the first data identifier of the pointer variable "h_reducedAccuracyTerm2" for each GPU.
+		}
 		
 		// We recalculate "the part 2 of the accuracy terms".
-		CHECK(cudaMemcpy(d_reducedAccuracyTerm2, h_reducedAccuracyTerm2, sizeof(double), cudaMemcpyHostToDevice)); // We pass mean of the "real output matrix" to the GPU, which is contained in the first data location of the pointer variable "h_reducedAccuracyTerm2".
-		getNeuronAdjustedCoefficientOfDetermination_multiGPUvoidPart2 <<< grid_n, block_32x_1y, double64_Bytes >>> (d_Y, neuron->n, d_accuracyTerm1, d_reducedAccuracyTerm2);
-		CHECK(cudaDeviceSynchronize()); // We force the program to wait until all GPU threads have finished the last task they were given.
-		getParallelReduction_multiGPU <<< trueUnrollingSize1, block_32x_1y, double32_Bytes >>> (d_accuracyTerm1, d_reducedAccuracyTerm1, unrollingTotalBlockSize1, numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1", containing the SST data.
-		CHECK(cudaMemcpy(h_reducedAccuracyTerm1, d_reducedAccuracyTerm1, parRed_Bytes, cudaMemcpyDeviceToHost)); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
-		totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will store the value of SST.
-		for (int currentBlock=0; currentBlock<trueUnrollingSize1; currentBlock++) {
-			totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm1[currentBlock]; // We sum all the fragments of the SST that was calculated by the previous parallelization process.
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+			CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We set the current GPU.
+			CHECK(cudaMemcpyAsync(d_reducedAccuracyTerm2[currentGpu], h_reducedAccuracyTerm2[currentGpu], sizeof(double), cudaMemcpyHostToDevice, stream[currentGpu])); // We pass mean of the "real output matrix" to the GPU, which is contained in the first data location of the pointer variable "h_reducedAccuracyTerm2".
+			getNeuronAdjustedCoefficientOfDetermination_multiGPUvoidPart2 <<< grid[currentGpu], block[currentGpu], double64_Bytes, stream[currentGpu] >>> (d_Y[currentGpu], mGpuConf[currentGpu].iSize, d_accuracyTerm1[currentGpu], d_reducedAccuracyTerm2[currentGpu]);
+			getParallelReduction_multiGPU <<< mGpuConf[currentGpu].trueUnrollingSize1, block[currentGpu], double32_Bytes, stream[currentGpu] >>> (d_accuracyTerm1[currentGpu], d_reducedAccuracyTerm1[currentGpu], mGpuConf[currentGpu].iSize, mGpuConf[currentGpu].unrollingTotalBlockSize1, mGpuConf[currentGpu].numberOfUnrollingLoop1); // We apply the parallel reduction strategy on "d_accuracyTerm1", containing the SST data.
+			CHECK(cudaMemcpyAsync(h_reducedAccuracyTerm1[currentGpu], d_reducedAccuracyTerm1[currentGpu], mGpuConf[currentGpu].parRed_Bytes, cudaMemcpyDeviceToHost, stream[currentGpu])); // We transfer the GPU data from "d_reducedAccuracyTerm1" to the CPU through "h_reducedAccuracyTerm1".
 		}
-
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) { // We synchronize all the GPU streams.
+			CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We select the current GPU.
+			CHECK(cudaStreamSynchronize(stream[currentGpu])); // We synchronize the CPU with the current GPU stream.
+		}
+		totalSumOfAccuracyTerm2 = 0; // We reset the value of the accuracy term 2, in which we will store the value of SST.
+		for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+			for (int currentBlock=0; currentBlock<mGpuConf[currentGpu].trueUnrollingSize1; currentBlock++) {
+				totalSumOfAccuracyTerm2 += h_reducedAccuracyTerm1[currentGpu][currentBlock]; // We sum all the fragments of the SST that was calculated by the previous parallelization process.
+			}
+		}
+		
 		// Finally, we recalculate the adjusted coefficient of determination and store its results in the variable "currentAccuracy".
 		currentAccuracy = 1 - ( (totalSumOfAccuracyTerm1/(nMinusOne-(neuron->m)))/(totalSumOfAccuracyTerm2 / nMinusOne) );
 		
@@ -682,22 +755,53 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 			printf("\nThe adjusted R squared (%f) of the neuron has achieved a higher one with respect to the one that was specified as a goal when concluding the epoch number %d.\n", currentAccuracy, currentEpoch+1);
 			
 			// Before terminating this function, we free the GPU and CPU allocated memory since they will no longer be used.
-			CHECK(cudaFree(d_X));
-			CHECK(cudaFree(d_Y));
-			CHECK(cudaFree(d_w_new));
-			CHECK(cudaFree(d_TransposeOf_X_tilde));
-			CHECK(cudaFree(d_f_x_tilde));
-			CHECK(cudaFree(d_A_u));
-			CHECK(cudaFree(d_dA_u));
-			CHECK(cudaFree(d_accuracyTerm1));
-			CHECK(cudaFree(d_accuracyTerm2));
-			CHECK(cudaFree(d_reducedAccuracyTerm1));
-			CHECK(cudaFree(d_reducedAccuracyTerm2));
-			CHECK(cudaFree(d_errorTerm));
-			CHECK(cudaFree(d_errorTerm_dot_Xtilde));
+			for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+				// We set the current GPU.
+				CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId));
+				
+				// We free the following GPU memory.
+				CHECK(cudaFree(d_X[currentGpu]));
+				CHECK(cudaFree(d_Y[currentGpu]));
+				CHECK(cudaFree(d_w_new[currentGpu]));
+				CHECK(cudaFree(d_TransposeOf_X_tilde[currentGpu]));
+				CHECK(cudaFree(d_f_x_tilde[currentGpu]));
+				CHECK(cudaFree(d_A_u[currentGpu]));
+				CHECK(cudaFree(d_dA_u[currentGpu]));
+				CHECK(cudaFree(d_accuracyTerm1[currentGpu]));
+				CHECK(cudaFree(d_accuracyTerm2[currentGpu]));
+				CHECK(cudaFree(d_reducedAccuracyTerm1[currentGpu]));
+				CHECK(cudaFree(d_reducedAccuracyTerm2[currentGpu]));
+				CHECK(cudaFree(d_errorTerm[currentGpu]));
+				CHECK(cudaFree(d_errorTerm_dot_Xtilde[currentGpu]));
+				
+				// We free the following CPU page locked memory.
+				CHECK(cudaFreeHost(h_reducedAccuracyTerm1[currentGpu]));
+				CHECK(cudaFreeHost(h_reducedAccuracyTerm2[currentGpu]));
+				CHECK(cudaFreeHost(h_errorTerm_dot_Xtilde[currentGpu]));
+				
+				// We destroy the destroy and clean up the current GPU stream.
+				CHECK(cudaStreamDestroy(stream[currentGpu]));
+			}
+			
+			// We free the remaining CPU allocated memory.
+			free(d_X);
+			free(d_Y);
+			free(d_w_new);
+			free(d_TransposeOf_X_tilde);
+			free(d_f_x_tilde);
+			free(d_A_u);
+			free(d_dA_u);
+			free(d_accuracyTerm1);
+			free(d_accuracyTerm2);
+			free(d_reducedAccuracyTerm1);
+			free(d_reducedAccuracyTerm2);
+			free(d_errorTerm);
+			free(d_errorTerm_dot_Xtilde);
 			free(h_reducedAccuracyTerm1);
 			free(h_reducedAccuracyTerm2);
 			free(h_errorTerm_dot_Xtilde);
+			free(stream);
+			free(totalErrorTerm_dot_Xtilde);
 			free(w_old);
 			return;
 		}
@@ -710,24 +814,55 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 	}
 	
 	// Before terminating this function, we free the GPU and CPU allocated memory since they will no longer be used.
-	CHECK(cudaFree(d_X));
-	CHECK(cudaFree(d_Y));
-	CHECK(cudaFree(d_w_new));
-	CHECK(cudaFree(d_TransposeOf_X_tilde));
-	CHECK(cudaFree(d_f_x_tilde));
-	CHECK(cudaFree(d_A_u));
-	CHECK(cudaFree(d_dA_u));
-	CHECK(cudaFree(d_accuracyTerm1));
-	CHECK(cudaFree(d_accuracyTerm2));
-	CHECK(cudaFree(d_reducedAccuracyTerm1));
-	CHECK(cudaFree(d_reducedAccuracyTerm2));
-	CHECK(cudaFree(d_errorTerm));
-	CHECK(cudaFree(d_errorTerm_dot_Xtilde));
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		// We set the current GPU.
+		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId));
+		
+		// We free the following GPU memory.
+		CHECK(cudaFree(d_X[currentGpu]));
+		CHECK(cudaFree(d_Y[currentGpu]));
+		CHECK(cudaFree(d_w_new[currentGpu]));
+		CHECK(cudaFree(d_TransposeOf_X_tilde[currentGpu]));
+		CHECK(cudaFree(d_f_x_tilde[currentGpu]));
+		CHECK(cudaFree(d_A_u[currentGpu]));
+		CHECK(cudaFree(d_dA_u[currentGpu]));
+		CHECK(cudaFree(d_accuracyTerm1[currentGpu]));
+		CHECK(cudaFree(d_accuracyTerm2[currentGpu]));
+		CHECK(cudaFree(d_reducedAccuracyTerm1[currentGpu]));
+		CHECK(cudaFree(d_reducedAccuracyTerm2[currentGpu]));
+		CHECK(cudaFree(d_errorTerm[currentGpu]));
+		CHECK(cudaFree(d_errorTerm_dot_Xtilde[currentGpu]));
+		
+		// We free the following CPU page locked memory.
+		CHECK(cudaFreeHost(h_reducedAccuracyTerm1[currentGpu]));
+		CHECK(cudaFreeHost(h_reducedAccuracyTerm2[currentGpu]));
+		CHECK(cudaFreeHost(h_errorTerm_dot_Xtilde[currentGpu]));
+		
+		// We destroy the destroy and clean up the current GPU stream.
+		CHECK(cudaStreamDestroy(stream[currentGpu]));
+	}
+	
+	// We free the remaining CPU allocated memory.
+	free(d_X);
+	free(d_Y);
+	free(d_w_new);
+	free(d_TransposeOf_X_tilde);
+	free(d_f_x_tilde);
+	free(d_A_u);
+	free(d_dA_u);
+	free(d_accuracyTerm1);
+	free(d_accuracyTerm2);
+	free(d_reducedAccuracyTerm1);
+	free(d_reducedAccuracyTerm2);
+	free(d_errorTerm);
+	free(d_errorTerm_dot_Xtilde);
 	free(h_reducedAccuracyTerm1);
 	free(h_reducedAccuracyTerm2);
 	free(h_errorTerm_dot_Xtilde);
+	free(stream);
+	free(totalErrorTerm_dot_Xtilde);
 	free(w_old);
-	*/
+
 	printf("\nThe best adjusted R squared (%f) achieved by the neuron did not surpased the defined goal but its training process has been successfully concluded.\n", neuron->bestAccuracy);
 	return;
 }
@@ -748,11 +883,24 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 *
 * @param int n - This argument will represent the total number of samples (rows)
 * 		that the input matrix has, with which the output data was
-*		obtained.
+* 		obtained.
+*
+* @param int m - This argument will represent the total number of features
+* 		(independent variables) that the input matrix has, with which
+* 		the output data was obtained.
+*
+* @param int iSize - This argument will represent the total number of samples
+* 		(rows) from the variable "n" that were assigned to the current
+* 		GPU.
 *
 * @param int mPlusOne - This argument will represent the total number of
 *		features (independent variables) that the input matrix has plus
 * 		one.
+*
+* @param int gpuStart - This argument will represent the identifier of the
+* 		initial row that was assigned to the current GPU with respect to
+* 		the total number of rows ("n") contained in the input matrixes
+* 		("X" and "Y").
 *
 * @param double *TransposeOf_X_tilde - This argument will contain the pointer to
 * 		a memory allocated matrix in which the transpose of the argument
@@ -766,23 +914,22 @@ void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron) 
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 21, 2022
+* CREATION DATE: JANUARY 27, 2022
 * LAST UPDATE: N/A
 */
-__global__ static void getTransposeOfInputData_multiGPU(double *X, int n, int iSize, int mPlusOne, int gpuStart, double *TransposeOf_X_tilde) {
+__global__ static void getTransposeOfInputData_multiGPU(double *X, int n, int m, int iSize, int mPlusOne, int gpuStart, double *TransposeOf_X_tilde) {
 	// We obtain the GPU thread global coordinate.
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	
 	// We calculate the transpose of "X_tilde" by using the argument variable "X", but only if it is within the threads boundary.
 	if (idx < iSize) {
 		double *idata = X; // We convert the pointer of interest from "X" to be the origin pointer of "idata".
-		idata += gpuStart; // We move the current column to the one at which the current GPU will start managing data from "X".
+		idata += (gpuStart+idx)*m - 1; // We move the current row to the one at which the current GPU will start managing data from "X".
 		double *odata = TransposeOf_X_tilde; // We convert the pointer of interest from "TransposeOf_X_tilde" to be the origin pointer of "odata".
 		odata[idx] = 1;
 		for (int currentColumn=1; currentColumn<(mPlusOne); currentColumn++) {
 			odata += iSize; // We move the origin pointer of the argument variable "TransposeOf_X_tilde" to its next column.
-			odata[idx] = idata[idx]; // We apply the transpose with respect to the next column of "X_tilde".
-			idata += n; // We move the origin pointer of the argument varaible "X" to its next row.
+			odata[idx] = idata[currentColumn]; // We apply the transponse on "X" and store it in "TransposeOf_X_tilde".
 		}
 	}
 	
@@ -820,13 +967,18 @@ __global__ static void getTransposeOfInputData_multiGPU(double *X, int n, int iS
 * 			INITIALIZED BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 * 			SIZE OF "1" TIMES "m+1" 'DOUBLE' MEMORY SPACES.
 * 
-* @param int n - This argument will represent the total number of samples (rows)
-* 		that the input matrix has, with which the output data was
-*		obtained.
+* @param int iSize - This argument will represent the total number of samples
+* 		(rows) from the variable "n" that were assigned to the current
+* 		GPU.
 *
 * @param int m - This argument will represent the total number of features
 * 		(independent variables) that the input matrix has, with which
 * 		the output data was obtained.
+*
+* @param int gpuStart - This argument will represent the identifier of the
+* 		initial row that was assigned to the current GPU with respect to
+* 		the total number of rows ("n") contained in the input matrixes
+* 		("X" and "Y").
 *
 * @param int activationFunctionToBeUsed - This argument will represent the
 * 					identifier of the desired activation
@@ -891,18 +1043,18 @@ __global__ static void getTransposeOfInputData_multiGPU(double *X, int n, int iS
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 23, 2022
-* LAST UPDATE: JANUARY 25, 2022
+* CREATION DATE: JANUARY 27, 2022
+* LAST UPDATE: N/A
 */
-__global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU(double *X, double *Y, double *w_new, int n, int m, int activationFunctionToBeUsed, double *f_x_tilde, double *A_u, double *dA_u, double *accuracyTerm1, double *accuracyTerm2) {
+__global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU(double *X, double *Y, double *w_new, int iSize, int m, int gpuStart, int activationFunctionToBeUsed, double *f_x_tilde, double *A_u, double *dA_u, double *accuracyTerm1, double *accuracyTerm2) {
 	// We obtain the GPU thread coordinates.
 	int idx = threadIdx.x + blockIdx.x * blockDim.x; // We obtain the GPU thread global coordinate.
 	int tid = threadIdx.x; // We obtain the GPU thread local coordinate
 	
 	// If the current GPU thread is within boundary, then proceed to work with the task. Otherwise, conclude your operation.
-	if (idx < n) {
+	if (idx < iSize) {
 		// We calculate the values of "f(x_tilde)".
-		getFxTilde_multiGPU(X, w_new, m, f_x_tilde, tid, idx);
+		getFxTilde_multiGPU(X, w_new, m, gpuStart, f_x_tilde, tid, idx);
 		
 		// We calculate the currently predicted output data made by the neuron and store it in "A_u" by applying the desired activation function to "f_x_tilde".
 		getActivationFunction_multiGPU(activationFunctionToBeUsed, f_x_tilde, A_u, idx); // We calculate A(u) and store it in the pointer variable "A_u".
@@ -928,12 +1080,6 @@ __global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU(double 
 *		algorithm will be calculated. THIS VARIABLE SHOULD BE ALLOCATED
 * 		AND INITIALIZED BEFORE CALLING THIS FUNCTION WITH A SIZE OF "n"
 * 		TIMES "m" 'DOUBLE' MEMORY SPACES.
-*
-* @param double *Y - This argument will contain the pointer to a memory
-* 		allocated output matrix, representing the real data of the
-*		system under study. THIS VARIABLE SHOULD BE ALLOCATED AND
-* 		INITIALIZED BEFORE CALLING THIS FUNCTION WITH A SIZE OF "n"
-* 		TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 * 
 * @param double *w_new - This argument will contain the pointer to a memory
 *			allocated variable in which we will store the last
@@ -947,31 +1093,15 @@ __global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU(double 
 * 			IT IS INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED AND
 * 			INITIALIZED BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 * 			SIZE OF "1" TIMES "m+1" 'DOUBLE' MEMORY SPACES.
-* 
-* @param int n - This argument will represent the total number of samples (rows)
-* 		that the input matrix has, with which the output data was
-*		obtained.
 *
 * @param int m - This argument will represent the total number of features
 * 		(independent variables) that the input matrix has, with which
 * 		the output data was obtained.
 *
-* @param int activationFunctionToBeUsed - This argument will represent the
-* 					identifier of the desired activation
-* 					function to be used by the neuron during
-* 					its training process. Its possible valid
-* 					values are the following:
-*					0 = Rectified Linear Units (ReLU).
-*					1 = Hyperbolic tangent (tanh).
-*					2 = Logistic function.
-*					3 = Raise to the 1st power.
-*					4 = Raise to the 2nd power.
-*					5 = Raise to the 3rd power.
-*					6 = Raise to the 4th power.
-*					7 = Raise to the 5th power.
-*					8 = Raise to the 6th power.
-*					9 = 1st order degree exponential.
-*					10 = 2nd order degree exponential.
+* @param int gpuStart - This argument will represent the identifier of the
+* 		initial row that was assigned to the current GPU with respect to
+* 		the total number of rows ("n") contained in the input matrixes
+* 		("X" and "Y").
 *
 * @param double *f_x_tilde - This argument will contain the pointer to a memory
 * 			allocated matrix that is used to store the output of the
@@ -992,26 +1122,24 @@ __global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU(double 
 * @return void
 * 
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 25, 2022
+* CREATION DATE: JANUARY 27, 2022
 * LAST UPDATE: N/A
 */
-__device__ static void getFxTilde_multiGPU(double *X, double *w_new, int m, double *f_x_tilde, int tid, int idx) {
+__device__ static void getFxTilde_multiGPU(double *X, double *w_new, int m, int gpuStart, double *f_x_tilde, int tid, int idx) {
 	// We declare and initialize the shared memory of the GPU that will be used.
 	extern __shared__ double sharedMem[]; // We declare the shared memory that we will use for each block.
-	// NOTE: Each GPU thread is storing data such that their local address (tid) will represent the identifier of the row number in which they will write data in the shared memory. Moreover, each thread will have assigned 3 columns per row.
+	// NOTE: Each GPU thread is storing data such that their local address (tid) will represent the identifier of the row number in which they will write data in the shared memory. Moreover, each thread will have assigned 1 row with 3 columns.
 	
 	// We calculate the values of "f(x_tilde)".
 	double *idata_X = X; // We convert the pointer of interest from "X" to be the origin pointer of "idata".
 	double *idata_w_new = w_new; // We convert the pointer of interest from "w_new" to be the origin pointer of "idata".
 	int tidTimesThree = tid*3; // This variable is used to store a repetitive value that is used several times in the program, for performance purposes.
-	int currentRowColumn1 = tidTimesThree; // This variable is used to store a repetitive value that is used several times in the program, for performance purposes.
+	int currentRowColumn1 = 1 + tidTimesThree; // This variable is used to store a repetitive value that is used several times in the program, for performance purposes.
 	int currentRowColumn2 = 1 + currentRowColumn1; // This variable is used to store a repetitive value that is used several times in the program, for performance purposes.
 	sharedMem[tidTimesThree] = idata_w_new[0]; // This memory address of the shared memory is where we will store the value of "f(x_tilde)". To begin with such process, we get the bias value of the body of the neuron.
 	idata_w_new++; // We move the origin pointer of the argument variable "w_new" to the location of the next weight value, for performance purposes.
-	idata_X += idx * m; // We move the origin pointer of the argument variable "X" to the location of the row of interest for the current GPU thread, for performance purposes.
+	idata_X += (idx + gpuStart) * m; // We move the origin pointer of the argument variable "X" to the location of the row of interest for the current GPU thread, for performance purposes.
 	for (int currentColumn=0; currentColumn<m; currentColumn++) {
-		currentRowColumn1++;
-		currentRowColumn2++;
 		sharedMem[currentRowColumn1] = idata_w_new[currentColumn]; // We pass the current weight value to the shared memory corresponding address.
 		sharedMem[currentRowColumn2] = idata_X[currentColumn]; // We pass the current input data to the shared memory corresponding address.
 		sharedMem[tidTimesThree] += sharedMem[currentRowColumn1] * sharedMem[currentRowColumn2]; // We multiply the current weight value with the current input data and store it in the address of the shared memory in which we will store the value of "f(x_tilde)".
@@ -1043,9 +1171,9 @@ __device__ static void getFxTilde_multiGPU(double *X, double *w_new, int m, doub
 * 		INITIALIZED BEFORE CALLING THIS FUNCTION WITH A SIZE OF "n"
 * 		TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 * 
-* @param int n - This argument will represent the total number of samples (rows)
-* 		that the input matrix has, with which the output data was
-*		obtained.
+* @param int iSize - This argument will represent the total number of samples
+* 		(rows) from the variable "n" that were assigned to the current
+* 		GPU.
 *
 * @param int mPlusOne - This argument will represent the total number of
 *		features (independent variables) that the input matrix has plus
@@ -1079,15 +1207,15 @@ __device__ static void getFxTilde_multiGPU(double *X, double *w_new, int m, doub
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 23, 2022
+* CREATION DATE: JANUARY 27, 2022
 * LAST UPDATE: N/A
 */
-__global__ static void getErrorAndUpdateWeightValues_multiGPUpart1(double *TransposeOf_X_tilde, double *Y, int n, int mPlusOne, double *A_u, double *dA_u, double *errorTerm) {
+__global__ static void getErrorAndUpdateWeightValues_multiGPUpart1(double *TransposeOf_X_tilde, double *Y, int iSize, int mPlusOne, double *A_u, double *dA_u, double *errorTerm) {
 	// We obtain the GPU thread coordinates.
 	int idx = threadIdx.x + blockIdx.x * blockDim.x; // We obtain the GPU thread global coordinate.
 	
 	// If the current GPU thread is within boundary, then proceed to work with the task. Otherwise, conclude your operation.
-	if (idx < n) {
+	if (idx < iSize) {
 		// We calculate the error term contribution of the current GPU thread.
 		double contributedErrorTerm = (Y[idx] - A_u[idx]) * dA_u[idx];
 		
@@ -1096,8 +1224,8 @@ __global__ static void getErrorAndUpdateWeightValues_multiGPUpart1(double *Trans
 		double *odata1 = errorTerm; // We convert the pointer of interest from "errorTerm" to be the origin pointer of "odata".
 		for (int currentWeight=0; currentWeight<mPlusOne; currentWeight++) {
 			odata1[idx] = contributedErrorTerm * idata1[idx]; // We apply the dot product between the error term and the transposed matrix of X_tilde.
-			odata1 += n;
-			idata1 += n;
+			odata1 += iSize;
+			idata1 += iSize;
 		}
 	}
 	
@@ -1126,9 +1254,9 @@ __global__ static void getErrorAndUpdateWeightValues_multiGPUpart1(double *Trans
 * 			FUNCTION WITH A VARIABLE SIZE OF "m+1" TIMES "n" 'DOUBLE'
 * 			MEMORY SPACES.
 *
-* @param int n - This argument will represent the total number of samples (rows)
-* 		that the input matrix has, with which the output data was
-*		obtained.
+* @param int iSize - This argument will represent the total number of samples
+* 		(rows) from the variable "n" that were assigned to the current
+* 		GPU.
 *
 * @param int mPlusOne - This argument will represent the total number of
 *		features (independent variables) that the input matrix has plus
@@ -1138,10 +1266,10 @@ __global__ static void getErrorAndUpdateWeightValues_multiGPUpart1(double *Trans
 * 			number of samples that are expected to be obtained after
 * 			having applied the Parallel Reduction strategy.
 *
-* @param int unrollingGridSize - This argument is used to represent the grid
-*		size that will be considered for all the GPU Kernels that apply
-* 		the Unrolling Parallel Reduction strategy, for performance
-* 		purposes.
+* @param int unrollingTotalBlockSize - This argument will represent the total
+* 				number of GPU threads that are to be employed
+* 				specifically for calling the GPU Kernel that is
+* 				responsible to excecute this function.
 *
 * @param int numberOfUnrollingLoop - This argument is used to represent the
 * 				number of unrolling loops that the algorithm will
@@ -1162,16 +1290,16 @@ __global__ static void getErrorAndUpdateWeightValues_multiGPUpart1(double *Trans
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 23, 2022
+* CREATION DATE: JANUARY 27, 2022
 * LAST UPDATE: N/A
 */
-__global__ static void getErrorAndUpdateWeightValues_multiGPUpart2(double *errorTerm, int n, int mPlusOne, int trueUnrollingSize, int unrollingGridSize, int numberOfUnrollingLoop, double *errorTerm_dot_Xtilde) {
+__global__ static void getErrorAndUpdateWeightValues_multiGPUpart2(double *errorTerm, int iSize, int mPlusOne, int trueUnrollingSize, int unrollingTotalBlockSize, int numberOfUnrollingLoop, double *errorTerm_dot_Xtilde) {
 	// We apply the parallel reduction strategy to all the individual error term contributions made for each weight available.
 	double *idata2 = errorTerm; // We convert the pointer of interest from "errorTerm" to be the origin pointer of "idata".
 	double *odata2 = errorTerm_dot_Xtilde; // We convert the pointer of interest from "errorTerm_dot_Xtilde" to be the origin pointer of "odata".
 	for (int currentWeight=0; currentWeight<mPlusOne; currentWeight++) {
-		getDeviceParallelReduction_multiGPU(idata2, odata2, unrollingGridSize, numberOfUnrollingLoop); // We apply the parallel reduction strategy on "errorTerm".
-		idata2 += n;
+		getDeviceParallelReduction_multiGPU(idata2, odata2, iSize, unrollingTotalBlockSize, numberOfUnrollingLoop); // We apply the parallel reduction strategy on "errorTerm".
+		idata2 += iSize;
 		odata2 += trueUnrollingSize;
 	}
 	
@@ -1222,7 +1350,7 @@ __global__ static void getErrorAndUpdateWeightValues_multiGPUpart2(double *error
 * @return void
 * 
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 21, 2022
+* CREATION DATE: JANUARY 27, 2022
 * LAST UPDATE: N/A
 */
 __device__ static void getActivationFunction_multiGPU(int activationFunctionToBeUsed, double *u, double *A_u, int idx) {
@@ -1334,7 +1462,7 @@ __device__ static void getActivationFunction_multiGPU(int activationFunctionToBe
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 21, 2022
+* CREATION DATE: JANUARY 27, 2022
 * LAST UPDATE: N/A
 */
 __device__ static void getDerivateOfActivationFunction_multiGPU(int activationFunctionToBeUsed, double *u, double *A_u, double *dA_u, int idx) {
@@ -1444,17 +1572,14 @@ __device__ static void getDerivateOfActivationFunction_multiGPU(int activationFu
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 24, 2022
-* LAST UPDATE: JANUARY 25, 2022
+* CREATION DATE: JANUARY 27, 2022
+* LAST UPDATE: N/A
 */
 __device__ static void getNeuronAdjustedCoefficientOfDetermination_multiGPUPart1(double *Y, double *A_u, double *accuracyTerm1, double *accuracyTerm2, int idx) {
-	// We obtain the GPU thread local coordinate.
-	int tid = threadIdx.x;
-	
 	// We declare and initialize the shared memory of the GPU that will be used.
 	extern __shared__ double sharedMem[]; // We declare the shared memory that we will use for each block.
-	// NOTE: Each GPU thread is storing data such that their local address (tid) will represent the identifier of the row number in which they will write data in the shared memory. Moreover, each thread will have assigned 2 columns per row.
-	int column1 = tid * 2;
+	// NOTE: Each GPU thread is storing data such that their local address (threadIdx.x) will represent the identifier of the row number in which they will write data in the shared memory. Moreover, each thread will have assigned 1 row with 2 columns.
+	int column1 = threadIdx.x * 2;
 	int column2 = 1 + column1;
 	sharedMem[column1] = Y[idx];
 	sharedMem[column2] = A_u[idx];
@@ -1487,9 +1612,14 @@ __device__ static void getNeuronAdjustedCoefficientOfDetermination_multiGPUPart1
 * 				Reduction strategy to the argument pointer
 * 				variable "termToBeReduced".
 *
-* @param int n - This argument will represent the total number of samples (rows)
-* 		that the input matrix has, with which the output data was
-*		obtained.
+* @param int iSize - This argument will represent the total number of samples
+* 		(rows) from the variable "n" that were assigned to the current
+* 		GPU.
+*
+* @param int unrollingTotalBlockSize - This argument will represent the total
+* 				number of GPU threads that are to be employed
+* 				specifically for calling the GPU Kernel that is
+* 				responsible to excecute this function.
 *
 * @param int numberOfUnrollingLoop - This argument is used to represent the
 * 				number of unrolling loops that the algorithm will
@@ -1502,10 +1632,10 @@ __device__ static void getNeuronAdjustedCoefficientOfDetermination_multiGPUPart1
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 24, 2022
+* CREATION DATE: JANUARY 28, 2022
 * LAST UPDATE: N/A
 */
-__global__ static void getParallelReduction_multiGPU(double *termToBeReduced, double *reducedAccuracyTerm, int n, int numberOfUnrollingLoop) {
+__global__ static void getParallelReduction_multiGPU(double *termToBeReduced, double *reducedAccuracyTerm, int iSize, int unrollingTotalBlockSize, int numberOfUnrollingLoop) {
 	// We declare the variables that will be given a value through the next case code.
 	int idx; // Variable used to store the GPU thread global coordinate.
 	int tid = threadIdx.x; // Variable used to store the GPU thread local coordinate.
@@ -1520,13 +1650,94 @@ __global__ static void getParallelReduction_multiGPU(double *termToBeReduced, do
 	double unroll8; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
 	double unroll9; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
 	double unroll10; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
+	double unroll11; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
+	double unroll12; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
+	double unroll13; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
+	double unroll14; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
+	double unroll15; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
 	
 	// Parallel Reduction Strategy: Unrolling Strategy process.
 	switch (numberOfUnrollingLoop) {
-		case 10: // "Unrolling10 Strategy": Unrolling 10 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 10*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 9*blockDim.x) < n) {
+		case 15: // "Unrolling15 Strategy": Unrolling 15 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 15*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 14*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx]; idata += blockDim.x;
+				unroll14 = idata[idx]; idata += blockDim.x;
+				unroll15 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13 + unroll14 + unroll15;
+			} else if ((idx + 13*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx]; idata += blockDim.x;
+				unroll14 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13 + unroll14;
+			} else if ((idx + 12*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13;
+			} else if ((idx + 11*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12;
+			} else if ((idx + 10*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11;
+			} else if ((idx + 9*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
@@ -1538,14 +1749,7 @@ __global__ static void getParallelReduction_multiGPU(double *termToBeReduced, do
 				unroll9 = idata[idx]; idata += blockDim.x;
 				unroll10 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
-			}
-			idata = termToBeReduced + 10*blockIdx.x*blockDim.x;
-		break;
-		
-		case 9: // "Unrolling9 Strategy": Unrolling 9 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 9*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 8*blockDim.x) < n) {
+			} else if ((idx + 8*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
@@ -1556,14 +1760,7 @@ __global__ static void getParallelReduction_multiGPU(double *termToBeReduced, do
 				unroll8 = idata[idx]; idata += blockDim.x;
 				unroll9 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
-			}
-			idata = termToBeReduced + 9*blockIdx.x*blockDim.x;
-		break;
-		
-		case 8: // "Unrolling8 Strategy": Unrolling 8 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 8*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 7*blockDim.x) < n) {
+			} else if ((idx + 7*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
@@ -1573,14 +1770,7 @@ __global__ static void getParallelReduction_multiGPU(double *termToBeReduced, do
 				unroll7 = idata[idx]; idata += blockDim.x;
 				unroll8 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
-			}
-			idata = termToBeReduced + 8*blockIdx.x*blockDim.x;
-		break;
-		
-		case 7: // "Unrolling7 Strategy": Unrolling 7 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 7*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 6*blockDim.x) < n) {
+			} else if ((idx + 6*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
@@ -1589,14 +1779,7 @@ __global__ static void getParallelReduction_multiGPU(double *termToBeReduced, do
 				unroll6 = idata[idx]; idata += blockDim.x;
 				unroll7 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
-			}
-			idata = termToBeReduced + 7*blockIdx.x*blockDim.x;
-		break;
-		
-		case 6: // "Unrolling6 Strategy": Unrolling 6 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 6*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 5*blockDim.x) < n) {
+			} else if ((idx + 5*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
@@ -1604,68 +1787,890 @@ __global__ static void getParallelReduction_multiGPU(double *termToBeReduced, do
 				unroll5 = idata[idx]; idata += blockDim.x;
 				unroll6 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
-			}
-			idata = termToBeReduced + 6*blockIdx.x*blockDim.x;
-		break;
-		
-		case 5: // "Unrolling5 Strategy": Unrolling 5 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 5*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 4*blockDim.x) < n) {
+			} else if ((idx + 4*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
 				unroll4 = idata[idx]; idata += blockDim.x;
 				unroll5 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
-			}
-			idata = termToBeReduced + 5*blockIdx.x*blockDim.x;
-		break;
-		
-		case 4: // "Unrolling4 Strategy": Unrolling 4 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 4*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 3*blockDim.x) < n) {
+			} else if ((idx + 3*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
 				unroll4 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
-			}
-			idata = termToBeReduced + 4*blockIdx.x*blockDim.x;
-		break;
-		
-		case 3: // "Unrolling3 Strategy": Unrolling 3 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 3*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 2*blockDim.x) < n) {
+			} else if ((idx + 2*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
 			}
-			idata = termToBeReduced + 3*blockIdx.x*blockDim.x;
+			idata = termToBeReduced + 15*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 14: // "Unrolling14 Strategy": Unrolling 14 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 14*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 13*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx]; idata += blockDim.x;
+				unroll14 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13 + unroll14;
+			} else if ((idx + 12*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13;
+			} else if ((idx + 11*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12;
+			} else if ((idx + 10*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11;
+			} else if ((idx + 9*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
+			} else if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 14*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 13: // "Unrolling13 Strategy": Unrolling 13 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 13*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 12*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13;
+			} else if ((idx + 11*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12;
+			} else if ((idx + 10*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11;
+			} else if ((idx + 9*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
+			} else if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 13*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 12: // "Unrolling12 Strategy": Unrolling 12 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 12*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 11*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12;
+			} else if ((idx + 10*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11;
+			} else if ((idx + 9*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
+			} else if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 12*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 11: // "Unrolling11 Strategy": Unrolling 11 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 11*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 10*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11;
+			} else if ((idx + 9*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
+			} else if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 11*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 10: // "Unrolling10 Strategy": Unrolling 10 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 10*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 9*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
+			} else if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 10*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 9: // "Unrolling9 Strategy": Unrolling 9 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 9*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 9*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 8: // "Unrolling8 Strategy": Unrolling 8 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 8*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 8*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 7: // "Unrolling7 Strategy": Unrolling 7 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 7*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 7*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 6: // "Unrolling6 Strategy": Unrolling 6 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 6*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 6*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 5: // "Unrolling5 Strategy": Unrolling 5 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 5*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 5*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 4: // "Unrolling4 Strategy": Unrolling 4 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 4*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 4*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 3: // "Unrolling3 Strategy": Unrolling 3 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 3*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 3*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
 		break;
 		
 		case 2: // "Unrolling2 Strategy": Unrolling 2 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 2*blockIdx.x*blockDim.x;
-			idata = termToBeReduced + 2*blockIdx.x*blockDim.x;
-			if ((idx + blockDim.x) < n) {
-				unroll1 = termToBeReduced[idx];
-				unroll2 = termToBeReduced[idx + blockDim.x];
+			idx = threadIdx.x + 2*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
 			}
+			idata = termToBeReduced + 2*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
 		break;
 		
 		default: // No "Unrolling Strategy" will be applied.
-			idx = threadIdx.x + blockIdx.x*blockDim.x;
-			idata = termToBeReduced + blockIdx.x*blockDim.x;
+			idx = threadIdx.x + blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced + blockIdx.x*blockDim.x; // We convert "idata" to target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
 	}
 	__syncthreads(); // We synchronize all threads within the same block.
 	
 	// Parallel Reduction Strategy: Unrolling Warp process with shared memory.
 	extern __shared__ double sharedMem[]; // We declare the shared memory that we will use for each block.
-	sharedMem[tid] = idata[tid];
+	if (idx < iSize) { // If the current GPU thread is within boundary, then make it transfer the data from "idata" to the shared memory of the current GPU.
+		sharedMem[tid] = idata[tid];
+	} else { // If the current GPU thread is not within boundary, then make it transfer a value of zero to its assigned memory address in the shared memory of the current GPU so that the "Unrolling Warp Strategy" does not give error in its processing.
+		sharedMem[tid] = 0;
+	}
 	__syncthreads(); // We synchronize all threads within the same block.
 	if (tid < 16) {
 		sharedMem[tid] += sharedMem[tid+16];__syncthreads(); // We synchronize all threads within the same block.
@@ -1698,9 +2703,14 @@ __global__ static void getParallelReduction_multiGPU(double *termToBeReduced, do
 * 				Reduction strategy to the argument pointer
 * 				variable "termToBeReduced".
 *
-* @param int n - This argument will represent the total number of samples (rows)
-* 		that the input matrix has, with which the output data was
-*		obtained.
+* @param int iSize - This argument will represent the total number of samples
+* 		(rows) from the variable "n" that were assigned to the current
+* 		GPU.
+*
+* @param int unrollingTotalBlockSize - This argument will represent the total
+* 				number of GPU threads that are to be employed
+* 				specifically for calling the GPU Kernel that is
+* 				responsible to excecute this function.
 *
 * @param int numberOfUnrollingLoop - This argument is used to represent the
 * 				number of unrolling loops that the algorithm will
@@ -1713,10 +2723,10 @@ __global__ static void getParallelReduction_multiGPU(double *termToBeReduced, do
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 24, 2022
+* CREATION DATE: JANUARY 28, 2022
 * LAST UPDATE: N/A
 */
-__device__ static void getDeviceParallelReduction_multiGPU(double *termToBeReduced, double *reducedAccuracyTerm, int n, int numberOfUnrollingLoop) {
+__device__ static void getDeviceParallelReduction_multiGPU(double *termToBeReduced, double *reducedAccuracyTerm, int iSize, int unrollingTotalBlockSize, int numberOfUnrollingLoop) {
 	// We declare the variables that will be given a value through the next case code.
 	int idx; // Variable used to store the GPU thread global coordinate.
 	int tid = threadIdx.x; // Variable used to store the GPU thread local coordinate.
@@ -1731,13 +2741,94 @@ __device__ static void getDeviceParallelReduction_multiGPU(double *termToBeReduc
 	double unroll8; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
 	double unroll9; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
 	double unroll10; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
+	double unroll11; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
+	double unroll12; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
+	double unroll13; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
+	double unroll14; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
+	double unroll15; // Variable used in the "Unrolling Loop Strategy" that applies, if any.
 	
 	// Parallel Reduction Strategy: Unrolling Strategy process.
 	switch (numberOfUnrollingLoop) {
-		case 10: // "Unrolling10 Strategy": Unrolling 10 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 10*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 9*blockDim.x) < n) {
+		case 15: // "Unrolling15 Strategy": Unrolling 15 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 15*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 14*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx]; idata += blockDim.x;
+				unroll14 = idata[idx]; idata += blockDim.x;
+				unroll15 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13 + unroll14 + unroll15;
+			} else if ((idx + 13*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx]; idata += blockDim.x;
+				unroll14 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13 + unroll14;
+			} else if ((idx + 12*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13;
+			} else if ((idx + 11*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12;
+			} else if ((idx + 10*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11;
+			} else if ((idx + 9*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
@@ -1749,14 +2840,7 @@ __device__ static void getDeviceParallelReduction_multiGPU(double *termToBeReduc
 				unroll9 = idata[idx]; idata += blockDim.x;
 				unroll10 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
-			}
-			idata = termToBeReduced + 10*blockIdx.x*blockDim.x;
-		break;
-		
-		case 9: // "Unrolling9 Strategy": Unrolling 9 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 9*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 8*blockDim.x) < n) {
+			} else if ((idx + 8*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
@@ -1767,14 +2851,7 @@ __device__ static void getDeviceParallelReduction_multiGPU(double *termToBeReduc
 				unroll8 = idata[idx]; idata += blockDim.x;
 				unroll9 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
-			}
-			idata = termToBeReduced + 9*blockIdx.x*blockDim.x;
-		break;
-		
-		case 8: // "Unrolling8 Strategy": Unrolling 8 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 8*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 7*blockDim.x) < n) {
+			} else if ((idx + 7*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
@@ -1784,14 +2861,7 @@ __device__ static void getDeviceParallelReduction_multiGPU(double *termToBeReduc
 				unroll7 = idata[idx]; idata += blockDim.x;
 				unroll8 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
-			}
-			idata = termToBeReduced + 8*blockIdx.x*blockDim.x;
-		break;
-		
-		case 7: // "Unrolling7 Strategy": Unrolling 7 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 7*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 6*blockDim.x) < n) {
+			} else if ((idx + 6*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
@@ -1800,14 +2870,7 @@ __device__ static void getDeviceParallelReduction_multiGPU(double *termToBeReduc
 				unroll6 = idata[idx]; idata += blockDim.x;
 				unroll7 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
-			}
-			idata = termToBeReduced + 7*blockIdx.x*blockDim.x;
-		break;
-		
-		case 6: // "Unrolling6 Strategy": Unrolling 6 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 6*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 5*blockDim.x) < n) {
+			} else if ((idx + 5*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
@@ -1815,68 +2878,890 @@ __device__ static void getDeviceParallelReduction_multiGPU(double *termToBeReduc
 				unroll5 = idata[idx]; idata += blockDim.x;
 				unroll6 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
-			}
-			idata = termToBeReduced + 6*blockIdx.x*blockDim.x;
-		break;
-		
-		case 5: // "Unrolling5 Strategy": Unrolling 5 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 5*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 4*blockDim.x) < n) {
+			} else if ((idx + 4*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
 				unroll4 = idata[idx]; idata += blockDim.x;
 				unroll5 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
-			}
-			idata = termToBeReduced + 5*blockIdx.x*blockDim.x;
-		break;
-		
-		case 4: // "Unrolling4 Strategy": Unrolling 4 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 4*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 3*blockDim.x) < n) {
+			} else if ((idx + 3*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx]; idata += blockDim.x;
 				unroll4 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
-			}
-			idata = termToBeReduced + 4*blockIdx.x*blockDim.x;
-		break;
-		
-		case 3: // "Unrolling3 Strategy": Unrolling 3 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 3*blockIdx.x*blockDim.x;
-			idata = termToBeReduced;
-			if ((idx + 2*blockDim.x) < n) {
+			} else if ((idx + 2*blockDim.x) < iSize) {
 				unroll1 = idata[idx]; idata += blockDim.x;
 				unroll2 = idata[idx]; idata += blockDim.x;
 				unroll3 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
 			}
-			idata = termToBeReduced + 3*blockIdx.x*blockDim.x;
+			idata = termToBeReduced + 15*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 14: // "Unrolling14 Strategy": Unrolling 14 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 14*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 13*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx]; idata += blockDim.x;
+				unroll14 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13 + unroll14;
+			} else if ((idx + 12*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13;
+			} else if ((idx + 11*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12;
+			} else if ((idx + 10*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11;
+			} else if ((idx + 9*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
+			} else if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 14*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 13: // "Unrolling13 Strategy": Unrolling 13 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 13*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 12*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx]; idata += blockDim.x;
+				unroll13 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12 + unroll13;
+			} else if ((idx + 11*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12;
+			} else if ((idx + 10*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11;
+			} else if ((idx + 9*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
+			} else if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 13*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 12: // "Unrolling12 Strategy": Unrolling 12 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 12*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 11*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx]; idata += blockDim.x;
+				unroll12 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11 + unroll12;
+			} else if ((idx + 10*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11;
+			} else if ((idx + 9*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
+			} else if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 12*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 11: // "Unrolling11 Strategy": Unrolling 11 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 11*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 10*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx]; idata += blockDim.x;
+				unroll11 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10 + unroll11;
+			} else if ((idx + 9*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
+			} else if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 11*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 10: // "Unrolling10 Strategy": Unrolling 10 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 10*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 9*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx]; idata += blockDim.x;
+				unroll10 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9 + unroll10;
+			} else if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 10*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 9: // "Unrolling9 Strategy": Unrolling 9 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 9*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 8*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx]; idata += blockDim.x;
+				unroll9 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8 + unroll9;
+			} else if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 9*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 8: // "Unrolling8 Strategy": Unrolling 8 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 8*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 7*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx]; idata += blockDim.x;
+				unroll8 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7 + unroll8;
+			} else if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 8*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 7: // "Unrolling7 Strategy": Unrolling 7 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 7*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 6*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx]; idata += blockDim.x;
+				unroll7 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6 + unroll7;
+			} else if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 7*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 6: // "Unrolling6 Strategy": Unrolling 6 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 6*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 5*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx]; idata += blockDim.x;
+				unroll6 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5 + unroll6;
+			} else if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 6*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 5: // "Unrolling5 Strategy": Unrolling 5 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 5*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 4*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx]; idata += blockDim.x;
+				unroll5 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4 + unroll5;
+			} else if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 5*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 4: // "Unrolling4 Strategy": Unrolling 4 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 4*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 3*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx]; idata += blockDim.x;
+				unroll4 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3 + unroll4;
+			} else if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 4*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
+		break;
+		
+		case 3: // "Unrolling3 Strategy": Unrolling 3 times, but only with the GPU threads that are within the boundary.
+			idx = threadIdx.x + 3*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			// The following will make all the GPU threads to apply the highest possible number of unrolling loops (defined in "numberOfUnrollingLoop") as applicable.
+			if ((idx + 2*blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx]; idata += blockDim.x;
+				unroll3 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2 + unroll3;
+			} else if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
+				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
+			}
+			idata = termToBeReduced + 3*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
 		break;
 		
 		case 2: // "Unrolling2 Strategy": Unrolling 2 times, but only with the GPU threads that are within the boundary.
-			idx = threadIdx.x + 2*blockIdx.x*blockDim.x;
-			idata = termToBeReduced + 2*blockIdx.x*blockDim.x;
-			if ((idx + blockDim.x) < n) {
-				unroll1 = termToBeReduced[idx];
-				unroll2 = termToBeReduced[idx + blockDim.x];
+			idx = threadIdx.x + 2*blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced; // We temporarily use "idata" to store the pointer of the argument variable "termToBeReduced".
+			if ((idx + blockDim.x) < iSize) {
+				unroll1 = idata[idx]; idata += blockDim.x;
+				unroll2 = idata[idx];
 				termToBeReduced[idx] = unroll1 + unroll2;
+			} else {
 			}
+			idata = termToBeReduced + 2*blockIdx.x*blockDim.x; // We convert "idata" to now target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
 		break;
 		
 		default: // No "Unrolling Strategy" will be applied.
-			idx = threadIdx.x + blockIdx.x*blockDim.x;
-			idata = termToBeReduced + blockIdx.x*blockDim.x;
+			idx = threadIdx.x + blockIdx.x*blockDim.x; // We define the corresponding value of the global thread Id for the current GPU.
+			idata = termToBeReduced + blockIdx.x*blockDim.x; // We convert "idata" to target the pointer of "termToBeReduced" with the corresponding offset for the current GPU thread.
 	}
 	__syncthreads(); // We synchronize all threads within the same block.
 	
 	// Parallel Reduction Strategy: Unrolling Warp process with shared memory.
 	extern __shared__ double sharedMem[]; // We declare the shared memory that we will use for each block.
-	sharedMem[tid] = idata[tid];
+	if (idx < iSize) { // If the current GPU thread is within boundary, then make it transfer the data from "idata" to the shared memory of the current GPU.
+		sharedMem[tid] = idata[tid];
+	} else { // If the current GPU thread is not within boundary, then make it transfer a value of zero to its assigned memory address in the shared memory of the current GPU so that the "Unrolling Warp Strategy" does not give error in its processing.
+		sharedMem[tid] = 0;
+	}
 	__syncthreads(); // We synchronize all threads within the same block.
 	if (tid < 16) {
 		sharedMem[tid] += sharedMem[tid+16];__syncthreads(); // We synchronize all threads within the same block.
@@ -1904,9 +3789,9 @@ __device__ static void getDeviceParallelReduction_multiGPU(double *termToBeReduc
 * 		INITIALIZED BEFORE CALLING THIS FUNCTION WITH A SIZE OF "n"
 * 		TIMES "p=1" 'DOUBLE' MEMORY SPACES.
 * 
-* @param int n - This argument will represent the total number of samples (rows)
-* 		that the input matrix has, with which the output data was
-*		obtained.
+* @param int iSize - This argument will represent the total number of samples
+* 		(rows) from the variable "n" that were assigned to the current
+* 		GPU.
 *
 * @param double *accuracyTerm1 - This argument will contain the pointer to a
 * 			memory allocated matrix that will contain all the
@@ -1932,20 +3817,19 @@ __device__ static void getDeviceParallelReduction_multiGPU(double *termToBeReduc
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 24, 2022
-* LAST UPDATE: JANUARY 25, 2022
+* CREATION DATE: JANUARY 27, 2022
+* LAST UPDATE: N/A
 */
-__global__ static void getNeuronAdjustedCoefficientOfDetermination_multiGPUvoidPart2(double *Y, int n, double *accuracyTerm1, double *reducedAccuracyTerm2) {
+__global__ static void getNeuronAdjustedCoefficientOfDetermination_multiGPUvoidPart2(double *Y, int iSize, double *accuracyTerm1, double *reducedAccuracyTerm2) {
 	// We obtain the GPU threads coordinates.
-	int tid = threadIdx.x; // We obtain the GPU thread local coordinate
 	int idx = threadIdx.x + blockIdx.x * blockDim.x; // We obtain the GPU thread global coordinate.
 	
 	// If the current GPU thread is within boundary, then proceed to work with the task. Otherwise, conclude your operation.
-	if (idx < n) {
+	if (idx < iSize) {
 		// We declare and initialize the shared memory of the GPU that will be used.
 		extern __shared__ double sharedMem[]; // We declare the shared memory that we will use for each block.
-		// NOTE: Each GPU thread is storing data such that their local address (tid) will represent the identifier of the row number in which they will write data in the shared memory. Moreover, each thread will have assigned 2 columns per row.
-		int column1 = tid * 2;
+		// NOTE: Each GPU thread is storing data such that their local address (threadIdx.x) will represent the identifier of the row number in which they will write data in the shared memory. Moreover, each thread will have assigned 1 row with 2 columns.
+		int column1 = threadIdx.x * 2;
 		int column2 = 1 + column1;
 		sharedMem[column1] = Y[idx];
 		sharedMem[column2] = reducedAccuracyTerm2[0];
@@ -1990,13 +3874,29 @@ __global__ static void getNeuronAdjustedCoefficientOfDetermination_multiGPUvoidP
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 24, 2022
-* LAST UPDATE: JANUARY 25, 2022
+* CREATION DATE: JANUARY 27, 2022
+* LAST UPDATE: N/A
 */
-void predictSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron, double *Y_hat) {/*
-	// If the requested GPU (device) is less than zero, then emit an error message and terminate the program. Otherwise, continue with the program.
-	if (neuron->gpuDevice < 0) {
-		printf("\nERROR: The identifier of the requested GPU (device) must be equal or greater than 0.\n");
+void predictSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neuron, double *Y_hat) {
+	// If the requested first GPU (device) is less than zero, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (neuron->firstGpuDevice < 0) {
+		printf("\nERROR: The identifier of the first GPU (device) that is requested for multiple GPU parallelization must be equal or greater than 0.\n");
+		exit(1);
+	}
+	// If the requested last GPU (device) is less than zero, then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (neuron->lastGpuDevice < 0) {
+		printf("\nERROR: The identifier of the last GPU (device) that is requested for multiple GPU parallelization must be equal or greater than 0.\n");
+		exit(1);
+	}
+	// If the requested first GPU (device) has an identifier greater than the last GPU (device), then emit an error message and terminate the program. Otherwise, continue with the program.
+	if (neuron->firstGpuDevice > neuron->lastGpuDevice) {
+		printf("\nERROR: The identifier of the first GPU (\"firstGpuDevice\" variable from the struct \"singleNeuronDnnStruct\") that is requested for multiple GPU parallelization must be lower than the last one (\"lastGpuDevice\" variable from the struct \"singleNeuronDnnStruct\").\n");
+		exit(1);
+	}
+	// If the machine learning samples are less than the substraction of "neuron->lastGpuDevice" and "neuron->firstGpuDevice" plus one, then emit an error message and terminate the program. Otherwise, continue with the program.
+	int ngpus = neuron->lastGpuDevice - neuron->firstGpuDevice + 1; // This variable is used to store the literal number of GPUs that the implementer has requested to this library to use for its multiple GPU parallelization process.
+	if (neuron->n < 2*ngpus) {
+		printf("\nERROR: The machine learning samples must be equal or greater than %d for this particular algorithm.\n", 2*ngpus);
 		exit(1);
 	}
 	// If the machine learning samples are less than value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -2027,54 +3927,107 @@ void predictSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neur
 	
 	
 	// ------- SELECTION AND INITIALIZATION OF THE DESIRED GPU ------- //
-	// We selected the GPU desired by the implementer and inform in the terminal the name of such GPU.
-	cudaDeviceProp gpuProperties;
-	CHECK(cudaGetDeviceProperties(&gpuProperties, neuron->gpuDevice)); // We obtain the details of the GPU that was defined by the implementer.
-	printf("\nThe GPU (device) %d: %s, has been selected by the CenyML library.\n", neuron->gpuDevice, gpuProperties.name);
-	CHECK(cudaSetDevice(neuron->gpuDevice)); // We select the GPU that was requested by the implementer.
+	// We select the desired GPUs by the implementer and inform in the terminal their names.
+	mGpuConfig mGpuConf[ngpus]; // We create a mGpuConfig structure variable to manage the data that will be required for managing each of the GPUs to be handled.
+	printf("\n"); // We print a new line in the terminal window.
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		mGpuConf[currentGpu].deviceId = currentGpu + neuron->firstGpuDevice; // We store the device id of the current GPU in its corresponding "deviceId" variable from the "mGpuConf" structure variable.
+		CHECK(cudaGetDeviceProperties(&mGpuConf[currentGpu].gpuProperties, mGpuConf[currentGpu].deviceId)); // We obtain the details of the current GPU that was requested to be used by this algorithm.
+		printf("The GPU (device) %d: %s, has been selected by the CenyML library.\n", mGpuConf[currentGpu].deviceId, mGpuConf[currentGpu].gpuProperties.name);
+	}
 	
 	// Set up the execution configurations that will be assigned to the selected GPU.
-	dim3 block_32x_1y(32, 1); // We define the number of GPU threads per block.
-	dim3 grid_n((neuron->n + block_32x_1y.x - 1) / block_32x_1y.x, 1); // We define the number of blocks that our GPU will manage.
-	
-	// We configure the shared memory of the current GPU.
-	cudaSharedMemConfig pConfig = cudaSharedMemBankSizeEightByte; // We create a cudaSharedMemConfig type variable to store in it the configuration of 8-byte mode for shared memory in the GPU.
-	cudaDeviceSetSharedMemConfig(pConfig); // We set the 8-byte mode for shared memory in the selected GPU.
+	dim3 block[ngpus];
+	dim3 grid[ngpus];
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We select the current GPU.
+		mGpuConf[currentGpu].pConfig = cudaSharedMemBankSizeEightByte; // We store the configuration of 8-byte mode for shared memory for the current GPU.
+		cudaDeviceSetSharedMemConfig(mGpuConf[currentGpu].pConfig); // We set the 8-byte mode for shared memory in the selected GPU.
+		mGpuConf[currentGpu].gpuStart = currentGpu * neuron->n / ngpus; // We set the start point from which the current GPU will extract data from the input data given to this function.
+		mGpuConf[currentGpu].iSize = ((currentGpu+1)*neuron->n/ngpus) - mGpuConf[currentGpu].gpuStart; // We set number of samples that the current GPU will extract data from the input data given to this function.
+		// NOTE: "((currentGpu+1)*neuron->n/ngpus)" = gpuStop.
+		mGpuConf[currentGpu].iBytes = mGpuConf[currentGpu].iSize * sizeof(double); // We set the number of bytes that will be required to allocate in the current GPU with respect to the input data given to this function.
+		
+		// We set the values of the blocks and grids for the current GPU kernels.
+		block[currentGpu].x = 32;
+		block[currentGpu].y = 1;
+		block[currentGpu].z = 1;
+		grid[currentGpu].x = (mGpuConf[currentGpu].iSize + block[currentGpu].x - 1)/(block[currentGpu].x);
+		grid[currentGpu].y = 1;
+		grid[currentGpu].z = 1;
+	}
 	
 	
 	// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
 	// We create the pointers to the data that the selected GPU will require.
-	double *d_X; // This pointer variable is used to store the data from "neuron->X" into the selected GPU.
-	double *d_w_new; // This pointer variable is used to store the data from "neuron->w_new" into the selected GPU.
-	double *d_f_x_tilde; // This pointer variable is used to store the output of the body of the neuron in the selected GPU.
-	double *d_A_u; // This pointer variable is used to store the output of the application of the chosen activation function in the selected GPU.
-	
-	// We allocate the required memory in the selected GPU.
-	int nDoubles_Bytes = neuron->n*sizeof(double); // This variable stores the number of bytes to allocate "n" bytes of double type, for performance purposes.
-	CHECK(cudaMalloc((void **) &d_X, neuron->m*nDoubles_Bytes));
+	double **d_X = (double **) malloc(ngpus * sizeof(double)); // This pointer variable is used to store the data from "neuron->X" into the selected GPU.
+	double **d_w_best = (double **) malloc(ngpus * sizeof(double)); // This pointer variable is used to store the data from "neuron->w_new" into the selected GPU.
+	double **d_f_x_tilde = (double **) malloc(ngpus * sizeof(double)); // This pointer variable is used to store the output of the body of the neuron in the selected GPU.
+	double **d_A_u = (double **) malloc(ngpus * sizeof(double)); // This pointer variable is used to store the output of the application of the chosen activation function in the selected GPU.
 	int w_new_Bytes = (neuron->m+1)*sizeof(double); // This variable stores the number of bytes to allocate the new weight values that will be obtained each epoch of the training process, for performance purposes.
-	CHECK(cudaMalloc((void **) &d_w_new, w_new_Bytes));
-	CHECK(cudaMalloc((void **) &d_f_x_tilde, nDoubles_Bytes));
-	CHECK(cudaMalloc((void **) &d_A_u, nDoubles_Bytes));
 	
-	// We transfer the required data from the CPU to the selected GPU.
-	CHECK(cudaMemcpy(d_w_new, neuron->w_best, w_new_Bytes, cudaMemcpyHostToDevice));
-	CHECK(cudaMemcpy(d_X, neuron->X, (neuron->n*neuron->m*sizeof(double)), cudaMemcpyHostToDevice));
+	// We allocate the required memory in all the selected GPU.
+	cudaStream_t *stream = (cudaStream_t *) malloc(ngpus * sizeof(cudaStream_t)); // This pointer variable is used to control the streams in which the selected GPUs will operate.
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		// We set the current GPU.
+		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId));
+		
+		// We allocate the required GPU memory.
+		CHECK(cudaMalloc((void **) &d_X[currentGpu], neuron->n*neuron->m*sizeof(double)));
+		CHECK(cudaMalloc((void **) &d_w_best[currentGpu], w_new_Bytes));
+		CHECK(cudaMalloc((void **) &d_f_x_tilde[currentGpu], mGpuConf[currentGpu].iBytes));
+		CHECK(cudaMalloc((void **) &d_A_u[currentGpu], mGpuConf[currentGpu].iBytes));
+		
+		// We create the streams and set them with a different GPU.
+		CHECK(cudaStreamCreate(&stream[currentGpu]));
+	}
 	
 	
 	// --------------- DATA PREDICTION PROCESS --------------- //
-	// We obtain the requested predictions from the artificial neuron model.
-	getPredictSingleNeuronDNN_multiGPU <<< grid_n, block_32x_1y, (3*32*sizeof(double)) >>> (d_X, d_w_new, neuron->n, neuron->m, neuron->activationFunctionToBeUsed, neuron->isClassification, neuron->threshold, neuron->desiredValueForGroup1, neuron->desiredValueForGroup2, d_f_x_tilde, d_A_u);
+	// We obtain the transpose of "X_tilde" in the GPU.
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		// We set the current GPU.
+		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId));
+		
+		// We transfer the required data from the CPU to the selected GPU.
+		CHECK(cudaMemcpyAsync(d_X[currentGpu], neuron->X, (neuron->n*neuron->m*sizeof(double)), cudaMemcpyHostToDevice, stream[currentGpu]));
+		CHECK(cudaMemcpyAsync(d_w_best[currentGpu], neuron->w_best, w_new_Bytes, cudaMemcpyHostToDevice, stream[currentGpu]));
+		
+		// We execute the Kernel.
+		getPredictSingleNeuronDNN_multiGPU <<< grid[currentGpu], block[currentGpu], (3*32*sizeof(double)), stream[currentGpu] >>> (d_X[currentGpu], d_w_best[currentGpu], mGpuConf[currentGpu].iSize, neuron->m, mGpuConf[currentGpu].gpuStart, neuron->activationFunctionToBeUsed, neuron->isClassification, neuron->threshold, neuron->desiredValueForGroup1, neuron->desiredValueForGroup2, d_f_x_tilde[currentGpu], d_A_u[currentGpu]);
+		
+		// We transfer the predicted data from the GPU to the CPU, to the argument variable "Y_hat".
+		CHECK(cudaMemcpyAsync(&Y_hat[mGpuConf[currentGpu].gpuStart], d_A_u[currentGpu], mGpuConf[currentGpu].iBytes, cudaMemcpyDeviceToHost, stream[currentGpu]));
+	}
 	
-	// We transfer the predicted data from the GPU to the CPU, to the argument variable "Y_hat".
-	CHECK(cudaMemcpy(Y_hat, d_A_u, nDoubles_Bytes, cudaMemcpyDeviceToHost));
-	
+	// We synchronize all the GPU streams.
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId)); // We select the current GPU.
+		CHECK(cudaStreamSynchronize(stream[currentGpu])); // We synchronize the CPU with the current GPU stream.
+	}
 	
 	// Before terminating this function, we free the GPU and CPU allocated memory since they will no longer be used.
-	CHECK(cudaFree(d_X));
-	CHECK(cudaFree(d_w_new));
-	CHECK(cudaFree(d_f_x_tilde));
-	CHECK(cudaFree(d_A_u));*/
+	for (int currentGpu=0; currentGpu<ngpus; currentGpu++) {
+		// We set the current GPU.
+		CHECK(cudaSetDevice(mGpuConf[currentGpu].deviceId));
+		
+		// We free the following GPU memory.
+		CHECK(cudaFree(d_X[currentGpu]));
+		CHECK(cudaFree(d_w_best[currentGpu]));
+		CHECK(cudaFree(d_f_x_tilde[currentGpu]));
+		CHECK(cudaFree(d_A_u[currentGpu]));
+		
+		// We destroy the destroy and clean up the current GPU stream.
+		CHECK(cudaStreamDestroy(stream[currentGpu]));
+	}
+	
+	// We free the remaining CPU allocated memory.
+	free(d_X);
+	free(d_w_best);
+	free(d_f_x_tilde);
+	free(d_A_u);	
+	free(stream);
+	
 	return;
 }
 
@@ -2103,13 +4056,18 @@ void predictSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neur
 * 			INITIALIZED BEFORE CALLING THIS FUNCTION WITH A VARIABLE
 * 			SIZE OF "1" TIMES "m+1" 'DOUBLE' MEMORY SPACES.
 * 
-* @param int n - This argument will represent the total number of samples (rows)
-* 		that the input matrix has, with which the output data was
-*		obtained.
+* @param int iSize - This argument will represent the total number of samples
+* 		(rows) from the variable "n" that were assigned to the current
+* 		GPU.
 *
 * @param int m - This argument will represent the total number of features
 * 		(independent variables) that the input matrix has, with which
 * 		the output data was obtained.
+*
+* @param int gpuStart - This argument will represent the identifier of the
+* 		initial row that was assigned to the current GPU with respect to
+* 		the total number of rows ("n") contained in the input matrixes
+* 		("X" and "Y").
 *
 * @param int activationFunctionToBeUsed - This argument will represent the
 * 					identifier of the desired activation
@@ -2200,18 +4158,18 @@ void predictSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *neur
 * @return void
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 24, 2022
-* LAST UPDATE: JANUARY 25, 2022
+* CREATION DATE: JANUARY 27, 2022
+* LAST UPDATE: N/A
 */
-__global__ static void getPredictSingleNeuronDNN_multiGPU(double *X, double *w_new, int n, int m, int activationFunctionToBeUsed, int isClassification, double threshold, int desiredValueForGroup1, int desiredValueForGroup2, double *f_x_tilde, double *A_u) {
+__global__ static void getPredictSingleNeuronDNN_multiGPU(double *X, double *w_new, int iSize, int m, int gpuStart, int activationFunctionToBeUsed, int isClassification, double threshold, int desiredValueForGroup1, int desiredValueForGroup2, double *f_x_tilde, double *A_u) {
 	// We obtain the GPU thread coordinates.
 	int idx = threadIdx.x + blockIdx.x * blockDim.x; // We obtain the GPU thread global coordinate.
 	int tid = threadIdx.x; // We obtain the GPU thread local coordinate
 	
 	// If the current GPU thread is within boundary, then proceed to work with the task. Otherwise, conclude your operation.
-	if (idx < n) {
+	if (idx < iSize) {
 		// We calculate the values of "f(x_tilde)".
-		getFxTilde_multiGPU(X, w_new, m, f_x_tilde, tid, idx);
+		getFxTilde_multiGPU(X, w_new, m, gpuStart, f_x_tilde, tid, idx);
 		
 		// We calculate the currently predicted output data made by the neuron and store it in "A_u" by applying the desired activation function to "f_x_tilde".
 		getActivationFunction_multiGPU(activationFunctionToBeUsed, f_x_tilde, A_u, idx); // We calculate A(u) and store it in the pointer variable "A_u".

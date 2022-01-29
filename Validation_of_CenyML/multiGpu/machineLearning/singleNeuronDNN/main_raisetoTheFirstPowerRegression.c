@@ -3,7 +3,7 @@
 * system to then extract all its data. Its input data will be saved into the
 * matrix "X" and its output data into the matrix "Y". Subsequently, a single
 * neuron in Deep Neural Network will be used to obtain the best fitting
-* coefficient values of such data by applying such algorithm with a single GPU.
+* coefficient values of such data by applying such algorithm with a multi GPU.
 * Then, some evaluation metrics will be applied. Next, two new .csv files will
 * be created to save: 1) the coefficient values that were obtained and 2) the
 * results obtained with the evaluation metrics. Finally, a plot of the predicted
@@ -22,7 +22,7 @@
 #include "../../../../CenyML_library_skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
 #include "../../../../CenyML_library_skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
 #include "../../../../CenyML_library_skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h" // library to use the regression evaluation metrics of CenyML.
-#include "../../../../CenyML_library_skeleton/CenyML_Library/multiGpu/machineLearning/CenyMLdeepLearning_MG.h" // library to use the deep learning algorithms of CenyML with GPU parallelism.
+#include "../../../../CenyML_library_skeleton/CenyML_Library/multiGpu/machineLearning/CenyMLdeepLearning_MG.h" // library to use the deep learning algorithms of CenyML with multi GPU parallelism.
 #include "../../../../CenyML_library_skeleton/otherLibraries/cuda/CUDA_check.h" // library to use a define function to allow the tracking of CUDA errors in the terminal window.
 #include <cuda_runtime.h>
 
@@ -50,7 +50,7 @@
 /**
 * This is the main function of the program. Here we will read a .csv file and
 * then apply the single neuron in Deep Neural Network on the input and output
-* data contained in it by applying such algorithm with a single GPU. In
+* data contained in it by applying such algorithm with a multi GPU. In
 * addition, some evaluation metrics will be applied to evaluate the model.
 * Finally, the results will be saved in two new .csv files and in a .png file
 * for further comparison and validation purposes.
@@ -67,7 +67,7 @@
 * @return 0
 *
 * @author Miranda Meza Cesar
-* CREATION DATE: JANUARY 24, 2022
+* CREATION DATE: JANUARY 28, 2022
 * LAST UPDATE: N/A
 */
 int main(int argc, char **argv) {
@@ -82,8 +82,8 @@ int main(int argc, char **argv) {
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
 	struct singleNeuronDnnStruct_multiGPU neuron1; // We create a singleNeuronDnnStruct_multiGPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
 	neuron1.firstGpuDevice = 1; // This variable will define the identifier of the first identifier of the GPU device that wants to be used to parallize the algorithms of the single neuron in DNN with multiple GPU.
-	neuron1.lastGpuDevice = 3; // This variable will define the identifier of the last identifier of the GPU device that wants to be used to parallize the algorithms of the single neuron in DNN with multiple GPU.
-	neuron1.maxUnrollingLoop = 10; // This variable will define the desired maximum Unrolling Loop strategy that wants to be applied within the Parallel Reduction and Unrolling Warp strategies (these are applied in the single neuron in DNN algorithm).
+	neuron1.lastGpuDevice = 1; // This variable will define the identifier of the last identifier of the GPU device that wants to be used to parallize the algorithms of the single neuron in DNN with multiple GPU.
+	neuron1.maxUnrollingLoop = 15; // This variable will define the desired maximum Unrolling Loop strategy that wants to be applied within the Parallel Reduction and Unrolling Warp strategies (these are applied in the single neuron in DNN algorithm).
 	neuron1.m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	neuron1.isInitial_w = 1; // This variable will indicate whether or not initial values will be given by the implementer (with value of 1) or if random ones are going to be used (with value of 0).
@@ -141,14 +141,14 @@ int main(int argc, char **argv) {
 	// ------------------------- DATA MODELING ----------------------- //
 	printf("Initializing CenyML single neuron in Deep Neural Network algorithm ...");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to apply the single neuron in Deep Neural Network with the input data (neuron1.X).
-	CHECK(cudaMallocHost((void **) &neuron1.w_best, (neuron1.m+1)*sizeof(double))); // We allocate the required CPU memory with page locked memory for asynchronous data transfer.
-	neuron1.w_new = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_new", which will store the last coefficient values identified by the neuron to be created, after its training process.
+	neuron1.w_best = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_best", which will store the best coefficient values identified by the neuron to be created, after its training process.
+	CHECK(cudaMallocHost((void **) &neuron1.w_new, (neuron1.m+1)*sizeof(double))); // We allocate the required CPU memory with page locked memory for asynchronous data transfer.
 	// We apply the single neuron in Deep Neural Network algorithm with respect to the input matrix "neuron1.X" and the result is stored in the memory location of the pointer "b".
 	getSingleNeuronDNN_multiGPU(&neuron1);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to apply the single neuron in Deep Neural Network with the input data (neuron1.X).
 	printf("CenyML single neuron in Deep Neural Network algorithm elapsed %f seconds.\n\n", elapsedTime);
-
-
+	
+	
 	// ------------ PREDICTIONS/VISUALIZATION OF THE MODEL ----------- //
 	// We predict the input values (neuron1.X) with the machine learning model that was obtained.
 	printf("Initializing CenyML predictions with the model that was obtained ...");
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
 	predictSingleNeuronDNN_multiGPU(&neuron1, Y_hat);
 	elapsedTime = seconds() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
 	printf("The CenyML predictions with the model that was obtained elapsed %f seconds.\n\n", elapsedTime);
-	/*
+	
 	// We apply the mean squared error metric.
 	printf("Initializing CenyML mean squared error metric ...\n");
 	startingTime = seconds(); // We obtain the reference time to count the elapsed time to calculate the mean squared error metric between "neuron1.Y" and "Y_hat".
@@ -319,15 +319,15 @@ int main(int argc, char **argv) {
 	free(neuron1.w_first);
 	free(csv1.rowsAndColumnsDimensions);
 	free(csv1.allData);
-	free(neuron1.Y);
-	free(neuron1.X);
+	CHECK(cudaFreeHost(neuron1.Y));
+	CHECK(cudaFreeHost(neuron1.X));
 	free(neuron1.w_best);
-	free(neuron1.w_new);
-	free(Y_hat);
+	CHECK(cudaFreeHost(neuron1.w_new));
+	CHECK(cudaFreeHost(Y_hat));
 	free(MSE);
 	free(Rsquared);
 	free(adjustedRsquared);
 	free(evaluationMetrics);
-	free(errorMessage);*/
+	free(errorMessage);
 	return (0); // end of program.
 }

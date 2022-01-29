@@ -50,19 +50,19 @@ struct singleNeuronDnnStruct_multiGPU {
 };
 
 extern "C" void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *);
-extern "C" __global__ static void getTransposeOfInputData_multiGPU(double *, int, int, int, int, double *);
-extern "C" __global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU(double *, double *, double *, int, int, int , double *, double *, double *, double *, double *);
-extern "C" __device__ static void getFxTilde_multiGPU(double *, double *, int, double *, int, int);
+extern "C" __global__ static void getTransposeOfInputData_multiGPU(double *, int, int, int, int, int, double *);
+extern "C" __global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU(double *, double *, double *, int, int, int, int, double *, double *, double *, double *, double *);
+extern "C" __device__ static void getFxTilde_multiGPU(double *, double *, int, int, double *, int, int);
 extern "C" __global__ static void getErrorAndUpdateWeightValues_multiGPUpart1(double *, double *, int, int, double *, double *, double *);
 extern "C"  __global__ static void getErrorAndUpdateWeightValues_multiGPUpart2(double *, int, int, int, int, int, double *);
 extern "C" __device__ static void getActivationFunction_multiGPU(int, double *, double *, int);
 extern "C" __device__ static void getDerivateOfActivationFunction_multiGPU(int, double *, double *, double *, int);
 extern "C" __device__ static void getNeuronAdjustedCoefficientOfDetermination_multiGPUPart1(double *, double *, double *, double *, int);
-extern "C" __global__ static void getParallelReduction_multiGPU(double *, double *, int, int);
-extern "C" __device__ static void getDeviceParallelReduction_multiGPU(double *, double *, int, int);
+extern "C" __global__ static void getParallelReduction_multiGPU(double *, double *, int, int, int);
+extern "C" __device__ static void getDeviceParallelReduction_multiGPU(double *, double *, int, int, int);
 extern "C" __global__ static void getNeuronAdjustedCoefficientOfDetermination_multiGPUvoidPart2(double *, int, double *, double *);
 extern "C" void predictSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *, double *);
-extern "C" __global__ static void getPredictSingleNeuronDNN_multiGPU(double *, double *, int, int, int, int, double, int, int, double *, double *);
+extern "C" __global__ static void getPredictSingleNeuronDNN_multiGPU(double *, double *, int, int, int, int, int, double, int, int, double *, double *);
 
 #else
 
@@ -100,19 +100,19 @@ struct singleNeuronDnnStruct_multiGPU {
 };
 
 void getSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *);
-__global__ static void getTransposeOfInputData_multiGPU(double *, int, int, int, int, double *);
-__global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU(double *, double *, double *, int, int, int , double *, double *, double *, double *, double *);
-__device__ static void getFxTilde_multiGPU(double *, double *, int, double *, int, int);
+__global__ static void getTransposeOfInputData_multiGPU(double *, int, int, int, int, int, double *);
+__global__ static void getFxTilde_Au_dAu_and_accuracyTermsPart1_multiGPU(double *, double *, double *, int, int, int, int, double *, double *, double *, double *, double *);
+__device__ static void getFxTilde_multiGPU(double *, double *, int, int, double *, int, int);
 __global__ static void getErrorAndUpdateWeightValues_multiGPUpart1(double *, double *, int, int, double *, double *, double *);
 __global__ static void getErrorAndUpdateWeightValues_multiGPUpart2(double *, int, int, int, int, int, double *);
 __device__ static void getActivationFunction_multiGPU(int, double *, double *, int);
 __device__ static void getDerivateOfActivationFunction_multiGPU(int, double *, double *, double *, int);
 __device__ static void getNeuronAdjustedCoefficientOfDetermination_multiGPUPart1(double *, double *, double *, double *, int);
-__global__ static void getParallelReduction_multiGPU(double *, double *, int, int);
-__device__ static void getDeviceParallelReduction_multiGPU(double *, double *, int, int);
+__global__ static void getParallelReduction_multiGPU(double *, double *, int, int, int);
+__device__ static void getDeviceParallelReduction_multiGPU(double *, double *, int, int, int);
 __global__ static void getNeuronAdjustedCoefficientOfDetermination_multiGPUvoidPart2(double *, int, double *, double *);
 void predictSingleNeuronDNN_multiGPU(struct singleNeuronDnnStruct_multiGPU *, double *);
-__global__ static void getPredictSingleNeuronDNN_multiGPU(double *, double *, int, int, int, int, double, int, int, double *, double *);
+__global__ static void getPredictSingleNeuronDNN_multiGPU(double *, double *, int, int, int, int, int, double, int, int, double *, double *);
 
 
 #endif

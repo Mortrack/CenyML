@@ -1,17 +1,16 @@
 /*
-* This program will read a .csv file containing the data of a linear
-* equation system to then extract all its data. Its input data will be
-* saved into the matrix "X" and then an output data (matrix "Y") will
-* be generated through this program. Subsequently, a single neuron in
-* Deep Neural Network will be used to obtain the best fitting
-* coefficient values of such data by applying such algorithm with CPU
-* parallelism through POSIX Threads. Then, some evaluation metrics will
-* be applied. Next, two new .csv files will be created to save: 1) the
-* coefficient values that were obtained and 2) the results obtained
-* with the evaluation metrics. Finally, a plot of the predicted data
-* by the obtained model with respect to the actual data, will be
-* plotted and saved into a .png file. Both the .csv files and this
-* .png file will serve for further comparisons and validation purposes.
+* This program will read a .csv file containing the data of a linear equation
+* system to then extract all its data. Its input data will be saved into the
+* matrix "X" and then an output data (matrix "Y") will be generated through this
+* program. Subsequently, a single neuron in Deep Neural Network will be used to
+* obtain the best fitting coefficient values of such data by applying such
+* algorithm with a single GPU. Then, some evaluation metrics will be applied.
+* Next, two new .csv files will be created to save: 1) the coefficient values
+* that were obtained and 2) the results obtained with the evaluation metrics.
+* Finally, a plot of the predicted data by the obtained model with respect to
+* the actual data, will be plotted and saved into a .png file. Both the .csv
+* files and this .png file will serve for further comparisons and validation
+* purposes.
 */
 
  // ------------------------------------------------- //
@@ -51,10 +50,9 @@
 * This is the main function of the program. Here we will read a .csv file and
 * then apply the single neuron in Deep Neural Network on the input data
 * contained in it and a generated output data by applying such algorithm with
-* CPU parallelism through POSIX Threads. In addition, some evaluation metrics
-* will be applied to evaluate the model. Finally, the results will be saved in
-* two new .csv files and in a .png file for further comparison and validation
-* purposes.
+* a single GPU. In addition, some evaluation metrics will be applied to evaluate
+* the model. Finally, the results will be saved in two new .csv files and in a
+* .png file for further comparison and validation purposes.
 *
 * @param int argc - This argument will posses the length number of what is
 *		    contained within the argument "*argv[]".
