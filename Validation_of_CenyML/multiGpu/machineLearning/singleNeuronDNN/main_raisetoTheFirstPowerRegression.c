@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
 	struct singleNeuronDnnStruct_multiGPU neuron1; // We create a singleNeuronDnnStruct_multiGPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
 	neuron1.firstGpuDevice = 1; // This variable will define the identifier of the first identifier of the GPU device that wants to be used to parallize the algorithms of the single neuron in DNN with multiple GPU.
-	neuron1.lastGpuDevice = 1; // This variable will define the identifier of the last identifier of the GPU device that wants to be used to parallize the algorithms of the single neuron in DNN with multiple GPU.
+	neuron1.lastGpuDevice = 4; // This variable will define the identifier of the last identifier of the GPU device that wants to be used to parallize the algorithms of the single neuron in DNN with multiple GPU.
 	neuron1.maxUnrollingLoop = 15; // This variable will define the desired maximum Unrolling Loop strategy that wants to be applied within the Parallel Reduction and Unrolling Warp strategies (these are applied in the single neuron in DNN algorithm).
 	neuron1.m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.

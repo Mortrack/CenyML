@@ -355,7 +355,7 @@ void getSingleNeuronDNN_singleGPU(struct singleNeuronDnnStruct_singleGPU *neuron
 		//	  he changes the number of input samples given to this function.
 		if ((grid_n.x/numberOfUnrollingLoop1) > 1) {
 			if (numberOfUnrollingLoop1 == 1) {
-				printf("The device %d WILL NOT apply the \"Unrolling Loop Strategy\" due to the number of samples given; number of gpus chosen and/or the defined maximum unrolling loop. Please assign a higher number of samples and/or decrease the number of selected gpus so that (\"samples\"/((\"number of gpus\")(\"number of unrolling loop\")) >= 2. \n", neuron->gpuDevice);
+				printf("The device %d WILL NOT apply the \"Unrolling Loop Strategy\" due to the number of samples given and/or the defined maximum unrolling loop. Please assign a higher number of samples and/or change the number defined for the unrolling loop strategy so that (\"samples\"/\"number of unrolling loop\") >= 2. \n", neuron->gpuDevice);
 			} else {
 				printf("The device %d will apply the \"Unrolling%d Loop Strategy\" for each case applicable (the current maximum limit is %d).\n", neuron->gpuDevice, numberOfUnrollingLoop1, neuron->maxUnrollingLoop);
 			}

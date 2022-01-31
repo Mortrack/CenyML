@@ -19,12 +19,12 @@
  // ------------------------------------------------- //
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../../CenyML library skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
-#include "../../../../CenyML library skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
-#include "../../../../CenyML library skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
-#include "../../../../CenyML library skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
-#include "../../../../CenyML library skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h" // library to use the regression evaluation metrics of CenyML.
-#include "../../../../CenyML library skeleton/CenyML_Library/cpuParallel/machineLearning/CenyMLdeepLearning_PC.h" // library to use the deep learning algorithms of CenyML with CPU parallelism.
+#include "../../../../CenyML_library_skeleton/otherLibraries/time/mTime.h" // library to count the time elapsed in Linux Ubuntu.
+#include "../../../../CenyML_library_skeleton/otherLibraries/csv/csvManager.h" // library to open and create .csv files.
+#include "../../../../CenyML_library_skeleton/otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
+#include "../../../../CenyML_library_skeleton/otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
+#include "../../../../CenyML_library_skeleton/CenyML_Library/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h" // library to use the regression evaluation metrics of CenyML.
+#include "../../../../CenyML_library_skeleton/CenyML_Library/cpuParallel/machineLearning/CenyMLdeepLearning_PC.h" // library to use the deep learning algorithms of CenyML with CPU parallelism.
 
 
 // ---------------------------------------------- //

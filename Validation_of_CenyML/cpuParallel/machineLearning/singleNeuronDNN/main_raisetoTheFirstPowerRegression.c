@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 	int columnIndexOfOutputDataInCsvFile = 2; // This variable will contain the index of the first column in which we will specify the location of the real output values (Y).
 	int columnIndexOfInputDataInCsvFile = 3; // This variable will contain the index of the first column in which we will specify the location of the input values (X).
 	struct singleNeuronDnnStruct_parallelCPU neuron1; // We create a singleNeuronDnnStruct_parallelCPU structure variable to manage the data input and output data of the single neuron in DNN that will be created.
-	neuron1.cpuThreads = 15; // This variable will define the number of CPU threads that wants to be used to parallelize the training and predictions made by the neuron to be created.
+	neuron1.cpuThreads = 18; // This variable will define the number of CPU threads that wants to be used to parallelize the training and predictions made by the neuron to be created.
 	neuron1.m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	neuron1.isInitial_w = 1; // This variable will indicate whether or not initial values will be given by the implementer (with value of 1) or if random ones are going to be used (with value of 0).
