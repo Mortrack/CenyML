@@ -37,7 +37,7 @@ NVCC = ${CUDA_PATH}/bin/nvcc
 
 # Monitor and compile all the files that are required for the target program to function.
 # ----- THIS IS THE COMMAND TO COMPILE ALL THE MAIN FILES ----- #
-main: main_raisetoTheFirstPowerRegression.o main_firstOrderExponentialRegression.o main_hyperbolicTangentRegression.o main_linearClassification.o main_logisticRegression.o main_raiseToTheFifthPowerRegression.o main_raisetoTheFirstPowerRegression2.o main_raiseToTheFourthPowerRegression.o main_raiseToTheSecondPowerRegression.o main_raiseToTheSixthPowerRegression.o main_raiseToTheThirdPowerRegression.o main_secondOrderExponentialRegression.o main_simpleLinearRegressionWithRelu.o Time.o csvManager.o pbPlots.o supportLib.o CUDA_check.o CenyMLregressionEvalMet.o CenyMLclassificationEvalMet.o CenyMLdeepLearning_MG.o
+main: main_raisetoTheFirstPowerRegression.o main_firstOrderExponentialRegression.o main_hyperbolicTangentRegression.o main_linearClassification.o main_logisticRegression.o main_raiseToTheFifthPowerRegression.o main_raisetoTheFirstPowerRegression2.o main_raiseToTheFourthPowerRegression.o main_raiseToTheSecondPowerRegression.o main_raiseToTheSixthPowerRegression.o main_raiseToTheThirdPowerRegression.o main_secondOrderExponentialRegression.o main_simpleLinearRegressionWithRelu.o mTime.o csvManager.o pbPlots.o supportLib.o CUDA_check.o CenyMLregressionEvalMet.o CenyMLclassificationEvalMet.o CenyMLdeepLearning_MG.o
 	$(NVCC) $(gpuOptimization) main_raisetoTheFirstPowerRegression.o mTime.o csvManager.o pbPlots.o supportLib.o CUDA_check.o CenyMLregressionEvalMet.o CenyMLdeepLearning_MG.o $(TARGETFLAGS) main_raisetoTheFirstPowerRegression.x
 	$(NVCC) $(gpuOptimization) main_firstOrderExponentialRegression.o mTime.o csvManager.o pbPlots.o supportLib.o CUDA_check.o CenyMLregressionEvalMet.o CenyMLdeepLearning_MG.o $(TARGETFLAGS) main_firstOrderExponentialRegression.x
 	$(NVCC) $(gpuOptimization) main_hyperbolicTangentRegression.o mTime.o csvManager.o pbPlots.o supportLib.o CUDA_check.o CenyMLregressionEvalMet.o CenyMLdeepLearning_MG.o $(TARGETFLAGS) main_hyperbolicTangentRegression.x
@@ -93,7 +93,7 @@ main_simpleLinearRegressionWithRelu.o: main_simpleLinearRegressionWithRelu.c
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) main_simpleLinearRegressionWithRelu.c
 	
 # ----- THESE ARE THE COMMANDS THAT MONITOR ANY CHANGES TO ANY INCLUDED FILE ----- #
-Time.o: $(Time_c) $(Time_h)
+mTime.o: $(Time_c) $(Time_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(Time_c)
 
 csvManager.o: $(csvManager_c) $(csvManager_h)

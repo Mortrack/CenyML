@@ -1,11 +1,70 @@
-# Create the following directory variables.
-oLib = ../../../../"CenyML library skeleton"/otherLibraries
-cM = ../../../../"CenyML library skeleton"/CenyML_Library
-time = mTime.c # header file to measure time in Linux Ubuntu
-#time = mTimeTer.c # header file to measure time in Cygwin terminal window
 
-main.x:
-	gcc main_linearKernel.c $(oLib)/time/$(time) $(oLib)/csv/csvManager.c $(oLib)/pbPlots/pbPlots.c $(oLib)/pbPlots/supportLib.c $(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.c $(cM)/cpuSequential/machineLearning/CenyMLclassification.c -O3 -o main_linearKernel.x -lm
-	gcc main_polynomialKernel.c $(oLib)/time/$(time) $(oLib)/csv/csvManager.c $(oLib)/pbPlots/pbPlots.c $(oLib)/pbPlots/supportLib.c $(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.c $(cM)/cpuSequential/machineLearning/CenyMLclassification.c -O3 -o main_polynomialKernel.x -lm
-	gcc main_logisticKernel.c $(oLib)/time/$(time) $(oLib)/csv/csvManager.c $(oLib)/pbPlots/pbPlots.c $(oLib)/pbPlots/supportLib.c $(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.c $(cM)/cpuSequential/machineLearning/CenyMLclassification.c -O3 -o main_logisticKernel.x -lm
-	gcc main_gaussianKernel.c $(oLib)/time/$(time) $(oLib)/csv/csvManager.c $(oLib)/pbPlots/pbPlots.c $(oLib)/pbPlots/supportLib.c $(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.c $(cM)/cpuSequential/machineLearning/CenyMLclassification.c -O3 -o main_gaussianKernel.x -lm
+# Directory path from the root of the project to the additionally added library files to complement the functionalities of the CenyML library.
+oLib = CenyML_library_skeleton/otherLibraries
+# Directory path from the root of the project to the CenyML library files location.
+cM = CenyML_library_skeleton/CenyML_Library
+
+# Set project directories for the Makefile to consider them.
+Time_c = $(addprefix ../../../../,$(oLib)/time/mTime.c)
+Time_h = $(addprefix ../../../../,$(oLib)/time/mTime.h)
+csvManager_c = $(addprefix ../../../../,$(oLib)/csv/csvManager.c)
+csvManager_h = $(addprefix ../../../../,$(oLib)/csv/csvManager.h)
+pbPlots_c = $(addprefix ../../../../,$(oLib)/pbPlots/pbPlots.c)
+pbPlots_h = $(addprefix ../../../../,$(oLib)/pbPlots/pbPlots.h)
+supportLib_c = $(addprefix ../../../../,$(oLib)/pbPlots/supportLib.c)
+supportLib_h = $(addprefix ../../../../,$(oLib)/pbPlots/supportLib.h)
+CenyMLclassificationEvalMet_c = $(addprefix ../../../../,$(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.c)
+CenyMLclassificationEvalMet_h = $(addprefix ../../../../,$(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.h)
+CenyMLclassification_c = $(addprefix ../../../../,$(cM)/cpuSequential/machineLearning/CenyMLclassification.c)
+CenyMLclassification_h = $(addprefix ../../../../,$(cM)/cpuSequential/machineLearning/CenyMLclassification.h)
+
+# The following variables are to tell the compiler the desired flags for the compilation process.
+OPTIMIZATIONLEVEL = -O3
+SOFTWAREFLAGS = -lm
+DEPENDENCYFLAGS = $(OPTIMIZATIONLEVEL) $(SOFTWAREFLAGS) -c
+TARGETFLAGS = $(OPTIMIZATIONLEVEL) $(SOFTWAREFLAGS) -o
+
+# Monitor and compile all the files that are required for the target program to function.
+# ----- THIS IS THE COMMAND TO COMPILE ALL THE MAIN FILES ----- #
+main: main_linearKernel.o main_polynomialKernel.o main_logisticKernel.o main_gaussianKernel.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLclassificationEvalMet.o CenyMLclassification.o
+	gcc main_linearKernel.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLclassificationEvalMet.o CenyMLclassification.o $(TARGETFLAGS) main_linearKernel.x
+	gcc main_polynomialKernel.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLclassificationEvalMet.o CenyMLclassification.o $(TARGETFLAGS) main_polynomialKernel.x
+	gcc main_logisticKernel.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLclassificationEvalMet.o CenyMLclassification.o $(TARGETFLAGS) main_logisticKernel.x
+	gcc main_gaussianKernel.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLclassificationEvalMet.o CenyMLclassification.o $(TARGETFLAGS) main_gaussianKernel.x
+	
+# ----- THESE ARE THE COMMANDS THAT MONITOR ANY CHANGES TO ANY MAIN FILE ----- #
+main_linearKernel.o: main_linearKernel.c
+	gcc $(DEPENDENCYFLAGS) main_linearKernel.c
+
+main_polynomialKernel.o: main_polynomialKernel.c
+	gcc $(DEPENDENCYFLAGS) main_polynomialKernel.c
+
+main_logisticKernel.o: main_logisticKernel.c
+	gcc $(DEPENDENCYFLAGS) main_logisticKernel.c
+
+main_gaussianKernel.o: main_gaussianKernel.c
+	gcc $(DEPENDENCYFLAGS) main_gaussianKernel.c
+	
+# ----- THESE ARE THE COMMANDS THAT MONITOR ANY CHANGES TO ANY INCLUDED FILE ----- #
+mTime.o: $(Time_c) $(Time_h)
+	gcc $(DEPENDENCYFLAGS) $(Time_c)
+
+csvManager.o: $(csvManager_c) $(csvManager_h)
+	gcc $(DEPENDENCYFLAGS) $(csvManager_c)
+
+pbPlots.o: $(pbPlots_c) $(pbPlots_h)
+	gcc $(DEPENDENCYFLAGS) $(pbPlots_c)
+
+supportLib.o: $(supportLib_c) $(supportLib_h)
+	gcc $(DEPENDENCYFLAGS) $(supportLib_c)
+
+CenyMLclassificationEvalMet.o: $(CenyMLclassificationEvalMet_c) $(CenyMLclassificationEvalMet_h)
+	gcc $(DEPENDENCYFLAGS) $(CenyMLclassificationEvalMet_c)
+	
+CenyMLclassification.o: $(CenyMLclassification_c) $(CenyMLclassification_h)
+	gcc $(DEPENDENCYFLAGS) $(CenyMLclassification_c)
+
+# ----- THIS COMMAND IS USED TO CLEAN/REMOVE ALL THE COMPILATION GENERATED FILES ----- #
+clean:
+	rm *.o *.x
+

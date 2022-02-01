@@ -22,7 +22,7 @@ TARGETFLAGS = $(OPTIMIZATIONLEVEL) $(SOFTWAREFLAGS) -o
 
 # Monitor and compile all the files that are required for the target program to function.
 # ----- THIS IS THE COMMAND TO COMPILE ALL THE MAIN FILES ----- #
-main.x: main.o Time.o csvManager.o CenyMLfeatureScaling.o
+main.x: main.o mTime.o csvManager.o CenyMLfeatureScaling.o
 	gcc main.o mTime.o csvManager.o CenyMLfeatureScaling.o $(TARGETFLAGS) main.x
 
 # ----- THESE ARE THE COMMANDS THAT MONITOR ANY CHANGES TO ANY MAIN FILE ----- #
@@ -30,7 +30,7 @@ main.o: main.c
 	gcc $(DEPENDENCYFLAGS) main.c
 	
 # ----- THESE ARE THE COMMANDS THAT MONITOR ANY CHANGES TO ANY INCLUDED FILE ----- #
-Time.o: $(Time_c) $(Time_h)
+mTime.o: $(Time_c) $(Time_h)
 	gcc $(DEPENDENCYFLAGS) $(Time_c)
 
 csvManager.o: $(csvManager_c) $(csvManager_h)
