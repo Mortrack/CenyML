@@ -1,6 +1,6 @@
 # Create the following directory variables.
-oLib = ../../../../../../"CenyML library skeleton"/otherLibraries
-cM = ../../../../../../"CenyML library skeleton"/CenyML_Library
+oLib = ../../../../../../"CenyML_library_skeleton"/otherLibraries
+cM = ../../../../../../"CenyML_library_skeleton"/CenyML_Library
 time = mTime.c # header file to measure time in Linux Ubuntu
 #time = mTimeTer.c # header file to measure time in Cygwin terminal window
 
