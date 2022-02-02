@@ -1,2 +1,2 @@
 id,getL2Normalization_CenyML,getL2Normalization_scikitLearn,getMinMaxNormalization_CenyML,getMinMaxNormalization_scikitLearn,getZscoreNormalization_CenyML,getZscoreNormalization_scikitLearn
-1,5000000,5000000,5000000,5000000,5000000,5000000
+30,5000000,5000000,5000000,5000000,5000000,5000000

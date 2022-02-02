@@ -1,2 +1,2 @@
-id,mean_CenyML,mean_Numpy,median_CenyML,median_NumPy,quickMode_CenyML,mode_statistics,quickSort_CenyML,quickSort_NumPy,standardDeviation_CenyML,standardDeviation_NumPy,variance_CenyML,variance_NumPy
-3.02765,0.004693,0.000792,0.001866,0.004376,0.00204,0.006356,0.000925,0.001837,0.010095,0.007894,0.009972,0.00884
+id,mean_CenyML,mean_Numpy,95meanIntervals_CenyML,99meanIntervals_CenyML,99_9meanIntervals_CenyML,median_CenyML,median_NumPy,quickMode_CenyML,mode_statistics,quickSort_CenyML,quickSort_NumPy,standardDeviation_CenyML,standardDeviation_NumPy,variance_CenyML,variance_NumPy
+8.803408,0.004506,0.001161,0.000672,0.000763,0.00078,0.002522,0.004822,0.001622,0.002763,0.001843,0.003192,0.009895,0.011904,0.010791,0.017443
