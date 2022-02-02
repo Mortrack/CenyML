@@ -74,7 +74,7 @@ print("")
 # Compare the results from the CenyML Lybrary and the ones obtained in python.
 print("The results will begin their comparation process...")
 startingTime = time.time()
-epsilon = 3.01e-7
+epsilon = 3.01e-76
 isMatch = 1
 for currentColumn in range(0, len(dataset_mPES100S100SPAPS.iloc[0]) ):
     differentiation = abs(dataset_CenyML_medianResults.iloc[0][currentColumn] - medianValues[currentColumn])
