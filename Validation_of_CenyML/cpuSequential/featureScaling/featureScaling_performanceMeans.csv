@@ -1,2 +1,2 @@
 id,getL2Normalization_CenyML,reverseL2Normalization_CenyML,getL2Normalization_scikitLearn,getMinMaxNormalization_CenyML,reverseMinMaxNormalization_CenyML,getMinMaxNormalization_scikitLearn,getZscoreNormalization_CenyML,reverseZscoreNormalization_CenyML,getZscoreNormalization_scikitLearn
-15.5,0.032149,0.024345,0.035563,0.036017,0.023771,0.108914,0.042662,0.024179,0.179967
+15.5,0.032149,0.024345,0.035563,0.036017,0.023771,0.112813,0.04412,0.025018,0.186045
