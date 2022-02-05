@@ -19,6 +19,10 @@ pbPlots_c = $(oLib)/pbPlots/pbPlots.c
 pbPlots_h = $(oLib)/pbPlots/pbPlots.h
 supportLib_c = $(oLib)/pbPlots/supportLib.c
 supportLib_h = $(oLib)/pbPlots/supportLib.h
+CenyMLstatistics_c = $(cM)/cpuSequential/statistics/CenyMLstatistics.c
+CenyMLstatistics_h = $(cM)/cpuSequential/statistics/CenyMLstatistics.h
+CenyMLfeatureScaling_c = $(cM)/cpuSequential/featureScaling/CenyMLfeatureScaling.c
+CenyMLfeatureScaling_h = $(cM)/cpuSequential/featureScaling/CenyMLfeatureScaling.h
 CenyMLregressionEvalMet_c = $(cM)/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.c
 CenyMLregressionEvalMet_h = $(cM)/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h
 CenyMLclassificationEvalMet_c = $(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.c
@@ -42,8 +46,8 @@ NVCC = ${CUDA_PATH}/bin/nvcc
 
 # Monitor and compile all the files that are required for the target program to function.
 # ----- THIS IS THE COMMAND TO COMPILE ALL THE MAIN FILES ----- #
-main.x: main.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLregressionEvalMet.o CenyMLclassificationEvalMet.o CenyMLdeepLearning.o CenyMLdeepLearning_PC.o CenyMLdeepLearning_SG.o CenyMLdeepLearning_MG.o
-	$(NVCC) $(gpuOptimization) main.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLregressionEvalMet.o CenyMLclassificationEvalMet.o CenyMLdeepLearning.o CenyMLdeepLearning_PC.o CenyMLdeepLearning_SG.o CenyMLdeepLearning_MG.o $(TARGETFLAGS) main.x
+main.x: main.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLstatistics.o CenyMLfeatureScaling.o CenyMLregressionEvalMet.o CenyMLclassificationEvalMet.o CenyMLdeepLearning.o CenyMLdeepLearning_PC.o CenyMLdeepLearning_SG.o CenyMLdeepLearning_MG.o
+	$(NVCC) $(gpuOptimization) main.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLstatistics.o CenyMLfeatureScaling.o CenyMLregressionEvalMet.o CenyMLclassificationEvalMet.o CenyMLdeepLearning.o CenyMLdeepLearning_PC.o CenyMLdeepLearning_SG.o CenyMLdeepLearning_MG.o $(TARGETFLAGS) main.x
 
 # ----- THESE ARE THE COMMANDS THAT MONITOR ANY CHANGES TO ANY MAIN FILE ----- #
 main.o: main.c
@@ -61,6 +65,12 @@ pbPlots.o: $(pbPlots_c) $(pbPlots_h)
 
 supportLib.o: $(supportLib_c) $(supportLib_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(supportLib_c)
+
+CenyMLstatistics.o: $(CenyMLstatistics_c) $(CenyMLstatistics_h)
+	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLstatistics_c)
+
+CenyMLfeatureScaling.o: $(CenyMLfeatureScaling_c) $(CenyMLfeatureScaling_h)
+	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLfeatureScaling_c)
 
 CenyMLregressionEvalMet.o: $(CenyMLregressionEvalMet_c) $(CenyMLregressionEvalMet_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLregressionEvalMet_c)

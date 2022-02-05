@@ -15,14 +15,16 @@ Inspired in the "Mortrack_ML_Library", CenyML provides a Machine Learning librar
 # How to explore the CenyML project files.
 The following will describe the general purpose of the folders that are located in the current directory address:
 
-- **/'CenyML library skeleton'**:
+- **/'CenyML\_library\_skeleton'**:
     - This folder will provide a skeleton of the structure or framework that is suggested for the user to use for the development of any desired program that uses the CenyML C library in it.
     - There, more information about the CenyML library documentation will be available, which will explain how to use the CenyML library and how to compile it in the skeleton project.
     - The user will be able to find more information related to any external libraries that have been implemented in this skeleton folder in order to complement the CenyML functionalities.
 - **/databases**:
     - More information about the databases generated for the validation of the CenyML project and the databases themselves can be found there.
-- **/'Validation of CenyML'**:
+- **/'Validation\_of\_CenyML'**:
     - Here are all the validation files that have been developed and where additional information about them can be found. In addition, please note that these validation files also contribute to serve as code examples of how to apply each of the functions provided by the CenyML project.
+- **/'ArduinoExample'**:
+    - This folder contains a simple application example of using the CenyML library in an Arduino UNO to train a linear regression model, make predictions and apply a validation code for it.
 
 # Cite this project in yours!
 TODO: Place APA citation text.

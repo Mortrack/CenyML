@@ -13,8 +13,12 @@
 #include "otherLibraries/csv/csvManager.h" // library to open and create .csv files.
 #include "otherLibraries/pbPlots/pbPlots.h" // library to generate plots v0.1.9.0
 #include "otherLibraries/pbPlots/supportLib.h"  // library required for "pbPlots.h" v0.1.9.0
+#include "CenyML_Library/cpuSequential/statistics/CenyMLstatistics.h" // library to use the statistics methods of CenyML.
+#include "CenyML_Library/cpuSequential/featureScaling/CenyMLfeatureScaling.h" // library to use the feature scaling methods of CenyML.
 #include "CenyML_Library/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h" // library to use the regression evaluation metrics of CenyML.
 #include "CenyML_Library/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.h" // library to use the classification evaluation metrics of CenyML.
+#include "CenyML_Library/cpuSequential/machineLearning/CenyMLregression.h" // library to use the regression algorithms of CenyML.
+#include "CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.h" // library to use the classification algorithms of CenyML.
 #include "CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h" // library to use the deep learning algorithms of CenyML.
 #include "CenyML_Library/cpuParallel/machineLearning/CenyMLdeepLearning_PC.h" // library to use the deep learning algorithms of CenyML with CPU parallelism.
 #include "CenyML_Library/singleGpu/machineLearning/CenyMLdeepLearning_SG.h" // library to use the deep learning algorithms of CenyML with GPU parallelism.
