@@ -104,6 +104,10 @@ void loop() {
   Serial.print(elapsedTime);
   Serial.print(" milliseconds.\n\n");
   Serial.print("The program has been successfully completed!\n");
+
+  // Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.
+  free(b);
+  free(Y_hat);
   Serial.print("----------------------------------------------------------------------\n");
   Serial.print("----------------------------------------------------------------------\n");
   
