@@ -1,5 +1,5 @@
-# /'ArduinoExample'
-This folder contains a simple application example of using the CenyML library in an Arduino UNO to train a linear regression model, make predictions and apply a validation code for it.
+# /'Arduino\_Example'
+This folder contains all the available application examples of using the CenyML library in an Arduino UNO to train a machine learning model; make predictions and; in some cases, apply a validation code for it.
 
 # How to explore the CenyML project files.
 The following will describe the general purpose of the folders that are located in the current directory address:

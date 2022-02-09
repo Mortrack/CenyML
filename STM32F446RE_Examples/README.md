@@ -1,13 +1,13 @@
-# /'STM32F446RE_Examples'
-This folder contains some simple application examples of using the CenyML library in an STM32F446RE ARM microprocessor to train some machine learning models, make predictions and apply a validation code for them in some cases.
+# /'STM32F446RE\_Examples'
+This folder contains some simple application examples of using the CenyML library in an STM32F446RE ARM microprocessor to train some machine learning models; make predictions and; in some cases, apply a validation code for them.
 
 # How to explore the CenyML project files.
 The following will describe the general purpose of the folders that are located in the current directory address:
 
 - **/SimpleLinearRegression/**:
-    - This folder will contain all the files that were coded/used in order to apply a simple linear regression model in the STM32F446RE microprocessor with the CenyML library.
+    - This folder will contain all the files that were coded in order to apply a simple linear regression model in the STM32F446RE microprocessor with the CenyML library.
 - **/SingleNeuronInDNN/**:
-    - This folder will contain all the files that were coded/used in order to solve a linear regression system with a single neuron in a Deep Neural Network model in the STM32F446RE microprocessor with the CenyML library.
+    - This folder will contain all the files that were coded in order to solve a linear regression system with a single neuron in a Deep Neural Network model in the STM32F446RE microprocessor with the CenyML library.
 
 # How to excecute this program
 
@@ -55,8 +55,8 @@ $ sudo sh ./st-stm32cubeide_1.8.0_11526_20211125_0815_amd64.deb_bundle.sh
 5. Click the "Main" tab.
 	1. Click in the hyperlink "Build Configuration", in the left list of the window that should have appeared.
 	2. Click the dropdown arrow of the menu text "C/C++ Build" and then select the "Settings" options.
-	3. In the main window, select the "MCU Settings" and then check the option "Use float with printf from newlib-nano (-u \_printf\_float)".
-	4. In the main window, selected the "Optimizations" option of the "MCU GCC Compiler" dropdown list. Then, select the option "Optimize most (-O3)" in "Optimization level".
+	3. In the content of such window, select the "MCU Settings" and then check the option "Use float with printf from newlib-nano (-u \_printf\_float)".
+	4. In the content of such window, selected the "Optimizations" option of the "MCU GCC Compiler" dropdown list. Then, select the option "Optimize most (-O3)" in "Optimization level".
 
 6. Click the "Apply" button and close the windows that opened for this configuration settings.
 

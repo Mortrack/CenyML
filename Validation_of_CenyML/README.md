@@ -1,18 +1,25 @@
-# /'Validation of CenyML'
+# /'Validation\_of\_CenyML'
 This folder contains all the files that were used to validate the CenyML project and that may also serve as code example files for the application of each of the functions contained in such project.
 
 # How to explore the CenyML project files.
 The following will describe the general purpose of the folders that are located in the current directory address:
 
+- **/cpuParallel/**:
+    - This folder will contain all the files that were made in order to validate and measure the performance all of the CenyML functions in their CPU parallel version.
 - **/cpuSequential/**:
-    - This folder will contain all the files that were made in order to validate and compare the performance all of the CenyML functions but in their sequential version.
-**NOTE:** We refer by sequential to computational programs that use only 1 CPU thread to excecute them.
+    - This folder will contain all the files that were made in order to validate and compare the performance all of the CenyML functions in their sequential version with respect to several other reference libraries.
+- **/multiGpu/**:
+    - This folder will contain all the files that were made in order to validate and measure the performance all of the CenyML functions in their multiple GPU parallel version.
+- **/singleGpu/**:
+    - This folder will contain all the files that were made in order to validate and measure the performance all of the CenyML functions in their single GPU parallel version.
+
+**NOTE:** We refer by sequential to computational programs that use only 1 CPU thread to excecute them. Conversely, parallel programs use more than 1 CPU thread to execute several instructions at the same time, which is well known to give faster results than the sequential programs.
 
 # Requirements to be able to compile any of these validation programs
 The following will describe all the requirements that the user has to meet in order to be able to obtain the same results as described in the CenyML project.
 
 ## Programming languages used
-The Python codes developed were compiled using the Spyder IDE v5.2.0 with Python v3.9.7. On the other hand, the CenyML programs were compiled in C language with the compiler GCC version 10.2.0 with -O3 code optimization. In addition, the Nvidia CUDA Compiler (NVCC) in its version 11.2.142 with -O3 code optimization was used for GPU programming.
+The Python codes developed were compiled using the Spyder IDE v5.2.0 with Python v3.9.7. On the other hand, the CenyML programs were compiled in C language with the compiler GCC version 9.3.0 with -O3 code optimization. In addition, POSIX threads were used for CPU parallelism and the Nvidia CUDA Compiler (NVCC) in its version 11.4 with -O3 code optimization was used for GPU programming.
 
 ## External libraries and packages used
 The following list will detail the version of the external libraries and packages that were used:
@@ -32,7 +39,7 @@ The following list will detail the version of the external libraries and package
     - pbPlots --> version 0.1.9.0
 
 ### How to install the external libraries and packages that are required
-To install the ones for Python, make sure you have installed anaconda to then open its command window terminal. Then, type in the following commands in that terminal window:
+To install the libraries for Python, make sure you have installed anaconda and then type in the following commands in any terminal window:
 
 ```console
 $ conda update conda
@@ -53,7 +60,7 @@ $ spyder
 ``` 
 
 
-**NOTE:** If you get the error "Could not open lock file /var/lib/apt/lists/lock - open (13: Permission denied)" while trying to execute the command "apt update", then to fix this what i did was to type the following commands in the terminal window in which the error happened:
+**NOTE:** If you get the error "Could not open lock file /var/lib/apt/lists/lock - open (13: Permission denied)" while trying to execute the command "apt update", then to fix this what I did was to type the following commands on the terminal window in which the error happened:
 
 ```console
 $ sudo fuser -vki /var/lib/dpkg/lock-frontend
@@ -63,9 +70,9 @@ $ sudo apt autoremove
 ``` 
 
 
-With the last command ($ spyder), the Spyder IDE will be opened there you will have to open the desired Python file to then compile and run it there.
+With the last command ($ spyder), the Spyder IDE will be opened and there you will have to open the desired Python file to then compile and run it.
 
-Moreover, all the libraries used in C were developed within the framework of the CenyML project, with the exception of the pbPlots library. For that particular library, the following must be made:
+Moreover, all the libraries used in C were developed as part of the CenyML project, with the exception of the pbPlots library. For that particular library, the following must be made:
 
 1. Download the pbPlots library version 0.1.9.0 --> https://github.com/InductiveComputerScience/pbPlots/archive/refs/tags/v0.1.9.0.zip
 2. Unzip the downloaded file and then enter its folder named "C".
