@@ -1,0 +1,3 @@
+id,mean_CenyML,mean_Numpy,95meanIntervals_CenyML,99meanIntervals_CenyML,99_9meanIntervals_CenyML,median_CenyML,median_NumPy,quickMode_CenyML,mode_statistics,quickSort_CenyML,quickSort_NumPy,standardDeviation_CenyML,standardDeviation_NumPy,variance_CenyML,variance_NumPy
+11.359659,0.08278,0.098231,0.013521,0.013185,0.013211,0.241792,0.057626,0.019183,0.081761,0.227577,0.191227,0.18494,0.728195,0.184335,0.726142
+19.640341,0.087019,0.099322,0.014153,0.013902,0.013945,0.244164,0.062162,0.020709,0.08436,0.229311,0.194229,0.194248,0.739391,0.194485,0.74255

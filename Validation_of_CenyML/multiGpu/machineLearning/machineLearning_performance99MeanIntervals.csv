@@ -1,0 +1,3 @@
+id,getSimpleLinearRegression_singleNeuronInDNN_1GPU,predictSimpleLinearRegression_singleNeuronInDNN_1GPU,getSimpleLinearRegression_singleNeuronInDNN_2GPU,predictSimpleLinearRegression_singleNeuronInDNN_2GPU,getSimpleLinearRegression_singleNeuronInDNN_3GPU,predictSimpleLinearRegression_singleNeuronInDNN_3GPU,getSimpleLinearRegression_singleNeuronInDNN_4GPU,predictSimpleLinearRegression_singleNeuronInDNN_4GPU
+11.359659,45.116837,0.009665,25.503367,0.01292,19.70581,0.015591,17.12867,0.019266
+19.640341,45.164467,0.009947,25.54823,0.013234,19.778058,0.015857,17.223694,0.019832

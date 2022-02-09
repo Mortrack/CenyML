@@ -1,2 +1,0 @@
-id,mean_CenyML,mean_Numpy,median_CenyML,median_NumPy,quickMode_CenyML,quickSort_CenyML,quickSort_NumPy,mode_statistics,standardDeviation_CenyML,standardDeviation_NumPy,variance_CenyML,variance_NumPy
-1,100000000,100000000,5000000,5000000,500000,4000000,4000000,500000,100000000,100000000,100000000,100000000
