@@ -108,7 +108,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
 	struct singleNeuronDnnStruct neuron1; // We create a singleNeuronDnnStruct structure variable to manage the data input and output data of the single neuron in DNN that will be created.
-	neuron1.n = 1900; // This variable will contain the number of samples that the input matrix is expected to have.
+	neuron1.n = 1990; // This variable will contain the number of samples that the input matrix is expected to have.
 	neuron1.m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
 	neuron1.p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
 	neuron1.isInitial_w = 1; // This variable will indicate whether or not initial values will be given by the implementer (with value of 1) or if random ones are going to be used (with value of 0).
