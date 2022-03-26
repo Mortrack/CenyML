@@ -34,7 +34,7 @@ void loop() {
   Serial.print("----------------------------------------------------------------------\n");
   
   // --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-  int n = 10; // This variable will contain the number of samples that the system under study will have.
+  int n = 115; // This variable will contain the number of samples that the system under study will have.
   int m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
   int p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
   float b_ideal[2]; // This variable will be used to contain the ideal coefficient values that the model to be trained should give.
@@ -43,13 +43,15 @@ void loop() {
 
   
   // ---------------------- IMPORT DATA TO USE --------------------- //
-  // We declare the input and output variables with the exact same input and output data as in the CenyML linear regression equation system that has 10 samples.
-  float X[n] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100}; // This variable contains the input data of the system under study.
-  float Y[n] = {18, 26, 34, 42, 50, 58, 66, 74, 82, 90}; // This variable ocntains the expected/real output data of the system under study.
+  // We declare the input and output variables with the exact same input and output data as in the CenyML linear regression equation system that has 10 samples, but repeated several times until the value of "n" is reached.
+  float X[n] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 10, 20, 30, 40, 50}; // This variable contains the input data of the system under study.
+  float Y[n] = {18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 18, 26, 34, 42, 50}; // This variable ocntains the expected/real output data of the system under study.
   
   
   // ------------------------- DATA MODELING ----------------------- //
-  Serial.print("\n\nInitializing CenyML simple linear regression algorithm ...\n");
+  Serial.print("\n\nInitializing CenyML simple linear regression algorithm with a dataset containing ");
+  Serial.print(n);
+  Serial.print(" samples ...\n");
   float startingTime = millis(); // We obtain the reference time to count the elapsed time to apply the simple linear regression with the input data (X).
   // Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the simple linear regression algorithm.
   float *b = (float *) calloc(m+1, sizeof(float));
@@ -66,12 +68,12 @@ void loop() {
   Serial.print("Initializing CenyML predictions with the model that was obtained ...\n");
   startingTime = millis(); // We obtain the reference time to count the elapsed time to apply the prediction with the model that was obtained.
   // Allocate the memory required for the variable "Y_hat", which will contain the predicted output data of the system under study.
-  float *Y_hat = (float *) malloc(n*sizeof(float));
+  float *Y_hat = (float *) malloc(sizeof(float));
   // We obtain the predicted values with the machine learning model that was obtained.
-  predictSimpleLinearRegression(X, b, n, m, p, Y_hat); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "Y_hat".
+  predictSimpleLinearRegression(&X[n-1], b, 1, m, p, Y_hat); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "Y_hat".
   elapsedTime = millis() - startingTime; // We obtain the elapsed time to obtain the prediction wit hthe model that was obtained.
   Serial.print("Making a prediction with the obtained model = ");
-  Serial.print(Y_hat[2]);
+  Serial.print(Y_hat[0]);
   Serial.print("\n");
   Serial.print("CenyML predictions with the model that was obtained elapsed ");
   Serial.print(elapsedTime);
