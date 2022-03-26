@@ -107,7 +107,7 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
   	// --- LOCAL VARIABLES VALUES TO BE DEFINED BY THE IMPLEMENTER --- //
-  	int n = 1900; // This variable will contain the number of samples that the system under study will have.
+  	int n = 65530; // This variable will contain the number of samples that the system under study will have.
     int m = 1; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
     int p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
     double databaseX[] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100}; // This variable contains the input data of the system under study for when n=10.
