@@ -59,11 +59,17 @@ $ ./main.x
 
 ## BibTeX citation
 @MastersThesis{cesarMirandaMeza_mastersThesis,
+
 author = {César Miranda},
+
 title  = {Machine learning library to support applications with embedded systems and parallel computing},
+
 school = {Centro de Investigación y Desarrollo de Tecnología Digital (CITEDI) of the Instituto Politécnico Nacional (IPN)},
+
 address = {Tijuana, B.C., Mexico},
+
 year   = {2022}
+
 }
 
 **NOTE:** The URL "https://bit.ly/3iW5t9Z" links to the repository of the IPN institute where the thesis "Machine learning library to support applications with embedded systems and parallel computing" will be available in the near future. The reason this thesis is not available there yet is because this thesis has just been completed and some administrative processes are required for this repository to make it available to the public.
