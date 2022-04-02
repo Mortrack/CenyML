@@ -79,7 +79,7 @@ Moreover, all the libraries used in C were developed as part of the CenyML proje
 3. Copy the files "pbPlots.c", "pbPlots.h", "supportLib.c" and "supportLib.h" and paste them in the directory folder 'CenyML library skeleton/otherLibraries/pbPlots/' (with respect to the root directory of this project). Alternatively, if you download the CenyML project files, the pbPlots library with the right version should already be there.
 
 ## Materials
-All the algorithms made for this thesis product, were executed on a dedicated computer system with Ubuntu OS v20.04.3 LTS and the following hardware:
+All the algorithms made for this thesis product, were executed on a dedicated computer system with Ubuntu OS v20.04.3 LTS, gcc v9.3.0, nvcc v11.4 and the following hardware:
 
 - Motherboard: 1 x HUANANZHI X99Dual-F8D.
 - CPU: 2 x Intel(R) Xeon(R) E5-2699V4 @ 2.10GHz.
