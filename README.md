@@ -1,8 +1,8 @@
 # CenyML
-Inspired in the "Mortrack_ML_Library", CenyML provides a Machine Learning library and API programmed in C that was created by César Miranda Meza durin his master's degree at IPN (CITEDI) and was completed on Tuesday, February 8, 2022. This software contributes with a complete set of machine learning tools that have been scientifically validated and that have the philosophy of increasing performance to the maximum and having transparent output models and documentation. In addition, the model transparency of the CenyML algorithms will allow the users to train and generate models to then use them even withot the strict need of this particular library. Furthermore, the user has the option of using CenyML through its software library or in its API format, depending on his needs. For example, the API could be used to train a certain model on a remote high performance server. Subsequently, the generated model could be implemented in a low cost microcontroller/microprocessor or embedded system through its library format (e.g., Arduino or literally any microcontroller you can think of that has enough memory to store either the whole library or the particular algorithm required from it).
+Inspired in the "Mortrack_ML_Library", CenyML provides a Machine Learning library programmed in C that was created by César Miranda Meza during his master's degree at IPN (CITEDI), which was completed on Tuesday, February 8, 2022. This software contributes with a complete set of machine learning tools that have been scientifically validated and that have the philosophy of increasing performance to the maximum and having transparent output models and documentation. In addition, the model transparency of the CenyML algorithms will allow the users to train and generate models with this library to then use them even without the strict need of this particular library by coding the resulting model from scratch in whatever programming language it is desired. Furthermore, the user has the option of using CenyML through its software library or, in the near future, in its API format, depending on his needs. For example, the API could be used to train a certain model on a remote high performance server. Subsequently, the generated model could be implemented in a low cost microcontroller/microprocessor or embedded system through its library format (e.g., Arduino or literally any microcontroller you can think of that has enough memory to store either the whole library or the particular algorithm required from it).
 
-- Latest public stable version of the CenyML software: 0.151.111.30 (released on March 26, 2022 in master branch)
-- Latest public stable version of the CenyML Library: 0.151.111.30 (released on March 26, 2022 in master_library branch)
+- Latest public stable version of the CenyML software: 1.0.0.0 (released on April 02, 2022 in master branch)
+- Latest public stable version of the CenyML Library: 1.0.0.0 (released on April 02, 2022 in master_library branch)
 - Latest public stable version of the CenyML API: 0.0.0.0 (released on September 21, 2021 in master_api branch)
 
 **NOTE:** Versions are assigned according to the following list, where each one of them describes an independent numeric value of the published version, out of a total of 4 values X.X.X.X:
@@ -43,5 +43,19 @@ The following list will describe the purpose for which each branch of this proje
     This branch is used to contain all the latest development files for the CenyML API only. However, its use is not recommended because it is highly possible that one or more functionalities will not work properly in this branch.
 
 # Cite this project in yours!
-TODO: Place APA citation text.
-TODO: Place bibtex citation code.
+
+## APA citation
+ C. Miranda, “Machine learning library to support applications with embedded systems and parallel computing” Master’s thesis, Centro de Investigación y Desarrollo de Tecnología Digital (CITEDI) of the Instituto Politécnico Nacional (IPN), Tijuana, B.C., Mexico, 2022.
+
+## BibTeX citation
+```$bibtex
+@MastersThesis{cesarMirandaMeza_mastersThesis,
+author = {César Miranda},
+title  = {Machine learning library to support applications with embedded systems and parallel computing},
+school = {Centro de Investigación y Desarrollo de Tecnología Digital (CITEDI) of the Instituto Politécnico Nacional (IPN)},
+address = {Tijuana, B.C., Mexico},
+year   = {2022}
+}
+```
+
+**NOTE:** The URL "https://bit.ly/3iW5t9Z" links to the repository of the IPN institute where the thesis "Machine learning library to support applications with embedded systems and parallel computing" will be available in the near future. The reason this thesis is not available there yet is because this thesis has just been completed and some administrative processes are required for this repository to make it available to the public.

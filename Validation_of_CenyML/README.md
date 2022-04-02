@@ -79,7 +79,7 @@ Moreover, all the libraries used in C were developed as part of the CenyML proje
 3. Copy the files "pbPlots.c", "pbPlots.h", "supportLib.c" and "supportLib.h" and paste them in the directory folder 'CenyML library skeleton/otherLibraries/pbPlots/' (with respect to the root directory of this project). Alternatively, if you download the CenyML project files, the pbPlots library with the right version should already be there.
 
 ## Materials
-All the algorithms made for this thesis product, were executed on a dedicated computer system with Ubuntu OS v20.04.3 LTS and the following hardware:
+All the algorithms made for this thesis product, were executed on a dedicated computer system with Ubuntu OS v20.04.3 LTS, gcc v9.3.0, nvcc v11.4 and the following hardware:
 
 - Motherboard: 1 x HUANANZHI X99Dual-F8D.
 - CPU: 2 x Intel(R) Xeon(R) E5-2699V4 @ 2.10GHz.
@@ -91,5 +91,19 @@ All the algorithms made for this thesis product, were executed on a dedicated co
 **NOTE:** The CUDA files were executed only in the Tesla K80 GPUs which were entirely dedicated to the CenyML project.
 
 # Cite this project in yours!
-TODO: Place APA citation text.
-TODO: Place bibtex citation code.
+
+## APA citation
+ C. Miranda, “Machine learning library to support applications with embedded systems and parallel computing” Master’s thesis, Centro de Investigación y Desarrollo de Tecnología Digital (CITEDI) of the Instituto Politécnico Nacional (IPN), Tijuana, B.C., Mexico, 2022.
+
+## BibTeX citation
+```$bibtex
+@MastersThesis{cesarMirandaMeza_mastersThesis,
+author = {César Miranda},
+title  = {Machine learning library to support applications with embedded systems and parallel computing},
+school = {Centro de Investigación y Desarrollo de Tecnología Digital (CITEDI) of the Instituto Politécnico Nacional (IPN)},
+address = {Tijuana, B.C., Mexico},
+year   = {2022}
+}
+```
+
+**NOTE:** The URL "https://bit.ly/3iW5t9Z" links to the repository of the IPN institute where the thesis "Machine learning library to support applications with embedded systems and parallel computing" will be available in the near future. The reason this thesis is not available there yet is because this thesis has just been completed and some administrative processes are required for this repository to make it available to the public.

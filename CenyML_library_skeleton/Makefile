@@ -27,6 +27,10 @@ CenyMLregressionEvalMet_c = $(cM)/cpuSequential/evaluationMetrics/CenyMLregressi
 CenyMLregressionEvalMet_h = $(cM)/cpuSequential/evaluationMetrics/CenyMLregressionEvalMet.h
 CenyMLclassificationEvalMet_c = $(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.c
 CenyMLclassificationEvalMet_h = $(cM)/cpuSequential/evaluationMetrics/CenyMLclassificationEvalMet.h
+CenyMLregression_c = $(cM)/cpuSequential/machineLearning/CenyMLregression.c
+CenyMLregression_h = $(cM)/cpuSequential/machineLearning/CenyMLregression.h
+CenyMLclassification_c = $(cM)/cpuSequential/machineLearning/CenyMLclassification.c
+CenyMLclassification_h = $(cM)/cpuSequential/machineLearning/CenyMLclassification.h
 CenyMLdeepLearning_c = $(cM)/cpuSequential/machineLearning/CenyMLdeepLearning.c
 CenyMLdeepLearning_h = $(cM)/cpuSequential/machineLearning/CenyMLdeepLearning.h
 CenyMLdeepLearning_PC_c = $(cM)/cpuParallel/machineLearning/CenyMLdeepLearning_PC.c
@@ -46,8 +50,8 @@ NVCC = ${CUDA_PATH}/bin/nvcc
 
 # Monitor and compile all the files that are required for the target program to function.
 # ----- THIS IS THE COMMAND TO COMPILE ALL THE MAIN FILES ----- #
-main.x: main.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLstatistics.o CenyMLfeatureScaling.o CenyMLregressionEvalMet.o CenyMLclassificationEvalMet.o CenyMLdeepLearning.o CenyMLdeepLearning_PC.o CenyMLdeepLearning_SG.o CenyMLdeepLearning_MG.o
-	$(NVCC) $(gpuOptimization) main.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLstatistics.o CenyMLfeatureScaling.o CenyMLregressionEvalMet.o CenyMLclassificationEvalMet.o CenyMLdeepLearning.o CenyMLdeepLearning_PC.o CenyMLdeepLearning_SG.o CenyMLdeepLearning_MG.o $(TARGETFLAGS) main.x
+main.x: main.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLstatistics.o CenyMLfeatureScaling.o CenyMLregressionEvalMet.o CenyMLclassificationEvalMet.o CenyMLregression.o CenyMLclassification.o CenyMLdeepLearning.o CenyMLdeepLearning_PC.o CenyMLdeepLearning_SG.o CenyMLdeepLearning_MG.o
+	$(NVCC) $(gpuOptimization) main.o mTime.o csvManager.o pbPlots.o supportLib.o CenyMLstatistics.o CenyMLfeatureScaling.o CenyMLregressionEvalMet.o CenyMLclassificationEvalMet.o CenyMLregression.o CenyMLclassification.o CenyMLdeepLearning.o CenyMLdeepLearning_PC.o CenyMLdeepLearning_SG.o CenyMLdeepLearning_MG.o $(TARGETFLAGS) main.x
 
 # ----- THESE ARE THE COMMANDS THAT MONITOR ANY CHANGES TO ANY MAIN FILE ----- #
 main.o: main.c
@@ -77,6 +81,12 @@ CenyMLregressionEvalMet.o: $(CenyMLregressionEvalMet_c) $(CenyMLregressionEvalMe
 
 CenyMLclassificationEvalMet.o: $(CenyMLclassificationEvalMet_c) $(CenyMLclassificationEvalMet_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLclassificationEvalMet_c)
+
+CenyMLregression.o: $(CenyMLregression_c) $(CenyMLregression_h)
+	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLregression_c)
+
+CenyMLclassification.o: $(CenyMLclassification_c) $(CenyMLclassification_h)
+	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLclassification_c)
 	
 CenyMLdeepLearning.o: $(CenyMLdeepLearning_c) $(CenyMLdeepLearning_h)
 	$(NVCC) $(gpuOptimization) $(DEPENDENCYFLAGS) $(CenyMLdeepLearning_c)
