@@ -182,7 +182,7 @@ int main(void)
 	  	epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
 	  	isMatch = 1; // Variable used as a flag to indicate if the current comparison of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
 	  	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
-	  	for (int currentRow=0; currentRow<m+1; currentRow++) {
+	  	for (int currentRow=0; currentRow<(m*N+1); currentRow++) {
 			differentiation = fabs(b[currentRow] - b_ideal[currentRow]);
 			if (differentiation > epsilon) { // if the error surpassed the value permitted, then terminate validation process and emit message to indicate a non match.
 				isMatch = 0;

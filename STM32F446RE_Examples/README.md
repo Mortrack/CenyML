@@ -98,7 +98,7 @@ int _write(int file, char *ptr, int len) {
 }
 ```
 
-3. Click on the "Debug Project" button, where the "Edit Configuration" window should have opened after that.
+3. Connect the STM32 development board to your computer and then click on the "Debug Project" button, where the "Edit Configuration" window should have opened after that.
 
 4. Click the "Debugger" tab of the "Edit Configuration" window.
 	

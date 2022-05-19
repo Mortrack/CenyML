@@ -831,3 +831,564 @@ arm-none-eabi-size   Project.elf
   28792	    488	   1632	  30912	   78c0	Project.elf
 Finished building: default.size.stdout
  
+16:14:40 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:179:2: error: 'epsilon' undeclared (first use in this function)
+  179 |  epsilon = 1.0E-8; // Variable used to store the max error value permitted during validation process.
+      |  ^~~~~~~
+../Core/Src/main.c:179:2: note: each undeclared identifier is reported only once for each function it appears in
+../Core/Src/main.c:180:2: error: 'isMatch' undeclared (first use in this function)
+  180 |  isMatch = 1; // Variable used as a flag to indicate if the current comparison of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
+      |  ^~~~~~~
+../Core/Src/main.c:182:36: error: 'm' undeclared (first use in this function)
+  182 |  for (int currentRow=0; currentRow<m+1; currentRow++) {
+      |                                    ^
+../Core/Src/main.c:183:2: error: 'differentiation' undeclared (first use in this function)
+  183 |  differentiation = fabs(neuron1.w_best[currentRow] - b_expected[currentRow]);
+      |  ^~~~~~~~~~~~~~~
+In file included from ../Core/Src/main.c:25:
+../Core/Src/main.c: At top level:
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:49:13: warning: 'getReluActivation' declared 'static' but never defined [-Wunused-function]
+   49 | static void getReluActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:50:13: warning: 'getDerivateReluActivation' declared 'static' but never defined [-Wunused-function]
+   50 | static void getDerivateReluActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:51:13: warning: 'getTanhActivation' declared 'static' but never defined [-Wunused-function]
+   51 | static void getTanhActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:52:13: warning: 'getDerivateTanhActivation' declared 'static' but never defined [-Wunused-function]
+   52 | static void getDerivateTanhActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:53:13: warning: 'getLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   53 | static void getLogisticActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:54:13: warning: 'getDerivateLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   54 | static void getDerivateLogisticActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:55:13: warning: 'getRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   55 | static void getRaiseToTheFirstPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:56:13: warning: 'getDerivateRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   56 | static void getDerivateRaiseToTheFirstPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:57:13: warning: 'getRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   57 | static void getRaiseToTheSecondPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:58:13: warning: 'getDerivateRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   58 | static void getDerivateRaiseToTheSecondPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:59:13: warning: 'getRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   59 | static void getRaiseToTheThirdPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:60:13: warning: 'getDerivateRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   60 | static void getDerivateRaiseToTheThirdPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:61:13: warning: 'getRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   61 | static void getRaiseToTheFourthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:62:13: warning: 'getDerivateRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   62 | static void getDerivateRaiseToTheFourthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:63:13: warning: 'getRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   63 | static void getRaiseToTheFifthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:64:13: warning: 'getDerivateRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   64 | static void getDerivateRaiseToTheFifthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:65:13: warning: 'getRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   65 | static void getRaiseToTheSixthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:66:13: warning: 'getDerivateRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   66 | static void getDerivateRaiseToTheSixthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:67:13: warning: 'getFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   67 | static void getFirstOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:68:13: warning: 'getDerivateFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   68 | static void getDerivateFirstOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:69:13: warning: 'getSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   69 | static void getSecondOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:70:13: warning: 'getDerivateSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   70 | static void getDerivateSecondOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:71:13: warning: 'getNeuronAdjustedCoefficientOfDetermination' declared 'static' but never defined [-Wunused-function]
+   71 | static void getNeuronAdjustedCoefficientOfDetermination(double *, double *, int, int, int, double *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+make: *** [Core/Src/subdir.mk:34: Core/Src/main.o] Error 1
+"make -j88 all" terminated with exit code 2. Build might be incomplete.
+16:15:30 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:186:36: error: 'm' undeclared (first use in this function)
+  186 |  for (int currentRow=0; currentRow<m+1; currentRow++) {
+      |                                    ^
+../Core/Src/main.c:186:36: note: each undeclared identifier is reported only once for each function it appears in
+In file included from ../Core/Src/main.c:25:
+../Core/Src/main.c: At top level:
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:49:13: warning: 'getReluActivation' declared 'static' but never defined [-Wunused-function]
+   49 | static void getReluActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:50:13: warning: 'getDerivateReluActivation' declared 'static' but never defined [-Wunused-function]
+   50 | static void getDerivateReluActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:51:13: warning: 'getTanhActivation' declared 'static' but never defined [-Wunused-function]
+   51 | static void getTanhActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:52:13: warning: 'getDerivateTanhActivation' declared 'static' but never defined [-Wunused-function]
+   52 | static void getDerivateTanhActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:53:13: warning: 'getLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   53 | static void getLogisticActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:54:13: warning: 'getDerivateLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   54 | static void getDerivateLogisticActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:55:13: warning: 'getRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   55 | static void getRaiseToTheFirstPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:56:13: warning: 'getDerivateRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   56 | static void getDerivateRaiseToTheFirstPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:57:13: warning: 'getRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   57 | static void getRaiseToTheSecondPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:58:13: warning: 'getDerivateRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   58 | static void getDerivateRaiseToTheSecondPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:59:13: warning: 'getRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   59 | static void getRaiseToTheThirdPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:60:13: warning: 'getDerivateRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   60 | static void getDerivateRaiseToTheThirdPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:61:13: warning: 'getRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   61 | static void getRaiseToTheFourthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:62:13: warning: 'getDerivateRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   62 | static void getDerivateRaiseToTheFourthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:63:13: warning: 'getRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   63 | static void getRaiseToTheFifthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:64:13: warning: 'getDerivateRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   64 | static void getDerivateRaiseToTheFifthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:65:13: warning: 'getRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   65 | static void getRaiseToTheSixthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:66:13: warning: 'getDerivateRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   66 | static void getDerivateRaiseToTheSixthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:67:13: warning: 'getFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   67 | static void getFirstOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:68:13: warning: 'getDerivateFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   68 | static void getDerivateFirstOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:69:13: warning: 'getSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   69 | static void getSecondOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:70:13: warning: 'getDerivateSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   70 | static void getDerivateSecondOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:71:13: warning: 'getNeuronAdjustedCoefficientOfDetermination' declared 'static' but never defined [-Wunused-function]
+   71 | static void getNeuronAdjustedCoefficientOfDetermination(double *, double *, int, int, int, double *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+make: *** [Core/Src/subdir.mk:34: Core/Src/main.o] Error 1
+"make -j88 all" terminated with exit code 2. Build might be incomplete.
+16:16:04 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+In file included from ../Core/Src/main.c:25:
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:49:13: warning: 'getReluActivation' declared 'static' but never defined [-Wunused-function]
+   49 | static void getReluActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:50:13: warning: 'getDerivateReluActivation' declared 'static' but never defined [-Wunused-function]
+   50 | static void getDerivateReluActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:51:13: warning: 'getTanhActivation' declared 'static' but never defined [-Wunused-function]
+   51 | static void getTanhActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:52:13: warning: 'getDerivateTanhActivation' declared 'static' but never defined [-Wunused-function]
+   52 | static void getDerivateTanhActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:53:13: warning: 'getLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   53 | static void getLogisticActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:54:13: warning: 'getDerivateLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   54 | static void getDerivateLogisticActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:55:13: warning: 'getRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   55 | static void getRaiseToTheFirstPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:56:13: warning: 'getDerivateRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   56 | static void getDerivateRaiseToTheFirstPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:57:13: warning: 'getRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   57 | static void getRaiseToTheSecondPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:58:13: warning: 'getDerivateRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   58 | static void getDerivateRaiseToTheSecondPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:59:13: warning: 'getRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   59 | static void getRaiseToTheThirdPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:60:13: warning: 'getDerivateRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   60 | static void getDerivateRaiseToTheThirdPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:61:13: warning: 'getRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   61 | static void getRaiseToTheFourthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:62:13: warning: 'getDerivateRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   62 | static void getDerivateRaiseToTheFourthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:63:13: warning: 'getRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   63 | static void getRaiseToTheFifthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:64:13: warning: 'getDerivateRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   64 | static void getDerivateRaiseToTheFifthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:65:13: warning: 'getRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   65 | static void getRaiseToTheSixthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:66:13: warning: 'getDerivateRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   66 | static void getDerivateRaiseToTheSixthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:67:13: warning: 'getFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   67 | static void getFirstOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:68:13: warning: 'getDerivateFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   68 | static void getDerivateFirstOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:69:13: warning: 'getSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   69 | static void getSecondOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:70:13: warning: 'getDerivateSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   70 | static void getDerivateSecondOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:71:13: warning: 'getNeuronAdjustedCoefficientOfDetermination' declared 'static' but never defined [-Wunused-function]
+   71 | static void getNeuronAdjustedCoefficientOfDetermination(double *, double *, int, int, int, double *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/SingleNeuronInDNN/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  29176	    488	   1632	  31296	   7a40	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+16:16:07 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  29176	    488	   1632	  31296	   7a40	Project.elf
+Finished building: default.size.stdout
+ 
+16:16:10 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  29176	    488	   1632	  31296	   7a40	Project.elf
+Finished building: default.size.stdout
+ 
+16:31:24 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+In file included from ../Core/Src/main.c:25:
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:49:13: warning: 'getReluActivation' declared 'static' but never defined [-Wunused-function]
+   49 | static void getReluActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:50:13: warning: 'getDerivateReluActivation' declared 'static' but never defined [-Wunused-function]
+   50 | static void getDerivateReluActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:51:13: warning: 'getTanhActivation' declared 'static' but never defined [-Wunused-function]
+   51 | static void getTanhActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:52:13: warning: 'getDerivateTanhActivation' declared 'static' but never defined [-Wunused-function]
+   52 | static void getDerivateTanhActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:53:13: warning: 'getLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   53 | static void getLogisticActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:54:13: warning: 'getDerivateLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   54 | static void getDerivateLogisticActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:55:13: warning: 'getRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   55 | static void getRaiseToTheFirstPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:56:13: warning: 'getDerivateRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   56 | static void getDerivateRaiseToTheFirstPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:57:13: warning: 'getRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   57 | static void getRaiseToTheSecondPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:58:13: warning: 'getDerivateRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   58 | static void getDerivateRaiseToTheSecondPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:59:13: warning: 'getRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   59 | static void getRaiseToTheThirdPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:60:13: warning: 'getDerivateRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   60 | static void getDerivateRaiseToTheThirdPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:61:13: warning: 'getRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   61 | static void getRaiseToTheFourthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:62:13: warning: 'getDerivateRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   62 | static void getDerivateRaiseToTheFourthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:63:13: warning: 'getRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   63 | static void getRaiseToTheFifthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:64:13: warning: 'getDerivateRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   64 | static void getDerivateRaiseToTheFifthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:65:13: warning: 'getRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   65 | static void getRaiseToTheSixthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:66:13: warning: 'getDerivateRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   66 | static void getDerivateRaiseToTheSixthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:67:13: warning: 'getFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   67 | static void getFirstOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:68:13: warning: 'getDerivateFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   68 | static void getDerivateFirstOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:69:13: warning: 'getSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   69 | static void getSecondOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:70:13: warning: 'getDerivateSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   70 | static void getDerivateSecondOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:71:13: warning: 'getNeuronAdjustedCoefficientOfDetermination' declared 'static' but never defined [-Wunused-function]
+   71 | static void getNeuronAdjustedCoefficientOfDetermination(double *, double *, int, int, int, double *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/SingleNeuronInDNN/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  29168	    488	   1632	  31288	   7a38	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+16:31:33 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  29168	    488	   1632	  31288	   7a38	Project.elf
+Finished building: default.size.stdout
+ 
+16:35:52 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+In file included from ../Core/Src/main.c:25:
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:49:13: warning: 'getReluActivation' declared 'static' but never defined [-Wunused-function]
+   49 | static void getReluActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:50:13: warning: 'getDerivateReluActivation' declared 'static' but never defined [-Wunused-function]
+   50 | static void getDerivateReluActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:51:13: warning: 'getTanhActivation' declared 'static' but never defined [-Wunused-function]
+   51 | static void getTanhActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:52:13: warning: 'getDerivateTanhActivation' declared 'static' but never defined [-Wunused-function]
+   52 | static void getDerivateTanhActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:53:13: warning: 'getLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   53 | static void getLogisticActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:54:13: warning: 'getDerivateLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   54 | static void getDerivateLogisticActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:55:13: warning: 'getRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   55 | static void getRaiseToTheFirstPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:56:13: warning: 'getDerivateRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   56 | static void getDerivateRaiseToTheFirstPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:57:13: warning: 'getRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   57 | static void getRaiseToTheSecondPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:58:13: warning: 'getDerivateRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   58 | static void getDerivateRaiseToTheSecondPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:59:13: warning: 'getRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   59 | static void getRaiseToTheThirdPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:60:13: warning: 'getDerivateRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   60 | static void getDerivateRaiseToTheThirdPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:61:13: warning: 'getRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   61 | static void getRaiseToTheFourthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:62:13: warning: 'getDerivateRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   62 | static void getDerivateRaiseToTheFourthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:63:13: warning: 'getRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   63 | static void getRaiseToTheFifthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:64:13: warning: 'getDerivateRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   64 | static void getDerivateRaiseToTheFifthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:65:13: warning: 'getRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   65 | static void getRaiseToTheSixthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:66:13: warning: 'getDerivateRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   66 | static void getDerivateRaiseToTheSixthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:67:13: warning: 'getFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   67 | static void getFirstOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:68:13: warning: 'getDerivateFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   68 | static void getDerivateFirstOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:69:13: warning: 'getSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   69 | static void getSecondOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:70:13: warning: 'getDerivateSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   70 | static void getDerivateSecondOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:71:13: warning: 'getNeuronAdjustedCoefficientOfDetermination' declared 'static' but never defined [-Wunused-function]
+   71 | static void getNeuronAdjustedCoefficientOfDetermination(double *, double *, int, int, int, double *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/SingleNeuronInDNN/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  29168	    488	   1632	  31288	   7a38	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+16:35:58 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  29168	    488	   1632	  31288	   7a38	Project.elf
+Finished building: default.size.stdout
+ 
+16:36:01 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  29168	    488	   1632	  31288	   7a38	Project.elf
+Finished building: default.size.stdout
+ 
+16:43:46 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+In file included from ../Core/Src/main.c:25:
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:49:13: warning: 'getReluActivation' declared 'static' but never defined [-Wunused-function]
+   49 | static void getReluActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:50:13: warning: 'getDerivateReluActivation' declared 'static' but never defined [-Wunused-function]
+   50 | static void getDerivateReluActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:51:13: warning: 'getTanhActivation' declared 'static' but never defined [-Wunused-function]
+   51 | static void getTanhActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:52:13: warning: 'getDerivateTanhActivation' declared 'static' but never defined [-Wunused-function]
+   52 | static void getDerivateTanhActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:53:13: warning: 'getLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   53 | static void getLogisticActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:54:13: warning: 'getDerivateLogisticActivation' declared 'static' but never defined [-Wunused-function]
+   54 | static void getDerivateLogisticActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:55:13: warning: 'getRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   55 | static void getRaiseToTheFirstPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:56:13: warning: 'getDerivateRaiseToTheFirstPowerActivation' declared 'static' but never defined [-Wunused-function]
+   56 | static void getDerivateRaiseToTheFirstPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:57:13: warning: 'getRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   57 | static void getRaiseToTheSecondPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:58:13: warning: 'getDerivateRaiseToTheSecondPowerActivation' declared 'static' but never defined [-Wunused-function]
+   58 | static void getDerivateRaiseToTheSecondPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:59:13: warning: 'getRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   59 | static void getRaiseToTheThirdPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:60:13: warning: 'getDerivateRaiseToTheThirdPowerActivation' declared 'static' but never defined [-Wunused-function]
+   60 | static void getDerivateRaiseToTheThirdPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:61:13: warning: 'getRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   61 | static void getRaiseToTheFourthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:62:13: warning: 'getDerivateRaiseToTheFourthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   62 | static void getDerivateRaiseToTheFourthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:63:13: warning: 'getRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   63 | static void getRaiseToTheFifthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:64:13: warning: 'getDerivateRaiseToTheFifthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   64 | static void getDerivateRaiseToTheFifthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:65:13: warning: 'getRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   65 | static void getRaiseToTheSixthPowerActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:66:13: warning: 'getDerivateRaiseToTheSixthPowerActivation' declared 'static' but never defined [-Wunused-function]
+   66 | static void getDerivateRaiseToTheSixthPowerActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:67:13: warning: 'getFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   67 | static void getFirstOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:68:13: warning: 'getDerivateFirstOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   68 | static void getDerivateFirstOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:69:13: warning: 'getSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   69 | static void getSecondOrderDegreeExponentialActivation(double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:70:13: warning: 'getDerivateSecondOrderDegreeExponentialActivation' declared 'static' but never defined [-Wunused-function]
+   70 | static void getDerivateSecondOrderDegreeExponentialActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLdeepLearning.h:71:13: warning: 'getNeuronAdjustedCoefficientOfDetermination' declared 'static' but never defined [-Wunused-function]
+   71 | static void getNeuronAdjustedCoefficientOfDetermination(double *, double *, int, int, int, double *);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/SingleNeuronInDNN/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  29176	    488	   1632	  31296	   7a40	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+16:43:50 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  29176	    488	   1632	  31296	   7a40	Project.elf
+Finished building: default.size.stdout
+ 

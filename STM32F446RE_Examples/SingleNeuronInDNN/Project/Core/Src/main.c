@@ -132,12 +132,16 @@ int main(void)
   double Y[] = {18, 26, 34, 42, 50, 58, 66, 74, 82, 90}; // This variable contains the expected/real output data of the system under study for when n=10.
   neuron1.w_best = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_best", which will store the best coefficient values identified by the neuron to be created, after its training process.
   neuron1.w_new = (double *) malloc((neuron1.m+1)*sizeof(double)); // We allocate the memory required for the variable "neuron1.w_new", which will store the last coefficient values identified by the neuron to be created, after its training process.
-  double b_ideal[2]; // This variable will be used to contain the ideal coefficient values that the model to be trained should give.
-  b_ideal[0] = 10;
-  b_ideal[1] = 0.8;
+  double b_expected[2]; // This variable will be used to contain the ideal coefficient values that the model to be trained should give.
+  b_expected[0] = 5.037575; // This is the expected b_0 coefficient value that was obtained through the Validation files of the CenyML library.
+  b_expected[1] = 0.870896; // This is the expected b_1 coefficient value that was obtained through the Validation files of the CenyML library.
 
   long int startingTime; // This variable will be used to store the starting timestamp in milliseconds of a certain process in which the time will be counted.
   long int elapsedTime; // This variable will be used to store the total time in milliseconds of a certain process in which the time will be counted.
+
+  double differentiation; // Variable used to store the error obtained for a certain value.
+  double epsilon; // Variable used to store the max error value permitted during validation process.
+  char isMatch; // Variable used as a flag to indicate if the current comparison of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -172,10 +176,27 @@ int main(void)
 	printf("CenyML single neuron in Deep Neural Network algorithm elapsed %ld milliseconds.\n\n", elapsedTime);
 
 
-	// --------------- VISUALIZATION OF THE COEFFICIENTS ------------- //
-	printf("Showing the coefficient values that were obtained during the training process ...\n");
-	printf("b_0 = %f\n", neuron1.w_best[0]);
-	printf("b_1 = %f\n\n", neuron1.w_best[1]);
+	// ------------------- VALIDATION OF THE MODEL ------------------- //
+	// We validate the getSingleNeuronDNN method.
+	printf("Initializing coefficients validation of the CenyML getSingleNeuronDNN method ...\n");
+	startingTime = HAL_GetTick(); // We obtain the reference time to count the elapsed time to validate the getSingleNeuronDNN method.
+	epsilon = 3.14E-7; // Variable used to store the max error value permitted during validation process.
+	isMatch = 1; // Variable used as a flag to indicate if the current comparison of values stands for a match. Note that the value of 1 = is a match and 0 = is not a match.
+	// We check that all the differentiations do not surpass the error indicated through the variable "epsilon".
+	for (int currentRow=0; currentRow<(neuron1.m+1); currentRow++) {
+	differentiation = fabs(neuron1.w_best[currentRow] - b_expected[currentRow]);
+	if (differentiation > epsilon) { // if the error surpassed the value permitted, then terminate validation process and emit message to indicate a non match.
+			isMatch = 0;
+			printf("Validation process DID NOT MATCH! and a difference of %.12f was obtained.\n", differentiation);
+			break;
+		}
+	}
+	if (isMatch == 1) { // If the flag "isMatch" indicates a true/high value, then emit message to indicate that the validation process matched.
+		printf("Validation process MATCHED!\n");
+	}
+	elapsedTime = HAL_GetTick() - startingTime; // We obtain the elapsed time to validate the getSingleNeuronDNN method.
+	printf("The coefficients validation of the CenyML getSingleNeuronDNN method elapsed %ld milliseconds.\n\n", elapsedTime);
+	printf("The program has been successfully completed!\n");
 	printf("----------------------------------------------------------------------\n");
 	printf("----------------------------------------------------------------------\n");
 
