@@ -7,6 +7,10 @@
 * Next, some evaluation metrics will be applied and then a validation
 * of the coefficients obtained by the model will be made with respect
 * to what is expected.
+* 
+* @author César Miranda Meza
+* CREATION DATE: February 04, 2022.
+* LAST UPDATE: March 26, 2022.
  */
 
 

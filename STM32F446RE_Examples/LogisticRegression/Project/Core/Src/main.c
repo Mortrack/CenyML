@@ -79,6 +79,10 @@ int _write(int file, char *ptr, int len) {
 /**
   * @brief  The application entry point.
   * @retval int
+  * 
+  * @author César Miranda Meza
+  * CREATION DATE: May 18, 2022.
+  * LAST UPDATE: May 24, 2022.
   */
 int main(void)
 {
@@ -138,17 +142,17 @@ int main(void)
 	printf("Initializing the output and input data with %d samples and %d independent variables...\n", n, m);
 	startingTime = HAL_GetTick(); // We obtain the reference time to count the elapsed time to initialize the input data to be used.
 	double *X = (double *) malloc(n*sizeof(double));
-	double *Y = (double *) malloc(n*sizeof(double));
+	double *Y_tilde = (double *) malloc(n*sizeof(double));
 	int currentRowAndColumn; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
-	// Create the output (Y) and input (X) data with the same rows as in the reference .csv file and their corresponding number of columns.
+	// Create the output (Y_tilde) and input (X) data with the same rows as in the reference .csv file and their corresponding number of columns.
 	for (int currentIteration=0; currentIteration<(n/n_database); currentIteration++) {
 		for (int currentRow=0; currentRow<n_database; currentRow++) {
 			currentRowAndColumn = currentRow + currentIteration*n_database;
-			Y[currentRowAndColumn] = databaseY[currentRow];
-			if (Y[currentRowAndColumn] == 1) {
-				Y[currentRowAndColumn] = 0.9999;
-			} else if (Y[currentRowAndColumn] == 0) {
-				Y[currentRowAndColumn] = 0.0001;
+			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
+			if (Y_tildeY[currentRowAndColumn] == 1) {
+				Y_tilde[currentRowAndColumn] = 0.9999;
+			} else if (Y_tilde[currentRowAndColumn] == 0) {
+				Y_tilde[currentRowAndColumn] = 0.0001;
 			}
 			X[currentRowAndColumn] = databaseX[currentRow];
 		}
@@ -162,7 +166,7 @@ int main(void)
 	startingTime = HAL_GetTick(); // We obtain the reference time to count the elapsed time to apply the logistic regression with the input data (X).
 	// Allocate the memory required for the variable "b", which will contain the identified best fitting coefficient values that will result from the logistic regression algorithm.
 	double *b = (double *) calloc(m+1, sizeof(double));
-	getLogisticRegression(X, Y, n, m, p, 0, b); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "b".
+	getLogisticRegression(X, Y_tilde, n, m, p, 0, b); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "b".
 	elapsedTime = HAL_GetTick() - startingTime; // We obtain the elapsed time to apply the logistic regression with the input data (X).
 	printf("CenyML logistic regression algorithm elapsed %ld milliseconds.\n\n", elapsedTime);
 
@@ -192,7 +196,7 @@ int main(void)
 
 	// Free the Heap memory used for the allocated variables since they will no longer be used and then terminate the program.
 	free(X);
-	free(Y);
+	free(Y_tilde);
 	free(b);
 	printf("----------------------------------------------------------------------\n");
 	printf("----------------------------------------------------------------------\n");

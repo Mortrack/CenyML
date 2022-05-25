@@ -79,6 +79,10 @@ int _write(int file, char *ptr, int len) {
 /**
   * @brief  The application entry point.
   * @retval int
+  * 
+  * @author César Miranda Meza
+  * CREATION DATE: February 07, 2022.
+  * LAST UPDATE: May 19, 2022.
   */
 int main(void)
 {

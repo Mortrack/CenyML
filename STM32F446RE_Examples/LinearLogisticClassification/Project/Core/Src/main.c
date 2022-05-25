@@ -79,6 +79,10 @@ int _write(int file, char *ptr, int len) {
 /**
   * @brief  The application entry point.
   * @retval int
+  * 
+  * @author César Miranda Meza
+  * CREATION DATE: May 19, 2022.
+  * LAST UPDATE: May 24, 2022.
   */
 int main(void)
 {
@@ -111,7 +115,6 @@ int main(void)
   int m = 2; // This variable will contain the number of features (independent variables) that the input matrix is expected to have.
   int p = 1; // This variable will contain the number of outputs that the output matrix is expected to have.
   double Y_epsilon = 1.0E-15; // This variable will contain the user desired epsilon value to be summed to any zero value and substracted to any value of the output matrix "Y" and that will be used in the ML model to be trained.
-  double threshold = 0.5; // This variable will contain the value that the user desired for the threshold to be taken into account for the ML model to be trained, where 0<threshold<1.
   int n_database = 100; // This variable will define the number of samples that the reference .csv file (reference input data) contains.
   double databaseX[] = {10, 10, 10, 20, 10, 30, 10, 40, 10, 50, 10, 60, 10, 70, 10, 80, 10, 90, 10, 100,
 						20, 10, 20, 20, 20, 30, 20, 40, 20, 50, 20, 60, 20, 70, 20, 80, 20, 90, 20, 100,
