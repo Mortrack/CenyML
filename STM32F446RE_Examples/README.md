@@ -10,13 +10,13 @@ The following will describe the general purpose of the folders that are located 
     - This folder will contain all the files that were coded in order to train a Kernel Machine classification model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
 - **/LinearLogisticClassification**:
     - This folder will contain all the files that were coded in order to train a linear logistic classification model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
-- **/LogisticRegression:
+- **/LogisticRegression**:
     - This folder will contain all the files that were coded in order to train a logistic regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
-- **/MultipleLinearRegression:
+- **/MultipleLinearRegression**:
     - This folder will contain all the files that were coded in order to train a multiple linear regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
 - **/MultiplePolynomialRegression**:
     - This folder will contain all the files that were coded in order to train a multiple polynomial regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
-- **/PolynomialRegression:
+- **/PolynomialRegression**:
     - This folder will contain all the files that were coded in order to train a Polynomial regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
 - **/SimpleLinearRegression**:
     - This folder will contain all the files that were coded in order to train a simple linear regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.

@@ -1,4 +1,4 @@
-id,getSimpleLinearRegression_singleNeuronInDNN,predictSimpleLinearRegression_singleNeuronInDNN
+sample_id,getSimpleLinearRegression_singleNeuronInDNN,predictSimpleLinearRegression_singleNeuronInDNN
 1,46.456461,0.013348
 2,46.399047,0.012808
 3,46.442369,0.012866

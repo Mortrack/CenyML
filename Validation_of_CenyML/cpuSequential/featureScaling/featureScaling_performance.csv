@@ -1,4 +1,4 @@
-id,getL2Normalization_CenyML,reverseL2Normalization_CenyML,getL2Normalization_scikitLearn,getMinMaxNormalization_CenyML,reverseMinMaxNormalization_CenyML,getMinMaxNormalization_scikitLearn,getZscoreNormalization_CenyML,reverseZscoreNormalization_CenyML,getZscoreNormalization_scikitLearn
+sample_id,getL2Normalization_CenyML,reverseL2Normalization_CenyML,getL2Normalization_scikitLearn,getMinMaxNormalization_CenyML,reverseMinMaxNormalization_CenyML,getMinMaxNormalization_scikitLearn,getZscoreNormalization_CenyML,reverseZscoreNormalization_CenyML,getZscoreNormalization_scikitLearn
 1,0.032093,0.024455,0.034622431,0.036002,0.022923,0.110738039,0.042756,0.025117,0.185291052
 2,0.032487,0.024264,0.035093069,0.036364,0.024254,0.110782623,0.04429,0.025804,0.180988312
 3,0.032505,0.024551,0.035228014,0.036795,0.024094,0.110252857,0.043199,0.024683,0.176978111
