@@ -428,3 +428,38 @@ arm-none-eabi-size   Project.elf
   25368	    488	   1632	  27488	   6b60	Project.elf
 Finished building: default.size.stdout
  
+17:08:16 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:152:8: error: 'Y_tildeY' undeclared (first use in this function); did you mean 'Y_tilde'?
+  152 |    if (Y_tildeY[currentRowAndColumn] == 1) {
+      |        ^~~~~~~~
+      |        Y_tilde
+../Core/Src/main.c:152:8: note: each undeclared identifier is reported only once for each function it appears in
+make: *** [Core/Src/subdir.mk:34: Core/Src/main.o] Error 1
+"make -j88 all" terminated with exit code 2. Build might be incomplete.
+17:08:36 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/LogisticRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  25368	    488	   1632	  27488	   6b60	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:08:40 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  25368	    488	   1632	  27488	   6b60	Project.elf
+Finished building: default.size.stdout
+ 

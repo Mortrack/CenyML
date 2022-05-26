@@ -1,13 +1,29 @@
 # /'STM32F446RE\_Examples'
-This folder contains some simple application examples of using the CenyML library in an STM32F446RE ARM microprocessor to train some machine learning models; and in some cases to make predictions and/or apply a validation code for the trained model.
+This folder contains some simple demonstrative examples of using the CenyML library in an STM32F446RE ARM microprocessor to train some machine learning models; and in some cases to make predictions and/or apply a validation code for the trained model.
 
 # How to explore the CenyML project files.
 The following will describe the general purpose of the folders that are located in the current directory address:
 
-- **/SimpleLinearRegression/**:
-    - This folder will contain all the files that were coded in order to apply a simple linear regression model in the STM32F446RE microprocessor with the CenyML library.
-- **/SingleNeuronInDNN/**:
-    - This folder will contain all the files that were coded in order to solve a linear regression system with a single neuron in a Deep Neural Network model in the STM32F446RE microprocessor with the CenyML library.
+- **/GaussianRegression**:
+    - This folder will contain all the files that were coded in order to train a Gaussian regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
+- **/KernelMachineClassification**:
+    - This folder will contain all the files that were coded in order to train a Kernel Machine classification model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
+- **/LinearLogisticClassification**:
+    - This folder will contain all the files that were coded in order to train a linear logistic classification model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
+- **/LogisticRegression:
+    - This folder will contain all the files that were coded in order to train a logistic regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
+- **/MultipleLinearRegression:
+    - This folder will contain all the files that were coded in order to train a multiple linear regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
+- **/MultiplePolynomialRegression**:
+    - This folder will contain all the files that were coded in order to train a multiple polynomial regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
+- **/PolynomialRegression:
+    - This folder will contain all the files that were coded in order to train a Polynomial regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
+- **/SimpleLinearRegression**:
+    - This folder will contain all the files that were coded in order to train a simple linear regression model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
+- **/SingleNeuronInDNN**:
+    - This folder will contain all the files that were coded in order to solve a linear regression system with a single neuron in a Deep Neural Network model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
+- **/SLMClassification**:
+    - This folder will contain all the files that were coded in order to train a simple linear machine classification model in the STM32F446RE microprocessor with the CenyML library and as many samples as possible before getting any errors.
 
 # How these projects were configured, compiled and executed
 
@@ -136,10 +152,10 @@ Have fun!.
 # Cite this project in yours!
 
 ## APA citation
-Paper in progress.
+Scientific paper in progress.
 
 ## BibTeX citation
 
 ```$bibtex
-Paper in progress.
+Scientific paper in progress.
 ```

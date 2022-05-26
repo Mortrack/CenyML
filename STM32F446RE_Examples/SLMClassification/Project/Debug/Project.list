@@ -1213,7 +1213,7 @@ Disassembly of section .text:
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 24, 2021
-* LAST UPDATE: DECEMBER 04, 2021
+* LAST UPDATE: MAY 25, 2022
 */
 void getSimpleLinearMachineClassification(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
  8000ee0:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}

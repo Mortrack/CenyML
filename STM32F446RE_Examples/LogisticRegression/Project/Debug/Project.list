@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  000201e0  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000e532  00000000  00000000  00020210  2**0
+ 12 .debug_info   0000e535  00000000  00000000  00020210  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000240f  00000000  00000000  0002e742  2**0
+ 13 .debug_abbrev 0000240f  00000000  00000000  0002e745  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_loc    00008dbd  00000000  00000000  00030b51  2**0
+ 14 .debug_loc    00008dbd  00000000  00000000  00030b54  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_aranges 00000718  00000000  00000000  00039910  2**3
+ 15 .debug_aranges 00000718  00000000  00000000  00039918  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_ranges 00001758  00000000  00000000  0003a028  2**3
+ 16 .debug_ranges 00001758  00000000  00000000  0003a030  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  00022a01  00000000  00000000  0003b780  2**0
+ 17 .debug_macro  00022a01  00000000  00000000  0003b788  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   0000e36f  00000000  00000000  0005e181  2**0
+ 18 .debug_line   0000e389  00000000  00000000  0005e189  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000cdef3  00000000  00000000  0006c4f0  2**0
+ 19 .debug_str    000cdef3  00000000  00000000  0006c512  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000053  00000000  00000000  0013a3e3  2**0
+ 20 .comment      00000053  00000000  00000000  0013a405  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  0000275c  00000000  00000000  0013a438  2**2
+ 21 .debug_frame  0000275c  00000000  00000000  0013a458  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2172,15 +2172,15 @@ void Error_Handler(void)
  800151a:	b672      	cpsid	i
   while (1)
  800151c:	e7fe      	b.n	800151c <main+0xac>
-			Y[currentRowAndColumn] = databaseY[currentRow];
+			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  800151e:	ed9f cb76 	vldr	d12, [pc, #472]	; 80016f8 <main+0x288>
 			X[currentRowAndColumn] = databaseX[currentRow];
  8001522:	ed9f bb77 	vldr	d11, [pc, #476]	; 8001700 <main+0x290>
-			Y[currentRowAndColumn] = databaseY[currentRow];
+			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  8001526:	ed9f ab78 	vldr	d10, [pc, #480]	; 8001708 <main+0x298>
 			X[currentRowAndColumn] = databaseX[currentRow];
  800152a:	ed9f 9b79 	vldr	d9, [pc, #484]	; 8001710 <main+0x2a0>
-			Y[currentRowAndColumn] = databaseY[currentRow];
+			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  800152e:	ed9f 8b7a 	vldr	d8, [pc, #488]	; 8001718 <main+0x2a8>
 	printf("----------------------------------------------------------------------\n");
  8001532:	f8df 92a4 	ldr.w	r9, [pc, #676]	; 80017d8 <main+0x368>
@@ -2201,27 +2201,27 @@ void Error_Handler(void)
  8001554:	f64f 10b0 	movw	r0, #63920	; 0xf9b0
  8001558:	f001 fa6e 	bl	8002a38 <malloc>
  800155c:	4680      	mov	r8, r0
-	double *Y = (double *) malloc(n*sizeof(double));
+	double *Y_tilde = (double *) malloc(n*sizeof(double));
  800155e:	f64f 10b0 	movw	r0, #63920	; 0xf9b0
  8001562:	f001 fa69 	bl	8002a38 <malloc>
-			Y[currentRowAndColumn] = databaseY[currentRow];
+			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  8001566:	f20f 1bb8 	addw	fp, pc, #440	; 0x1b8
  800156a:	e9db ab00 	ldrd	sl, fp, [fp]
  800156e:	f500 4179 	add.w	r1, r0, #63744	; 0xf900
 			X[currentRowAndColumn] = databaseX[currentRow];
  8001572:	ed9f 5b6d 	vldr	d5, [pc, #436]	; 8001728 <main+0x2b8>
-			Y[currentRowAndColumn] = databaseY[currentRow];
+			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  8001576:	ed9f 6b6e 	vldr	d6, [pc, #440]	; 8001730 <main+0x2c0>
 			X[currentRowAndColumn] = databaseX[currentRow];
  800157a:	ed9f 7b6f 	vldr	d7, [pc, #444]	; 8001738 <main+0x2c8>
  800157e:	31b0      	adds	r1, #176	; 0xb0
-	double *Y = (double *) malloc(n*sizeof(double));
+	double *Y_tilde = (double *) malloc(n*sizeof(double));
  8001580:	4607      	mov	r7, r0
 	for (int currentIteration=0; currentIteration<(n/n_database); currentIteration++) {
  8001582:	4603      	mov	r3, r0
  8001584:	4642      	mov	r2, r8
  8001586:	468c      	mov	ip, r1
-			Y[currentRowAndColumn] = databaseY[currentRow];
+			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  8001588:	a16d      	add	r1, pc, #436	; (adr r1, 8001740 <main+0x2d0>)
  800158a:	e9d1 0100 	ldrd	r0, r1, [r1]
  800158e:	ed9f 4b6e 	vldr	d4, [pc, #440]	; 8001748 <main+0x2d8>
@@ -2236,7 +2236,7 @@ void Error_Handler(void)
  80015ae:	e9d1 0100 	ldrd	r0, r1, [r1]
 			X[currentRowAndColumn] = databaseX[currentRow];
  80015b2:	ed9f 4b6d 	vldr	d4, [pc, #436]	; 8001768 <main+0x2f8>
-			Y[currentRowAndColumn] = databaseY[currentRow];
+			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  80015b6:	e9c3 0112 	strd	r0, r1, [r3, #72]	; 0x48
 			X[currentRowAndColumn] = databaseX[currentRow];
  80015ba:	ed82 4b08 	vstr	d4, [r2, #32]
@@ -2249,7 +2249,7 @@ void Error_Handler(void)
  80015d0:	2000      	movs	r0, #0
  80015d2:	ed9f 4b69 	vldr	d4, [pc, #420]	; 8001778 <main+0x308>
  80015d6:	e9c2 010e 	strd	r0, r1, [r2, #56]	; 0x38
-			Y[currentRowAndColumn] = databaseY[currentRow];
+			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  80015da:	ed83 cb00 	vstr	d12, [r3]
  80015de:	ed83 ab02 	vstr	d10, [r3, #8]
  80015e2:	ed83 8b04 	vstr	d8, [r3, #16]
@@ -2289,7 +2289,7 @@ void Error_Handler(void)
 	double *b = (double *) calloc(m+1, sizeof(double));
  800162e:	2002      	movs	r0, #2
  8001630:	f001 f9bc 	bl	80029ac <calloc>
-	getLogisticRegression(X, Y, n, m, p, 0, b); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "b".
+	getLogisticRegression(X, Y_tilde, n, m, p, 0, b); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "b".
  8001634:	2301      	movs	r3, #1
  8001636:	2200      	movs	r2, #0
  8001638:	9300      	str	r3, [sp, #0]
@@ -2298,7 +2298,7 @@ void Error_Handler(void)
  8001640:	f641 7236 	movw	r2, #7990	; 0x1f36
 	double *b = (double *) calloc(m+1, sizeof(double));
  8001644:	4606      	mov	r6, r0
-	getLogisticRegression(X, Y, n, m, p, 0, b); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "b".
+	getLogisticRegression(X, Y_tilde, n, m, p, 0, b); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "b".
  8001646:	4640      	mov	r0, r8
  8001648:	f7ff fc4a 	bl	8000ee0 <getLogisticRegression>
 	elapsedTime = HAL_GetTick() - startingTime; // We obtain the elapsed time to apply the logistic regression with the input data (X).
@@ -2360,7 +2360,7 @@ void Error_Handler(void)
 	free(X);
  80016c4:	4640      	mov	r0, r8
  80016c6:	f001 f9bf 	bl	8002a48 <free>
-	free(Y);
+	free(Y_tilde);
  80016ca:	4638      	mov	r0, r7
  80016cc:	f001 f9bc 	bl	8002a48 <free>
 	free(b);

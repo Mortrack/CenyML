@@ -536,3 +536,19 @@
 
 2022-05-18 17:01:47,540 [INFO] Activator:178 - !SESSION log4j initialized
 2022-05-18 17:01:52,306 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2022-05-25 17:12:09,544 [INFO] Activator:177 - 
+
+
+2022-05-25 17:12:09,547 [INFO] Activator:178 - !SESSION log4j initialized
+2022-05-25 17:12:15,728 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2022-05-25 17:12:53,029 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Exception in thread "SWV client thread" java.lang.NullPointerException
+2022-05-25 17:12:53,030 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at com.st.stm32cube.ide.mcu.debug.swv.core.SWVPlugin.debugTrace(SWVPlugin.java:86)
+2022-05-25 17:12:53,030 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at com.st.stm32cube.ide.mcu.debug.swv.core.SWVClient.TRACE(SWVClient.java:763)
+2022-05-25 17:12:53,031 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at com.st.stm32cube.ide.mcu.debug.swv.core.SWVClient.readByte(SWVClient.java:295)
+2022-05-25 17:12:53,031 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at com.st.stm32cube.ide.mcu.debug.swv.core.SWVClient.getNextByte(SWVClient.java:278)
+2022-05-25 17:12:53,032 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at com.st.stm32cube.ide.mcu.debug.swv.core.SWVClient.run(SWVClient.java:312)
+2022-05-25 17:13:03,621 [INFO] Activator:177 - 
+
+
+2022-05-25 17:13:03,624 [INFO] Activator:178 - !SESSION log4j initialized
+2022-05-25 17:13:08,050 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com

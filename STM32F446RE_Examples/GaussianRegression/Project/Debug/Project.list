@@ -27,11 +27,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  000201e0  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000e545  00000000  00000000  00020210  2**0
+ 12 .debug_info   0000e548  00000000  00000000  00020210  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000240f  00000000  00000000  0002e755  2**0
+ 13 .debug_abbrev 0000240f  00000000  00000000  0002e758  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_loc    00008dbd  00000000  00000000  00030b64  2**0
+ 14 .debug_loc    00008dbd  00000000  00000000  00030b67  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_aranges 00000718  00000000  00000000  00039928  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -39,13 +39,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_macro  00022a01  00000000  00000000  0003b798  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   0000e370  00000000  00000000  0005e199  2**0
+ 18 .debug_line   0000e386  00000000  00000000  0005e199  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000cdef3  00000000  00000000  0006c509  2**0
+ 19 .debug_str    000cdef3  00000000  00000000  0006c51f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000053  00000000  00000000  0013a3fc  2**0
+ 20 .comment      00000053  00000000  00000000  0013a412  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  00002754  00000000  00000000  0013a450  2**2
+ 21 .debug_frame  00002754  00000000  00000000  0013a468  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2273,11 +2273,11 @@ void Error_Handler(void)
  80015b2:	b672      	cpsid	i
   while (1)
  80015b4:	e7fe      	b.n	80015b4 <main+0xac>
-	  			Y[currentRowAndColumn] = databaseY[currentRow];
+	  			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  80015b6:	ed9f 9b72 	vldr	d9, [pc, #456]	; 8001780 <main+0x278>
 	  			X[currentRowAndColumn] = databaseX[currentRow];
  80015ba:	ed9f bb73 	vldr	d11, [pc, #460]	; 8001788 <main+0x280>
-	  			Y[currentRowAndColumn] = databaseY[currentRow];
+	  			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  80015be:	ed9f 8b74 	vldr	d8, [pc, #464]	; 8001790 <main+0x288>
 	  			X[currentRowAndColumn] = databaseX[currentRow];
  80015c2:	ed9f ab75 	vldr	d10, [pc, #468]	; 8001798 <main+0x290>
@@ -2300,10 +2300,10 @@ void Error_Handler(void)
  80015e8:	f645 70f0 	movw	r0, #24560	; 0x5ff0
  80015ec:	f001 fa56 	bl	8002a9c <malloc>
  80015f0:	4680      	mov	r8, r0
-	  	double *Y = (double *) malloc(n*p*sizeof(double));
+	  	double *Y_tilde = (double *) malloc(n*p*sizeof(double));
  80015f2:	f645 70f0 	movw	r0, #24560	; 0x5ff0
  80015f6:	f001 fa51 	bl	8002a9c <malloc>
-	  			Y[currentRowAndColumn] = databaseY[currentRow];
+	  			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  80015fa:	f20f 1ba4 	addw	fp, pc, #420	; 0x1a4
  80015fe:	e9db ab00 	ldrd	sl, fp, [fp]
  8001602:	f500 41bf 	add.w	r1, r0, #24448	; 0x5f80
@@ -2311,20 +2311,20 @@ void Error_Handler(void)
 	  			X[currentRowAndColumn] = databaseX[currentRow];
  800160a:	ed9f 4b69 	vldr	d4, [pc, #420]	; 80017b0 <main+0x2a8>
  800160e:	ed9f 5b6a 	vldr	d5, [pc, #424]	; 80017b8 <main+0x2b0>
-	  			Y[currentRowAndColumn] = databaseY[currentRow];
+	  			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  8001612:	ed9f 6b6b 	vldr	d6, [pc, #428]	; 80017c0 <main+0x2b8>
  8001616:	3170      	adds	r1, #112	; 0x70
-	  	double *Y = (double *) malloc(n*p*sizeof(double));
+	  	double *Y_tilde = (double *) malloc(n*p*sizeof(double));
  8001618:	4607      	mov	r7, r0
 	  	for (int currentIteration=0; currentIteration<(n/n_database); currentIteration++) {
  800161a:	4603      	mov	r3, r0
  800161c:	4642      	mov	r2, r8
  800161e:	468c      	mov	ip, r1
-	  			Y[currentRowAndColumn] = databaseY[currentRow];
+	  			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  8001620:	ed9f 3b69 	vldr	d3, [pc, #420]	; 80017c8 <main+0x2c0>
 	  			X[currentRowAndColumn] = databaseX[currentRow];
  8001624:	4979      	ldr	r1, [pc, #484]	; (800180c <main+0x304>)
-	  			Y[currentRowAndColumn] = databaseY[currentRow];
+	  			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  8001626:	ed83 3b12 	vstr	d3, [r3, #72]	; 0x48
 	  			X[currentRowAndColumn] = databaseX[currentRow];
  800162a:	ed9f 3b69 	vldr	d3, [pc, #420]	; 80017d0 <main+0x2c8>
@@ -2336,7 +2336,7 @@ void Error_Handler(void)
  800163c:	ed9f 2b66 	vldr	d2, [pc, #408]	; 80017d8 <main+0x2d0>
  8001640:	ed9f 3b67 	vldr	d3, [pc, #412]	; 80017e0 <main+0x2d8>
  8001644:	e9c2 010e 	strd	r0, r1, [r2, #56]	; 0x38
-	  			Y[currentRowAndColumn] = databaseY[currentRow];
+	  			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
  8001648:	ed83 9b00 	vstr	d9, [r3]
  800164c:	ed83 8b02 	vstr	d8, [r3, #8]
  8001650:	ed83 7b04 	vstr	d7, [r3, #16]
@@ -2381,7 +2381,7 @@ void Error_Handler(void)
 	  	double *b = (double *) calloc(m+1, sizeof(double));
  80016b0:	2002      	movs	r0, #2
  80016b2:	f001 f9ad 	bl	8002a10 <calloc>
-	  	getGaussianRegression(X, Y, n, m, p, isForceGaussianCurve, 0, b); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "b".
+	  	getGaussianRegression(X, Y_tilde, n, m, p, isForceGaussianCurve, 0, b); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "b".
  80016b6:	2301      	movs	r3, #1
  80016b8:	2200      	movs	r2, #0
  80016ba:	e9cd 3300 	strd	r3, r3, [sp]
@@ -2390,7 +2390,7 @@ void Error_Handler(void)
  80016c4:	f640 32fe 	movw	r2, #3070	; 0xbfe
 	  	double *b = (double *) calloc(m+1, sizeof(double));
  80016c8:	4606      	mov	r6, r0
-	  	getGaussianRegression(X, Y, n, m, p, isForceGaussianCurve, 0, b); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "b".
+	  	getGaussianRegression(X, Y_tilde, n, m, p, isForceGaussianCurve, 0, b); // NOTE: Remember that this functions stores the resulting coefficients in the pointer variable "b".
  80016ca:	4640      	mov	r0, r8
  80016cc:	f7ff fc08 	bl	8000ee0 <getGaussianRegression>
 	  	elapsedTime = HAL_GetTick() - startingTime; // We obtain the elapsed time to apply the Gaussian regression with the input data (X).
@@ -2452,7 +2452,7 @@ void Error_Handler(void)
 	  	free(X);
  8001746:	4640      	mov	r0, r8
  8001748:	f001 f9b0 	bl	8002aac <free>
-	  	free(Y);
+	  	free(Y_tilde);
  800174c:	4638      	mov	r0, r7
  800174e:	f001 f9ad 	bl	8002aac <free>
 	  	free(b);

@@ -352,3 +352,250 @@ arm-none-eabi-size   Project.elf
   26396	    484	   1628	  28508	   6f5c	Project.elf
 Finished building: default.size.stdout
  
+17:22:44 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/MultiplePolynomialRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26484	    484	   1628	  28596	   6fb4	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:22:49 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26484	    484	   1628	  28596	   6fb4	Project.elf
+Finished building: default.size.stdout
+ 
+17:23:33 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/MultiplePolynomialRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26484	    484	   1628	  28596	   6fb4	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:23:36 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26484	    484	   1628	  28596	   6fb4	Project.elf
+Finished building: default.size.stdout
+ 
+17:23:56 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/MultiplePolynomialRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:24:03 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+17:24:05 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+17:24:22 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/MultiplePolynomialRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:24:25 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+17:25:16 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/MultiplePolynomialRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26468	    484	   1628	  28580	   6fa4	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:25:20 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26468	    484	   1628	  28580	   6fa4	Project.elf
+Finished building: default.size.stdout
+ 
+17:25:43 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/MultiplePolynomialRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:25:50 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+17:26:11 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/MultiplePolynomialRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:26:15 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+17:26:31 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/MultiplePolynomialRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:26:39 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+17:26:59 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/MultiplePolynomialRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:27:04 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+17:31:13 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/MultiplePolynomialRegression/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:31:18 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26476	    484	   1628	  28588	   6fac	Project.elf
+Finished building: default.size.stdout
+ 

@@ -474,12 +474,13 @@ void predictLinearLogisticClassification(double *X, double threshold, double *b,
 *					 coefficients will each be stored in the same
 *					 column but under different rows where the first
 *					 coefficient (b_0) will be stored in the row with
-*					 index 0 and the last coefficient (b_m or, in other
-*					 words, omega_m) will be stored in the row with
-*					 index "m". IT IS INDISPENSABLE THAT THIS VARIABLE
-*					 IS ALLOCATED AND INITIALIZED WITH ZEROS BEFORE
-*					 CALLING THIS FUNCTION WITH A VARIABLE SIZE OF "m+1"
-*					 TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+*					 index 0, followed by the remaining coefficient
+*					 values, which are omega_1 in row index 1; omega_2
+*					 in row index 2, ..., omega_m in row index "m". IT
+*					 IS INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
+*					 AND INITIALIZED WITH ZEROS BEFORE CALLING THIS
+*					 FUNCTION WITH A VARIABLE SIZE OF "m+1" TIMES "p=1"
+*					 'DOUBLE' MEMORY SPACES.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE "b".
 * 
@@ -487,7 +488,7 @@ void predictLinearLogisticClassification(double *X, double threshold, double *b,
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 24, 2021
-* LAST UPDATE: DECEMBER 04, 2021
+* LAST UPDATE: MAY 25, 2022
 */
 void getSimpleLinearMachineClassification(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *b) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -733,39 +734,32 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 
 
 /**
-* The "getKernelMachineClassification()" function is used to
-* apply the machine learning algorithm called Kernel machine
-* classification. Within this process, the best fitting equation
-* with the form of "y_hat = alpha.K(x) + b_0" will be identified
-* with respect to the sampled data given through the argument
-* pointer variables "X" and "Y". In that equation, "alpha" and
-* "b_0" are the coefficients to be identified, "K(x)" is the
-* Kernel function which is basically a transformation function
-* of x, "alpha" is the coefficient of the Kernel, "b_0" is the
-* bias coefficient of the model, "x" is a vector containing all
-* the machine learning features and the coefficients within
-* "K(x)" will be representend as "Beta". The way this algorithm
-* is going to be solved will be as formulated in the master
-* thesis of Cesar Miranda Meza called "Machine learning to
-* support applications with embedded systems and parallel
-* computing". Moreover, when inserting all the identified
-* coefficient values into this model, whenever its output is
-* greater than the value of "0", it should be interpreted as the
-* model predicting that the current input values represent group
-* 1 or the numeric value of "+1". Conversely, if the model
-* produces a value less than "0", it should be interpreted as
-* the model predicting that the current input values represent
-* group 2 or the numeric value of "-1".
+* The "getKernelMachineClassification()" function is used to apply the machine
+* learning algorithm called Kernel machine classification. Within this process,
+* the best fitting equation with the form of "y_hat = Beta.K(x) + b_0" will be
+* identified with respect to the sampled data given through the argument pointer
+* variables "X" and "Y". In that equation, "Beta" and "b_0" are the coefficients
+* to be identified, "K(x)" is the Kernel function which is basically a
+* transformation function of x, "Beta" is a coefficient that multiplies the
+* Kernel, "b_0" is the bias coefficient of the model and "x" is a vector
+* containing all the machine learning features for a certain sample from "X".
+* The way this algorithm is going to be solved will be as formulated in the
+* master thesis of Cesar Miranda Meza called "Machine learning library to
+* support applications with embedded systems and parallel computing". Moreover,
+* when inserting all the identified coefficient values into this model, whenever
+* its output is greater than the value of "0", it should be interpreted as the
+* model predicting that the current input values represent group 1 or the
+* numeric value of "+1". Conversely, if the model produces a value less than
+* "0", it should be interpreted as the model predicting that the current input
+* values represent group 2 or the numeric value of "-1".
 *
-* THIS IS IMPORTANT TO KNOW --> Finally, have in mind that not
-* all the argument variables of this function will be used and
-* the ones that do will strictly depend on what Kernel you
-* tell this function to use. Therefore, make sure to read the
-* following descriptions made for all the possible argument
-* variables to be taken into consideration when using this
-* function. There, it will be explicitly specified whether such
-* argument variable will be used and under what cirumstances
-* and what to do when it will not be used.
+* THIS IS IMPORTANT TO KNOW --> Finally, have in mind that not all the argument
+* variables of this function will be used and the ones that do will strictly
+* depend on what Kernel you tell this function to use. Therefore, make sure to
+* read the following descriptions made for all the possible argument variables
+* to be taken into consideration when using this function. There, it will be
+* explicitly specified whether such argument variable will be used and under
+* what cirumstances and what to do when it will not be used.
 * 
 * @param double *X - This argument will contain the pointer to a
 *					 memory allocated input matrix, from which the
@@ -948,7 +942,7 @@ void predictSimpleLinearMachineClassification(double *X, double *b, int n, int m
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: DECEMBER 04, 2021
+* LAST UPDATE: MAY 25, 2022
 */
 void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, int N, double zeroEpsilon, char Kernel[], char isInteractionTerms, char isForceGaussianCurve, char isVariableOptimizer, double *coefficients) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -993,42 +987,36 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, i
 
 
 /**
-* The "trainLinearKernel()" is a static function that is used to
-* apply the machine learning algorithm called Kernel machine
-* classification with a linear Kernel. Within this process, the
-* best fitting equation with the form of "y_hat = alpha.K(x) +
-* b_0" will be identified with respect to the sampled data given
-* through the argument pointer variables "X" and "Y". In that
-* equation, "alpha" and "b_0" are the coefficients to be
-* identified, "K(x)" is the Kernel function which is basically a
-* transformation function of x, "alpha" is the coefficient of the
-* Kernel, "b_0" is the bias coefficient of the model, "x" is a
-* vector containing all the machine learning features and the
-* coefficients within "K(x)" will be representend as "Beta". With
-* this in mind and just like in the master thesis of Cesar
-* Miranda Meza ("Machine learning to support applications with
-* embedded systems and parallel computing"), the first step to
-* train this model is to solve the kernel function. For this
-* purpose and for this particular type of Kernel, a multiple
-* linear regression will be applied with respect to the output
-* of the system under study "Y". Both the characteristic
-* equation of the multiple linear system and its best fitting
-* coefficient values will together represent the Kernel function
-* K(x). Now, for this particular Kernel machine classifier,
-* because of being a linear system, the coefficient value of
-* "alpha"=1 and "b_0"=0. As a result, when inserting all the
-* coefficient values into this model, whenever its output is
-* greater than the value of "0", it should be interpreted as the
-* model predicting that the current input values represent group
-* 1 or the numeric value of "+1". Conversely, if the model
-* produces a value less than "0", it should be interpreted as the
-* model predicting that the current input values represent group
-* 2 or the numeric value of "-1".
+* The "trainLinearKernel()" is a static function that is used to apply the
+* machine learning algorithm called Kernel machine classification with a linear
+* Kernel. Within this process, the best fitting equation with the form of
+* "y_hat = Beta.K(x) + b_0" will be identified with respect to the sampled data
+* given through the argument pointer variables "X" and "Y". In that equation,
+* "Beta" and "b_0" are the coefficients to be identified, "K(x)" is the Kernel
+* function which is basically a transformation function of x, "Beta" is a
+* coefficient that multiplies the Kernel, "b_0" is the bias coefficient of the
+* model and "x" is a vector containing all the machine learning features for a
+* certain sample from "X". With this in mind and just like in the master thesis
+* of Cesar Miranda Meza ("Machine learning library to support applications with
+* embedded systems and parallel computing"), the first step to train this model
+* is to solve the kernel function. For this purpose and for this particular type
+* of Kernel, a multiple linear regression will be applied with respect to the
+* output of the system under study "Y". Both the characteristic equation of the
+* multiple linear system and its best fitting coefficient values will together
+* represent the Kernel function K(x). Now, for this particular Kernel machine
+* classifier, because of being a linear system, the coefficient value of
+* "Beta"=1 and "b_0"=0. As a result, when inserting all the coefficient values
+* into this model, whenever its output is greater than the value of "0", it
+* should be interpreted as the model predicting that the current input values
+* represent group 1 or the numeric value of "+1". Conversely, if the model
+* produces a value less than "0", it should be interpreted as the model
+* predicting that the current input values represent group 2 or the numeric
+* value of "-1".
 *
-* NOTE: The algorithm section that applied the matrix inverse using
-* the Gauss-Jordan method was inspired in the following source:
-* "CodeSansar. Matrix Inverse Using Gauss Jordan Method C Program.
-* November 16, 2021 (Recovery date), de CodeSansar Sitio web:
+* NOTE: The algorithm section that applied the matrix inverse using the
+* Gauss-Jordan method was inspired in the following source: "CodeSansar. Matrix
+* Inverse Using Gauss Jordan Method C Program. November 16, 2021 (recovery
+* date), de CodeSansar Sitio web:
 * https://bit.ly/3CowwSy".
 *
 * 
@@ -1073,27 +1061,28 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, i
 *									does not surprise the user when it
 *									gets developed in the near future.
 *
-* @param double *coefficients - This argument will contain the pointer
-*					 to a memory allocated variable in which we will
-*					 store the identified best fitting coefficient values
-*					 for the desired machine learning algorithm. These
-*					 coefficients will each be stored in the same
-*					 column but under different rows where the first
-*					 coefficient (Beta_0) will be stored in the row with
-*					 index 0, the last Beta value (Beta_m) will be
-*					 stored in the row with index "m", the bias
-*					 coefficient value (b_0) will be stored in the row
-*					 with index "m+1" and the last coefficient (alpha)
-*					 will be stored in the row with index "m+2". NOTE:
-*					 For more information on how the "Beta"
-*					 coefficients will be stored, please see the
-*					 description given for the argument pointer variable
-*					 "b" of the function "getMultipleLinearRegression()"
-*					 in the "CenyMLregression.c" file. IT IS
-*					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED AND
-*					 INITIALIZED WITH ZEROS BEFORE CALLING THIS
-*					 FUNCTION WITH A VARIABLE SIZE OF "m+3" TIMES
-*					 "p=1" 'DOUBLE' MEMORY SPACES.
+* @param double *coefficients - This argument will contain the pointer to a
+*				 memory allocated variable in which we will store
+*				 the identified best fitting coefficient values
+*				 for the desired machine learning algorithm.
+*				 These coefficients will each be stored in the
+*				 same column but under different rows where the
+*				 first coefficient (Kernel_b_0) will be stored in
+*				 the row with index 0, the last "Kernel_b" value
+*				 (Kernel_b_m) will be stored in the row with
+*				 index "m", the bias coefficient value (b_0) will
+*				 be stored in the row with index "m+1" and the
+*				 last coefficient (Beta) will be stored in the
+*				 row with index "m+2". NOTE: For more information
+*				 on how the "Kernel_b_0" coefficients will be
+*				 stored, please see the description given for the
+*				 argument pointer variable "b" of the function
+*				 "getMultipleLinearRegression()" in the
+*				 "CenyMLregression.c" file. IT IS INDISPENSABLE
+*				 THAT THIS VARIABLE IS ALLOCATED AND INITIALIZED
+*				 WITH ZEROS BEFORE CALLING THIS FUNCTION WITH A
+*				 VARIABLE SIZE OF "m+3" TIMES "p=1" 'DOUBLE'
+*				 MEMORY SPACES.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"coefficients".
@@ -1102,7 +1091,7 @@ void getKernelMachineClassification(double *X, double *Y, int n, int m, int p, i
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 26, 2021
-* LAST UPDATE: DECEMBER 04, 2021
+* LAST UPDATE: MAY 25, 2022
 */
 static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *coefficients) {
 	// --------------- PREPROCESSING OF THE INPUT DATA --------------- //
@@ -1131,7 +1120,7 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 	}
 	
 	// -------------------- SOLUTION OF THE MODEL -------------------- //
-	// NOTE: To solve for the "Beta_0" + "Beta_1", ..., "Beta_m" coefficients, we will apply a multiple linear regression.
+	// NOTE: To solve for the "Kernel_b_0" + "Kernel_b_1", ..., "Kernel_b_m" coefficients, we will apply a multiple linear regression.
 	// In order to start obtaining the coefficients, we multiply the matrix "TransposeOf_X_tilde" with the matrix "X_tilde" and store the result in the matrix "matMul1".
 	int currentColumnTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int currentRowTimesN; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
@@ -1218,14 +1207,14 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 	}
 	
 	// In order to conclude obtaining the coefficients ("coefficients"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y".
-	for (int currentRow=0; currentRow<mPlusOne; currentRow++) { // In this for-loop, we will store the "Beta" coefficient values of the Kernel function "K(x)".
+	for (int currentRow=0; currentRow<mPlusOne; currentRow++) { // In this for-loop, we will store the "Kernel_b" coefficient values of the Kernel function "K(x)".
 		currentRowTimesN = currentRow*n;
 		for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
 			coefficients[currentRow] = coefficients[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y[currentMultipliedElements];
 		}
 	}
-	coefficients[1+m] = 0; // We store the value of "b_0" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
-	coefficients[2+m] = 1; // We store the value of "alpha" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+	coefficients[1+m] = 0; // We store the value of "b_0" from the main function to be solved, which is "y_hat = Beta.K(x) + b_0"
+	coefficients[2+m] = 1; // We store the value of "Beta" from the main function to be solved, which is "y_hat = Beta.K(x) + b_0"
 	
 	// Free the Heap memory used for the locally allocated variables since they will no longer be used.
 	free(X_tilde);
@@ -1238,44 +1227,36 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 
 
 /**
-* The "trainPolynomialKernel()" is a static function that is
-* used to apply the machine learning algorithm called Kernel
-* machine classification with a polynomial Kernel. Within this
-* process, the best fitting equation with the form of "y_hat =
-* alpha.K(x) + b_0" will be identified with respect to the
-* sampled data given through the argument pointer variables "X"
-* and "Y". In that equation, "alpha" and "b_0" are the
-* coefficients to be identified, "K(x)" is the Kernel function
-* which is basically a transformation function of x, "alpha" is
-* the coefficient of the Kernel, "b_0" is the bias coefficient
-* of the model, "x" is a vector containing all the machine
-* learning features and the coefficients within "K(x)" will be
-* representend as "Beta". With this in mind and just like in
-* the master thesis of Cesar Miranda Meza ("Machine learning to
-* support applications with embedded systems and parallel
-* computing"), the first step to train this model is to solve
-* the kernel function. For this purpose and for this particular
-* type of Kernel, a multiple polynomial regression will be
-* applied with respect to the output of the system under study
-* "Y". Both the characteristic equation of the multiple
-* polynomial system and its best fitting coefficient values
-* will together represent the Kernel function K(x). Now, for
-* this particular Kernel machine classifier, because of being
-* a polynomial system, the coefficient value of "alpha"=1 and
-* "b_0"=0. As a result, when inserting all the coefficient
-* values into this model, whenever its output is greater than
-* the value of "0", it should be interpreted as the model
-* predicting that the current input values represent group 1
-* or the numeric value of "+1". Conversely, if the model
-* produces a value less than "0", it should be interpreted as
-* the model predicting that the current input values represent
-* group 2 or the numeric value of "-1".
+* The "trainPolynomialKernel()" is a static function that is used to apply the
+* machine learning algorithm called Kernel machine classification with a
+* polynomial Kernel. Within this process, the best fitting equation with the
+* form of "y_hat = Beta.K(x) + b_0" will be identified with respect to the
+* sampled data given through the argument pointer variables "X" and "Y". In that
+* equation, "Beta" and "b_0" are the coefficients to be identified, "K(x)" is
+* the Kernel function which is basically a transformation function of x, "Beta"
+* is a coefficient that multiplies the Kernel, "b_0" is the bias coefficient of
+* the model and "x" is a vector containing all the machine learning features for
+* a certain sample from "X". With this in mind and just like in the master
+* thesis of Cesar Miranda Meza ("Machine learning library to support
+* applications with embedded systems and parallel computing"), the first step to
+* train this model is to solve the kernel function. For this purpose and for
+* this particular type of Kernel, a multiple polynomial regression will be
+* applied with respect to the output of the system under study "Y". Both the
+* characteristic equation of the multiple polynomial system and its best fitting
+* coefficient values will together represent the Kernel function K(x). Now, for
+* this particular Kernel machine classifier, because of being a polynomial
+* system, the coefficient value of "Beta"=1 and "b_0"=0. As a result, when
+* inserting all the coefficient values into this model, whenever its output is
+* greater than the value of "0", it should be interpreted as the model
+* predicting that the current input values represent group 1 or the numeric
+* value of "+1". Conversely, if the model produces a value less than "0", it
+* should be interpreted as the model predicting that the current input values
+* represent group 2 or the numeric value of "-1".
 *
-* NOTE: The algorithm section that applied the matrix inverse using
-* the Gauss-Jordan method was inspired in the following source:
-* "CodeSansar. Matrix Inverse Using Gauss Jordan Method C Program.
-* November 16, 2021 (Recovery date), de CodeSansar Sitio web:
-* https://bit.ly/3CowwSy".
+* NOTE: The algorithm section that applied the matrix inverse using the
+* Gauss-Jordan method was inspired in the following source: "CodeSansar. Matrix
+* Inverse Using Gauss Jordan Method C Program. November 16, 2021 (recovery
+* date), de CodeSansar Sitio web: https://bit.ly/3CowwSy".
 *
 * 
 * @param double *X - This argument will contain the pointer to a
@@ -1338,26 +1319,28 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 *									does not surprise the user when it
 *									gets developed in the near future.
 *
-* @param double *coefficients - This argument will contain the pointer
-*					 to a memory allocated variable in which we will
-*					 store the identified best fitting coefficient
-*					 values for the desired machine learning algorithm.
-*					 These coefficients will each be stored in the same
-*					 column but under different rows where the first
-*					 coefficient (Beta_0) will be stored in the row with
-*					 index 0, the last Beta value (Beta_{m*N}) will be
-*					 stored in the row with index "{m*N}", the bias
-*					 coefficient value (b_0) will be stored in the row
-*					 with index "m*N+1" and the last coefficient (alpha)
-*					 will be stored in the row with index "m*N+2". NOTE:
-*					 For more information on how the "Beta" coefficients
-*					 will be stored, please see the description given
-*					 for the argument pointer variable "b" of the
-*					 function "getMultiplePolynomialRegression()" in the
-*					 "CenyMLregression.c" file. IT IS INDISPENSABLE THAT
-*					 THIS VARIABLE IS ALLOCATED AND INITIALIZED WITH
-*					 ZEROS BEFORE CALLING THIS FUNCTION WITH A VARIABLE
-*					 SIZE OF "m*N+3" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+* @param double *coefficients - This argument will contain the pointer to a
+*				 memory allocated variable in which we will store
+*				 the identified best fitting coefficient values
+*				 for the desired machine learning algorithm.
+*				 These coefficients will each be stored in the
+*				 same column but under different rows where the
+*				 first coefficient (Kernel_b_0) will be stored in
+*				 the row with index 0, the last "Kernel_b" value
+*				 (Kernel_b_{m*N}) will be stored in the row with
+*				 index "{m*N}", the bias coefficient value (b_0)
+*				 will be stored in the row with index "m*N+1" and
+*				 the last coefficient (Beta) will be stored in
+*				 the row with index "m*N+2". NOTE: For more
+*				 information on how the "Kernel_b" coefficients
+*				 will be stored, please see the description given
+*				 for the argument pointer variable "b" of the
+*				 function "getMultiplePolynomialRegression()" in
+*				 the "CenyMLregression.c" file. IT IS
+*				 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
+*				 AND INITIALIZED WITH ZEROS BEFORE CALLING THIS
+*				 FUNCTION WITH A VARIABLE SIZE OF "m*N+3" TIMES
+*				 "p=1" 'DOUBLE' MEMORY SPACES.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"coefficients".
@@ -1366,7 +1349,7 @@ static void trainLinearKernel(double *X, double *Y, int n, int m, int p, char is
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 26, 2021
-* LAST UPDATE: DECEMBER 04, 2021
+* LAST UPDATE: MAY 25, 2022
 */
 static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int N, char isInteractionTerms, char isVariableOptimizer, double *coefficients) {
 	// Determine whether the interaction terms are desired in the resulting model to be generated or not and then excecute the corresponding code.
@@ -1411,7 +1394,7 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 		}
 		
 		// -------------------- SOLUTION OF THE MODEL -------------------- //
-		// NOTE: To solve for the "Beta_0", "Beta_1", ..., "Beta_m*N" coefficients, we will apply a multiple polynomial regression.
+		// NOTE: To solve for the "Kernel_b_0", "Kernel_b_1", ..., "Kernel_b_m*N" coefficients, we will apply a multiple polynomial regression.
 		// In order to start obtaining the coefficients, we multiply the matrix "TransposeOf_X_tilde" with the matrix "X_tilde" and store the result in the matrix "matMul1".
 		int currentRowTimesN; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 		int currentColumnTimesN; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
@@ -1497,14 +1480,14 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 		}
 		
 		// In order to conclude obtaining the coefficients ("coefficients"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y".
-		for (int currentRow=0; currentRow<mTimesNPlusOne; currentRow++) { // In this for-loop, we will store the "Beta" coefficient values of the Kernel function "K(x)".
+		for (int currentRow=0; currentRow<mTimesNPlusOne; currentRow++) { // In this for-loop, we will store the "Kernel_b" coefficient values of the Kernel function "K(x)".
 			currentRowTimesN = currentRow*n;
 			for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
 				coefficients[currentRow] = coefficients[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y[currentMultipliedElements];
 			}
 		}
-		coefficients[1+m*N] = 0; // We store the value of "b_0" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
-		coefficients[2+m*N] = 1; // We store the value of "alpha" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+		coefficients[1+m*N] = 0; // We store the value of "b_0" from the main function to be solved, which is "y_hat = Beta.K(x) + b_0"
+		coefficients[2+m*N] = 1; // We store the value of "Beta" from the main function to be solved, which is "y_hat = Beta.K(x) + b_0"
 		
 		// Free the Heap memory used for the locally allocated variables since they will no longer be used.
 		free(X_tilde);
@@ -1523,49 +1506,40 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 
 
 /**
-* The "trainLogisticKernel()" is a static function that is used
-* to apply the machine learning algorithm called Kernel machine
-* classification with a logistic Kernel. Within this process, the
-* best fitting equation with the form of "y_hat = alpha.K(x) +
-* b_0" will be identified with respect to the sampled data given
-* through the argument pointer variables "X" and "Y". In that
-* equation, "alpha" and "b_0" are the coefficients to be
-* identified, "K(x)" is the Kernel function which is basically a
-* transformation function of x, "alpha" is the coefficient of the
-* Kernel, "b_0" is the bias coefficient of the model, "x" is a
-* vector containing all the machine learning features and the
-* coefficients within "K(x)" will be representend as "Beta". With
-* this in mind and just like in the master thesis of Cesar
-* Miranda Meza ("Machine learning to support applications with
-* embedded systems and parallel computing"), the first step to
-* train this model is to solve the kernel function. For this
-* purpose and for this particular type of Kernel, a multiple
-* linear regression will be applied with respect to the required
-* transformed output of the system under study "Y_tilde" in order
-* to obtain the equivalent of a logistic regression (see the
-* thesis of Cesar Miranda Meza for more details). Both the
-* characteristic equation of the logistic system and its best
-* fitting coefficient values will together represent the Kernel
-* function K(x). The next step is to now apply the transformation
-* of the Kernel function "K(x)" with the coefficients that were
-* obtained to then store its output. Finally, we will use the
-* output of "K(x)" as the input data of a simple linear
-* regression in order to learn the best fitting coefficient
-* values of "alpha" and "b_0". As a result, when inserting all
-* the coefficient values into the main model which is
-* "y_hat = alpha.K(x) + b_0", whenever its output is greater than
-* the value of "0", it should be interpreted as the model
-* predicting that the current input values represent group 1 or
-* the numeric value of "+1". Conversely, if the model produces a
-* value less than "0", it should be interpreted as the model
-* predicting that the current input values represent group 2 or
-* the numeric value of "-1".
+* The "trainLogisticKernel()" is a static function that is used to apply the
+* machine learning algorithm called Kernel machine classification with a
+* logistic Kernel. Within this process, the best fitting equation with the form
+* of "y_hat = Beta.K(x) + b_0" will be identified with respect to the sampled
+* data given through the argument pointer variables "X" and "Y". In that
+* equation, "Beta" and "b_0" are the coefficients to be identified, "K(x)" is
+* the Kernel function which is basically a transformation function of x, "Beta"
+* is a coefficient that multiplies the Kernel, "b_0" is the bias coefficient of
+* the model and "x" is a vector containing all the machine learning features for
+* a certain sample from "X". With this in mind and just like in the master
+* thesis of Cesar Miranda Meza ("Machine learning library to support
+* applications with embedded systems and parallel computing"), the first step to
+* train this model is to solve the kernel function. For this purpose and for
+* this particular type of Kernel, a multiple linear regression will be applied
+* with respect to the required transformed output of the system under study
+* "Y_tilde" in order to obtain the equivalent of a logistic regression (see the
+* thesis of Cesar Miranda Meza for more details). Both the characteristic
+* equation of the logistic system and its best fitting coefficient values will
+* together represent the Kernel function K(x). The next step is to now apply the
+* transformation of the Kernel function "K(x)" with the coefficients that were
+* obtained to then store its output. Finally, we will use the output of "K(x)"
+* as the input data of a simple linear regression in order to learn the best
+* fitting coefficient values of "Beta" and "b_0". As a result, when inserting
+* all the coefficient values into the main model which is "y_hat = Beta.K(x) +
+* b_0", whenever its output is greater than the value of "0", it should be
+* interpreted as the model predicting that the current input values represent
+* group 1 or the numeric value of "+1". Conversely, if the model produces a
+* value less than "0", it should be interpreted as the model predicting that the
+* current input values represent group 2 or the numeric value of "-1".
 *
-* NOTE: The algorithm section that applied the matrix inverse using
-* the Gauss-Jordan method was inspired in the following source:
-* "CodeSansar. Matrix Inverse Using Gauss Jordan Method C Program.
-* November 16, 2021 (Recovery date), de CodeSansar Sitio web:
-* https://bit.ly/3CowwSy".
+* NOTE: The algorithm section that applied the matrix inverse using the
+* Gauss-Jordan method was inspired in the following source: "CodeSansar. Matrix
+* Inverse Using Gauss Jordan Method C Program. November 16, 2021 (recovery
+* date), de CodeSansar Sitio web: https://bit.ly/3CowwSy".
 *
 * 
 * @param double *X - This argument will contain the pointer to a
@@ -1609,26 +1583,28 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 *									does not surprise the user when it
 *									gets developed in the near future.
 *
-* @param double *coefficients - This argument will contain the pointer
-*					 to a memory allocated variable in which we will
-*					 store the identified best fitting coefficient values
-*					 for the desired machine learning algorithm. These
-*					 coefficients will each be stored in the same
-*					 column but under different rows where the first
-*					 coefficient (Beta_0) will be stored in the row with
-*					 index 0, the last Beta value (Beta_m) will be
-*					 stored in the row with index "m", the bias
-*					 coefficient value (b_0) will be stored in the row
-*					 with index "m+1" and the last coefficient (alpha)
-*					 will be stored in the row with index "m+2". NOTE:
-*					 For more information on how the "Beta" coefficients
-*					 will be stored, please see the description given for
-*					 the argument pointer variable "coefficients" of the
-*					 function "getLogisticRegression()" in the
-*					 "CenyMLregression.c" file. IT IS INDISPENSABLE THAT
-*					 THIS VARIABLE IS ALLOCATED AND INITIALIZED WITH
-*					 ZEROS BEFORE CALLING THIS FUNCTION WITH A VARIABLE
-*					 SIZE OF "m+3" TIMES "p=1" 'DOUBLE' MEMORY SPACES.
+* @param double *coefficients - This argument will contain the pointer to a
+* 				 memory allocated variable in which we will store
+*				 the identified best fitting coefficient values
+*				 for the desired machine learning algorithm.
+*				 These coefficients will each be stored in the
+*				 same column but under different rows where the
+*				 first coefficient (Kernel_b_0) will be stored in
+*				 the row with index 0, the last "Kernel_b" value
+*				 (Kernel_b_m) will be stored in the row with
+*				 index "m", the bias coefficient value (b_0) will
+*				 be stored in the row with index "m+1" and the
+*				 last coefficient (Beta) will be stored in the
+*				 row with index "m+2". NOTE: For more information
+*				 on how the "Kernel_b" coefficients will be
+*				 stored, please see the description given for the
+*				 argument pointer variable "coefficients" of the
+*				 function "getLogisticRegression()" in the
+*				 "CenyMLregression.c" file. IT IS INDISPENSABLE
+*				 THAT THIS VARIABLE IS ALLOCATED AND INITIALIZED
+*				 WITH ZEROS BEFORE CALLING THIS FUNCTION WITH A
+*				 VARIABLE SIZE OF "m+3" TIMES "p=1" 'DOUBLE'
+*				 MEMORY SPACES.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"coefficients".
@@ -1637,7 +1613,7 @@ static void trainPolynomialKernel(double *X, double *Y, int n, int m, int p, int
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: DECEMBER 04, 2021
+* LAST UPDATE: MAY 25, 2022
 */
 static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char isVariableOptimizer, double *coefficients) {
 	// Store the data that must be contained in the input matrix "X_tilde". In addition, we obtain the transpose of "X_tilde".
@@ -1676,7 +1652,7 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 	}
 	
 	// -------------------- SOLUTION OF THE KERNEL -------------------- //
-	// NOTE: To solve for the "Beta_0", "Beta_1", ..., "Beta_m" coefficients, we will apply a multiple linear regression.
+	// NOTE: To solve for the "Kernel_b_0", "Kernel_b_1", ..., "Kernel_b_m" coefficients, we will apply a multiple linear regression.
 	// In order to start obtaining the coefficients, we multiply the matrix "TransposeOf_X_tilde" with the matrix "X_tilde" and store the result in the matrix "matMul1".
 	int currentColumnTimesMplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 	int currentRowTimesN; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
@@ -1763,15 +1739,15 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 	}
 	
 	// In order to conclude obtaining the coefficients ("coefficients"), we multiply the previously resulting matrix ("matMul2") by the output matrix "Y_tilde".
-	for (int currentRow=0; currentRow<mPlusOne; currentRow++) { // In this for-loop, we will store the "Beta" coefficient values of the Kernel function "K(x)".
+	for (int currentRow=0; currentRow<mPlusOne; currentRow++) { // In this for-loop, we will store the "Kernel_b" coefficient values of the Kernel function "K(x)".
 		currentRowTimesN = currentRow*n;
 		for (int currentMultipliedElements=0; currentMultipliedElements<n; currentMultipliedElements++) {
 			coefficients[currentRow] = coefficients[currentRow] + matMul2[currentMultipliedElements + currentRowTimesN] * Y_tilde[currentMultipliedElements];
 		}
 	}
 	
-	// We declare and innitialize the variables that will be required to calculate the coefficients of "alpha" and "b_0".
-	// NOTE: To solve for the "alpha" and "b_0" coefficients, we will apply a simple linear regression.
+	// We declare and innitialize the variables that will be required to calculate the coefficients of "Beta" and "b_0".
+	// NOTE: To solve for the "Beta" and "b_0" coefficients, we will apply a simple linear regression.
 	double sumOf_xy = 0;
 	double sumOf_y = 0;
 	double sumOf_x = 0;
@@ -1786,18 +1762,18 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 		}
 		Y_tilde[currentRow] = 1 / (1 + exp(-Y_tilde[currentRow])); // We will store the results of the transformed function "K(x)" in "Y_tilde".
 		
-		// -------------------- SOLUTION OF "alpha" AND "b_0" -------------------- //
-		// In order to obtain the coefficients of "alpha" and "b_0", we apply a linear regression using the input data "Y_tilde" (that was obtained with the transformed function "K(x)") with respect to the output data "Y".
+		// -------------------- SOLUTION OF "Beta" AND "b_0" -------------------- //
+		// In order to obtain the coefficients of "Beta" and "b_0", we apply a linear regression using the input data "Y_tilde" (that was obtained with the transformed function "K(x)") with respect to the output data "Y".
 		sumOf_xy += Y_tilde[currentRow] * Y[currentRow];
 		sumOf_y += Y[currentRow];
 		sumOf_x += Y_tilde[currentRow];
 		sumOf_xSquared += Y_tilde[currentRow] * Y_tilde[currentRow];
 	}
 	
-	// We calculate the value of "alpha" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+	// We calculate the value of "Beta" from the main function to be solved, which is "y_hat = Beta.K(x) + b_0"
 	coefficients[2+m] = (n*sumOf_xy - sumOf_y*sumOf_x)/(n*sumOf_xSquared - sumOf_x*sumOf_x);
 	
-	// We calculate the value of "b_0" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+	// We calculate the value of "b_0" from the main function to be solved, which is "y_hat = Beta.K(x) + b_0"
 	coefficients[1+m] = (sumOf_y - coefficients[2+m]*sumOf_x)/n;
 	
 	// Free the Heap memory used for the locally allocated variables since they will no longer be used.
@@ -1811,49 +1787,41 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 
 
 /**
-* The "trainGaussianKernel()" is a static function that is used
-* to apply the machine learning algorithm called Kernel machine
-* classification with a gaussian Kernel. Within this process, the
-* best fitting equation with the form of "y_hat = alpha.K(x) +
-* b_0" will be identified with respect to the sampled data given
-* through the argument pointer variables "X" and "Y". In that
-* equation, "alpha" and "b_0" are the coefficients to be
-* identified, "K(x)" is the Kernel function which is basically a
-* transformation function of x, "alpha" is the coefficient of the
-* Kernel, "b_0" is the bias coefficient of the model, "x" is a
-* vector containing all the machine learning features and the
-* coefficients within "K(x)" will be representend as "Beta". With
-* this in mind and just like in the master thesis of Cesar
-* Miranda Meza ("Machine learning to support applications with
-* embedded systems and parallel computing"), the first step to
-* train this model is to solve the kernel function. For this
-* purpose and for this particular type of Kernel, a multiple
-* polynomial regression will be applied with respect to the
-* required transformed output of the system under study
-* "Y_tilde" in order to obtain the equivalent of a gaussian
-* regression (see the thesis of Cesar Miranda Meza for more
-* details). Both the characteristic equation of the gaussian
-* system and its best fitting coefficient values will together
-* represent the Kernel function K(x). The next step is to now
-* apply the transformation of the Kernel function "K(x)" with
-* the coefficients that were obtained to then store its output.
-* Finally, we will use the output of "K(x)" as the input data of
-* a simple linear regression in order to learn the best fitting
-* coefficient values of "alpha" and "b_0". As a result, when
-* inserting all the coefficient values into the main model which
-* is "y_hat = alpha.K(x) + b_0", whenever its output is greater
-* than the value of "0", it should be interpreted as the model
-* predicting that the current input values represent group 1 or
-* the numeric value of "+1". Conversely, if the model produces a
-* value less than "0", it should be interpreted as the model
-* predicting that the current input values represent group 2 or
-* the numeric value of "-1".
+* The "trainGaussianKernel()" is a static function that is used to apply the
+* machine learning algorithm called Kernel machine classification with a
+* gaussian Kernel. Within this process, the best fitting equation with the form
+* of "y_hat = Beta.K(x) + b_0" will be identified with respect to the sampled
+* data given through the argument pointer variables "X" and "Y". In that
+* equation, "Beta" and "b_0" are the coefficients to be identified, "K(x)" is
+* the Kernel function which is basically a transformation function of x, "Beta"
+* is a coefficient that multiplies the Kernel, "b_0" is the bias coefficient of
+* the model and "x" is a vector containing all the machine learning features for
+* a certain sample from "X". With this in mind and just like in the master
+* thesis of Cesar Miranda Meza ("Machine learning library to support
+* applications with embedded systems and parallel computing"), the first step to
+* train this model is to solve the kernel function. For this purpose and for
+* this particular type of Kernel, a multiple polynomial regression will be
+* applied with respect to the required transformed output of the system under
+* study "Y_tilde" in order to obtain the equivalent of a gaussian regression
+* (see the thesis of Cesar Miranda Meza for more details). Both the
+* characteristic equation of the gaussian system and its best fitting
+* coefficient values will together represent the Kernel function K(x). The next
+* step is to now apply the transformation of the Kernel function "K(x)" with the
+* coefficients that were obtained to then store its output. Finally, we will use
+* the output of "K(x)" as the input data of a simple linear regression in order
+* to learn the best fitting coefficient values of "Beta" and "b_0". As a result,
+* when inserting all the coefficient values into the main model which is "y_hat
+* = Beta.K(x) + b_0", whenever its output is greater than the value of "0", it
+* should be interpreted as the model predicting that the current input values
+* represent group 1 or the numeric value of "+1". Conversely, if the model
+* produces a value less than "0", it should be interpreted as the model
+* predicting that the current input values represent group 2 or the numeric
+* value of "-1".
 *
-* NOTE: The algorithm section that applied the matrix inverse using
-* the Gauss-Jordan method was inspired in the following source:
-* "CodeSansar. Matrix Inverse Using Gauss Jordan Method C Program.
-* November 16, 2021 (Recovery date), de CodeSansar Sitio web:
-* https://bit.ly/3CowwSy".
+* NOTE: The algorithm section that applied the matrix inverse using the
+* Gauss-Jordan method was inspired in the following source: "CodeSansar. Matrix
+* Inverse Using Gauss Jordan Method C Program. November 16, 2021 (recovery
+* date), de CodeSansar Sitio web: https://bit.ly/3CowwSy".
 *
 * 
 * @param double *X - This argument will contain the pointer to a
@@ -1953,55 +1921,61 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 *									does not surprise the user when it
 *									gets developed in the near future.
 *
-* @param double *coefficients - This argument will contain the pointer
-*					 to a memory allocated variable in which we will
-*					 store the identified best fitting coefficient values
-*					 for the desired machine learning algorithm.  IT IS
-*					 INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED AND
-*					 INITIALIZED WITH ZEROS BEFORE CALLING THIS FUNCTION
-*					 WITH A VARIABLE SIZE OF "m*2+3" TIMES "p=1" 'DOUBLE'
-*					 MEMORY SPACES. Moreover, the coefficients will be
-*					 stored in a different manner depending on the value
-*					 of the argument variable "isForceGaussianCurve". If
-*					 its value equals 0, the coefficients will each be
-*					 stored in the same column but under different rows
-*					 where the first coefficient (Beta_0) will be stored
-*					 in the row with index 0, the last Beta value
-*					 (Beta_{2*m}) will be stored in the row with index
-*					 "2*m", the bias coefficient value (b_0) will be
-*					 stored in the row with index "2*m+1" and the last
-*					 coefficient (alpha) will be stored in the row with
-*					 index "2*m+2". On the other hand, if
-*					 "isForceGaussianCurve" = 1, then each machine
-*					 learning feature will contain two coefficients but
-*					 only in the Kernel function. The first will be the
-*					 "mean" and the second will be the "variance". Both
-*					 of these will be stored in the same row, where the
-*					 first column (column index 0) will store the mean and
-*					 the variance will be stored in the second column
-*					 (column index 1). In addition, each of the identified
-*					 means and variances for each different machine
-*					 learning feature will be stored separately in rows.
-*					 The first row (row index 0) will contain the mean and
-*					 variance for the first machine learning feature and
-*					 the last row (row index "m") will contain the mean
-*					 and variance for the "m"-th machine learning feature.
-*					 Furthermore, note that if "isForceGaussianCurve" = 1,
-*					 then the true size to be taken into account of the
-*					 argument pointer variable "coefficients" will be from
-*					 "m*2+3" to "m*2+2". This means that the last index
-*					 with respect to the entirely allocated memory in
-*					 "coefficients" will not be used or have any meaning
-*					 under this case. Finally, the bias coefficient value
-*					 (b_0) will be stored in the row with index "m*2" and
-*					 column index "0" and the last coefficient (alpha)
-*					 will be stored in the row with index "m*2+1" and
-*					 column index "1".
-*				     NOTE: For more information on how the "Beta"
-*					 coefficients will be stored, please see the
-*					 description given for the argument pointer variable
-*					 "b" of the function "getLogisticRegression()" in the
-*					 "CenyMLregression.c" file.
+* @param double *coefficients - This argument will contain the pointer to a
+*				 memory allocated variable in which we will store
+*				 the identified best fitting coefficient values
+*				 for the desired machine learning algorithm. IT
+*				 IS INDISPENSABLE THAT THIS VARIABLE IS ALLOCATED
+*				 AND INITIALIZED WITH ZEROS BEFORE CALLING THIS
+*				 FUNCTION WITH A VARIABLE SIZE OF "m*2+3" TIMES
+*				 "p=1" 'DOUBLE' MEMORY SPACES. Moreover, the
+*				 coefficients will be stored in a different
+*				 manner depending on the value of the argument
+*				 variable "isForceGaussianCurve". If its value
+*				 equals 0, the coefficients will each be stored
+*				 in the same column but under different rows
+*				 where the first coefficient (Kernel_b_0) will be
+*				 stored in the row with index 0, the last
+*				 "Kernel_b" value (Kernel_b_{2*m}) will be stored
+*				 in the row with index "2*m", the bias
+*				 coefficient value (b_0) will be stored in the
+*				 row with index "2*m+1" and the last coefficient
+*				 (Beta) will be stored in the row with index
+*				 "2*m+2". On the other hand, if
+*				 "isForceGaussianCurve" = 1, then each machine
+*				 learning feature will contain two coefficients
+*				 but only in the Kernel function. The first will
+*				 be the "mean" and the second will be the
+*				 "variance". Both of these will be stored in the
+*				 same row, where the first column (column index
+*				 0) will store the mean and the variance will be
+*				 stored in the second column (column index 1). In
+*				 addition, each of the identified means and
+*				 variances for each different machine learning
+*				 feature will be stored separately in rows. The
+*				 first row (row index 0) will contain the mean
+*				 and variance for the first machine learning
+*				 feature and the last row (row index "m") will
+*				 contain the mean and variance for the "m"-th
+*				 machine learning feature. Furthermore, note that
+*				 if "isForceGaussianCurve" = 1, then the true
+*				 size to be taken into account of the argument
+*				 pointer variable "coefficients" will be from
+*				 "m*2+3" to "m*2+2". This means that the last
+*				 index with respect to the entirely allocated
+*				 memory in "coefficients" will not be used or
+*				 have any meaning under this case. Finally, the
+*				 bias coefficient value (b_0) will be stored in
+*				 the row with index "m*2" and column index "0"
+*				 and the last coefficient (Beta) will be stored
+*				 in the row with index "m*2+1" and column index
+*				 "1".
+*				 NOTE: For more information on how the "Kernel_b"
+*				       coefficients will be stored, please see
+*				       the description given for the argument
+*				       pointer variable "b" of the function
+*				       "getLogisticRegression()" in the
+*				       "CenyMLregression.c" file.
 *
 * NOTE: RESULT IS STORED IN THE MEMORY ALLOCATED POINTER VARIABLE
 *		"coefficients".
@@ -2010,7 +1984,7 @@ static void trainLogisticKernel(double *X, double *Y, int n, int m, int p, char 
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: DECEMBER 04, 2021
+* LAST UPDATE: MAY 25, 2022
 */
 static void trainGaussianKernel(double *X, double *Y, int n, int m, int p, double zeroEpsilon, char isForceGaussianCurve, char isVariableOptimizer, double *coefficients) {
 	// If the argument flag variable "isForceGaussianCurve" is different than the value of "1" and "0", then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -2171,8 +2145,8 @@ static void trainGaussianKernel(double *X, double *Y, int n, int m, int p, doubl
 		}
 	}
 	
-	// We declare and innitialize the variables that will be required to calculate the coefficients of "alpha" and "b_0".
-	// NOTE: To solve for the "alpha" and "b_0" coefficients, we will apply a simple linear regression.
+	// We declare and innitialize the variables that will be required to calculate the coefficients of "Beta" and "b_0".
+	// NOTE: To solve for the "Beta" and "b_0" coefficients, we will apply a simple linear regression.
 	double sumOf_xy = 0;
 	double sumOf_y = 0;
 	double sumOf_x = 0;
@@ -2192,18 +2166,18 @@ static void trainGaussianKernel(double *X, double *Y, int n, int m, int p, doubl
 			}
 			Y_tilde[currentRow] = exp(-Y_tilde[currentRow]); // We will store the results of the transformed function "K(x)" in "Y_tilde".
 			
-			// -------------------- SOLUTION OF "alpha" AND "b_0" -------------------- //
-			// In order to obtain the coefficients of "alpha" and "b_0", we apply a linear regression using the input data "Y_tilde" (that was obtained with the transformed function "K(x)") with respect to the output data "Y_tilde".
+			// -------------------- SOLUTION OF "Beta" AND "b_0" -------------------- //
+			// In order to obtain the coefficients of "Beta" and "b_0", we apply a linear regression using the input data "Y_tilde" (that was obtained with the transformed function "K(x)") with respect to the output data "Y_tilde".
 			sumOf_xy += Y_tilde[currentRow] * Y[currentRow];
 			sumOf_y += Y[currentRow];
 			sumOf_x += Y_tilde[currentRow];
 			sumOf_xSquared += Y_tilde[currentRow] * Y_tilde[currentRow];
 		}
 		
-		// We calculate the value of "alpha" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+		// We calculate the value of "Beta" from the main function to be solved, which is "y_hat = Beta.K(x) + b_0"
 		coefficients[1+m*2] = (n*sumOf_xy - sumOf_y*sumOf_x)/(n*sumOf_xSquared - sumOf_x*sumOf_x);
 		
-		// We calculate the value of "b_0" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+		// We calculate the value of "b_0" from the main function to be solved, which is "y_hat = Beta.K(x) + b_0"
 		coefficients[m*2] = (sumOf_y - coefficients[1+m*2]*sumOf_x)/n;
 	} else { // The given coefficient values that were obtained for the Kernel are the ones obtained from the multiple polynomial regression that was applied during the training of its model.
 		// We predict all the requested input values (X) with the desired machine learning algorithm and its especified coefficient values (coefficients).
@@ -2235,18 +2209,18 @@ static void trainGaussianKernel(double *X, double *Y, int n, int m, int p, doubl
 			}
 			Y_tilde[currentRow] = exp(Y_tilde[currentRow]); // We will store the results of the transformed function "K(x)" in "Y_tilde".
 			
-			// -------------------- SOLUTION OF "alpha" AND "b_0" -------------------- //
-			// In order to obtain the coefficients of "alpha" and "b_0", we apply a linear regression using the input data "Y_tilde" (that was obtained with the transformed function "K(x)") with respect to the output data "Y_tilde".
+			// -------------------- SOLUTION OF "Beta" AND "b_0" -------------------- //
+			// In order to obtain the coefficients of "Beta" and "b_0", we apply a linear regression using the input data "Y_tilde" (that was obtained with the transformed function "K(x)") with respect to the output data "Y_tilde".
 			sumOf_xy += Y_tilde[currentRow] * Y[currentRow];
 			sumOf_y += Y[currentRow];
 			sumOf_x += Y_tilde[currentRow];
 			sumOf_xSquared += Y_tilde[currentRow] * Y_tilde[currentRow];
 		}
 		
-		// We calculate the value of "alpha" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+		// We calculate the value of "Beta" from the main function to be solved, which is "y_hat = Beta.K(x) + b_0"
 		coefficients[2+2*m] = (n*sumOf_xy - sumOf_y*sumOf_x)/(n*sumOf_xSquared - sumOf_x*sumOf_x);
 		
-		// We calculate the value of "b_0" from the main function to be solved, which is "y_hat = alpha.K(x) + b_0"
+		// We calculate the value of "b_0" from the main function to be solved, which is "y_hat = Beta.K(x) + b_0"
 		coefficients[1+2*m] = (sumOf_y - coefficients[2+2*m]*sumOf_x)/n;
 	}
 	
@@ -2424,7 +2398,7 @@ static void trainGaussianKernel(double *X, double *Y, int n, int m, int p, doubl
 *
 * @author Miranda Meza Cesar
 * CREATION DATE: NOVEMBER 27, 2021
-* LAST UPDATE: DECEMBER 04, 2021
+* LAST UPDATE: MAY 25, 2022
 */
 void predictKernelMachineClassification(double *X, int N, char Kernel[], char isInteractionTerms, char isForceGaussianCurve, double *coefficients, int n, int m, int p, double *Y_hat) {
 	// If the machine learning features are less than the value of one, then emit an error message and terminate the program. Otherwise, continue with the program.
@@ -2438,10 +2412,10 @@ void predictKernelMachineClassification(double *X, int N, char Kernel[], char is
 		exit(1);
 	}
 	
-	// We predict all the requested input values (X) with the desired machine learning algorithm; Kernel and; coefficient values ("Beta_0", "Beta_1", ..., "Beta_m", "b_0" and "alpha").
+	// We predict all the requested input values (X) with the desired machine learning algorithm; Kernel and; coefficient values ("Kernel_b_0", "Kernel_b_1", ..., "Kernel_b_m", "b_0" and "Beta").
 	// ------------------------ LINEAR KERNEL ------------------------ //
 	if (strcmp(Kernel, "linear") == 0) {
-		// NOTE: For performance purposes, the coefficient values of "alpha" and "b_0" from the main equation "y_hat = alpha.K(x) + b_0" will be ignored for this particular Kernel since they will have no effect on the result.
+		// NOTE: For performance purposes, the coefficient values of "Beta" and "b_0" from the main equation "y_hat = Beta.K(x) + b_0" will be ignored for this particular Kernel since they will have no effect on the result.
 		int mPlusOne = m+1; //This variable is used to store a repetitive matheamtical operation, for performance purposes.
 		int currentRowTimesM; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
 		for (int currentRow=0; currentRow<n; currentRow++) {
@@ -2464,7 +2438,7 @@ void predictKernelMachineClassification(double *X, int N, char Kernel[], char is
 			printf("\nERROR: The functionality of this function, when the argument variable \"isInteractionTerms\" contains a value of 1, has not yet been developed.\n");
 			exit(1);
 		} else if (isInteractionTerms == 0) { // The interaction terms are not available in the current model.			
-			// NOTE: For performance purposes, the coefficient values of "alpha" and "b_0" from the main equation "y_hat = alpha.K(x) + b_0" will be ignored for this particular Kernel since they will have no effect on the result.
+			// NOTE: For performance purposes, the coefficient values of "Beta" and "b_0" from the main equation "y_hat = Beta.K(x) + b_0" will be ignored for this particular Kernel since they will have no effect on the result.
 			// We predict all the requested input values (X) with the desired machine learning algorithm and its especified coefficient values (coefficients).
 			int mTimesNPlusOne = m*N+1; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
 			int currentRowTimesmTimesNplusOne; // This variable is used to store a repetitive multiplication in some for-loops, for performance purposes.
@@ -2513,7 +2487,7 @@ void predictKernelMachineClassification(double *X, int N, char Kernel[], char is
 				Y_hat[currentRow] = Y_hat[currentRow] + coefficients[currentColumn]*X[currentColumn-1 + currentRowTimesM];
 			}
 			Y_hat[currentRow] = 1 / (1 + exp(-Y_hat[currentRow])); // We finish applying the Kernel function "K(x)".
-			Y_hat[currentRow] = coefficients[1+m] + coefficients[2+m]*Y_hat[currentRow]; // We input the value obtained with the Kernel function "K(x)" into the main equation of the Kernel machine classifer "y_hat = alpha.K(x) + b_0".
+			Y_hat[currentRow] = coefficients[1+m] + coefficients[2+m]*Y_hat[currentRow]; // We input the value obtained with the Kernel function "K(x)" into the main equation of the Kernel machine classifer "y_hat = Beta.K(x) + b_0".
 			if (Y_hat[currentRow] > 0) { // We determine whether the model predicts the result of "+1" or "-1".
 				Y_hat[currentRow] = 1;
 			} else {
@@ -2536,7 +2510,7 @@ void predictKernelMachineClassification(double *X, int N, char Kernel[], char is
 					Y_hat[currentRow] = Y_hat[currentRow] + squareThisValue * squareThisValue / (2*coefficients[1 + currentColumnTimesTwo]);
 				}
 				Y_hat[currentRow] = exp(-Y_hat[currentRow]); // We finish applying the Kernel function "K(x)".
-				Y_hat[currentRow] = coefficients[m*2] + coefficients[1+m*2]*Y_hat[currentRow]; // We input the value obtained with the Kernel function "K(x)" into the main equation of the Kernel machine classifer "y_hat = alpha.K(x) + b_0".
+				Y_hat[currentRow] = coefficients[m*2] + coefficients[1+m*2]*Y_hat[currentRow]; // We input the value obtained with the Kernel function "K(x)" into the main equation of the Kernel machine classifer "y_hat = Beta.K(x) + b_0".
 				if (Y_hat[currentRow] > 0) { // We determine whether the model predicts the result of "+1" or "-1".
 					Y_hat[currentRow] = 1;
 				} else {
@@ -2571,7 +2545,7 @@ void predictKernelMachineClassification(double *X, int N, char Kernel[], char is
 					}
 				}
 				Y_hat[currentRow] = exp(Y_hat[currentRow]); // We finish applying the Kernel function "K(x)".
-				Y_hat[currentRow] = coefficients[1+2*m] + coefficients[2+2*m]*Y_hat[currentRow]; // We input the value obtained with the Kernel function "K(x)" into the main equation of the Kernel machine classifer "y_hat = alpha.K(x) + b_0".
+				Y_hat[currentRow] = coefficients[1+2*m] + coefficients[2+2*m]*Y_hat[currentRow]; // We input the value obtained with the Kernel function "K(x)" into the main equation of the Kernel machine classifer "y_hat = Beta.K(x) + b_0".
 				if (Y_hat[currentRow] > 0) { // We determine whether the model predicts the result of "+1" or "-1".
 					Y_hat[currentRow] = 1;
 				} else {

@@ -567,3 +567,47 @@ arm-none-eabi-size   Project.elf
   27568	    488	   1632	  29688	   73f8	Project.elf
 Finished building: default.size.stdout
  
+17:03:20 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+In file included from ../Core/Src/main.c:25:
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.h:29:13: warning: 'trainLinearKernel' declared 'static' but never defined [-Wunused-function]
+   29 | static void trainLinearKernel(double *, double *, int, int, int, char, double *);
+      |             ^~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.h:30:13: warning: 'trainPolynomialKernel' declared 'static' but never defined [-Wunused-function]
+   30 | static void trainPolynomialKernel(double *, double *, int, int, int, int, char, char, double *);
+      |             ^~~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.h:31:13: warning: 'trainLogisticKernel' declared 'static' but never defined [-Wunused-function]
+   31 | static void trainLogisticKernel(double *, double *, int, int, int, char, double *);
+      |             ^~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.h:32:13: warning: 'trainGaussianKernel' declared 'static' but never defined [-Wunused-function]
+   32 | static void trainGaussianKernel(double *, double *, int, int, int, double, char, char, double *);
+      |             ^~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/LinearLogisticClassification/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  27568	    488	   1632	  29688	   73f8	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:03:23 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27568	    488	   1632	  29688	   73f8	Project.elf
+Finished building: default.size.stdout
+ 
+17:03:26 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27568	    488	   1632	  29688	   73f8	Project.elf
+Finished building: default.size.stdout
+ 

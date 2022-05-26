@@ -553,3 +553,8 @@
 2022-05-19 16:50:07,425 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at com.st.stm32cube.ide.mcu.debug.swv.core.SWVClient.readByte(SWVClient.java:295)
 2022-05-19 16:50:07,426 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at com.st.stm32cube.ide.mcu.debug.swv.core.SWVClient.getNextByte(SWVClient.java:278)
 2022-05-19 16:50:07,427 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] 	at com.st.stm32cube.ide.mcu.debug.swv.core.SWVClient.run(SWVClient.java:312)
+2022-05-25 11:27:07,500 [INFO] Activator:177 - 
+
+
+2022-05-25 11:27:07,503 [INFO] Activator:178 - !SESSION log4j initialized
+2022-05-25 11:27:13,728 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com

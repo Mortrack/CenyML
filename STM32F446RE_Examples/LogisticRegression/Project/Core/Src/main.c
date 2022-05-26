@@ -149,7 +149,7 @@ int main(void)
 		for (int currentRow=0; currentRow<n_database; currentRow++) {
 			currentRowAndColumn = currentRow + currentIteration*n_database;
 			Y_tilde[currentRowAndColumn] = databaseY[currentRow];
-			if (Y_tildeY[currentRowAndColumn] == 1) {
+			if (Y_tilde[currentRowAndColumn] == 1) {
 				Y_tilde[currentRowAndColumn] = 0.9999;
 			} else if (Y_tilde[currentRowAndColumn] == 0) {
 				Y_tilde[currentRowAndColumn] = 0.0001;

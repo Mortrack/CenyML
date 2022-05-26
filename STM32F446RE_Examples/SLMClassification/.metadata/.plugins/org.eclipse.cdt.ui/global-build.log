@@ -581,3 +581,45 @@ arm-none-eabi-size   Project.elf
   26652	    484	   1628	  28764	   705c	Project.elf
 Finished building: default.size.stdout
  
+17:50:00 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-gcc "../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.d" -MT"Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.o"
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.c: In function 'trainGaussianKernel':
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.c:2191:7: warning: variable 'currentRowAndColumn2' set but not used [-Wunused-but-set-variable]
+ 2191 |   int currentRowAndColumn2; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+      |       ^~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.c: In function 'predictKernelMachineClassification':
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.c:2449:8: warning: variable 'currentRowAndColumn2' set but not used [-Wunused-but-set-variable]
+ 2449 |    int currentRowAndColumn2; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+      |        ^~~~~~~~~~~~~~~~~~~~
+../Core/Src/CenyML_Library/cpuSequential/machineLearning/CenyMLclassification.c:2529:8: warning: variable 'currentRowAndColumn2' set but not used [-Wunused-but-set-variable]
+ 2529 |    int currentRowAndColumn2; // This variable is used to store a repetitive mathematical operations in some for-loops, for performance purposes.
+      |        ^~~~~~~~~~~~~~~~~~~~
+arm-none-eabi-gcc -o "Project.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/mortrack/Desktop/GitHub/CenyML/STM32F446RE_Examples/SLMClassification/Project/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Project.elf
+ 
+arm-none-eabi-size   Project.elf 
+arm-none-eabi-objdump -h -S  Project.elf  > "Project.list"
+arm-none-eabi-objcopy  -O binary  Project.elf  "Project.bin"
+   text	   data	    bss	    dec	    hex	filename
+  26652	    484	   1628	  28764	   705c	Project.elf
+Finished building: default.size.stdout
+ 
+Finished building: Project.bin
+ 
+Finished building: Project.list
+ 
+17:50:03 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26652	    484	   1628	  28764	   705c	Project.elf
+Finished building: default.size.stdout
+ 
+17:50:06 **** Incremental Build of configuration Debug for project Project ****
+make -j88 all 
+arm-none-eabi-size   Project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26652	    484	   1628	  28764	   705c	Project.elf
+Finished building: default.size.stdout
+ 

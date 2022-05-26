@@ -638,3 +638,8 @@
 2022-05-24 17:22:32,699 [INFO] ApiDb:276 - Save user favorites file /home/mortrack/.stm32cubeide/favorites.mcus.txt: 1 item(s)
 2022-05-24 17:22:32,699 [INFO] ApiDb:280 - User favorites MCUs=[STM32F446RETx]
 2022-05-24 17:27:30,942 [INFO] LogOutputStream:76 - [STDOUT_REDIRECT] StartTraceHandler.execute(), success : Collect=true
+2022-05-25 17:49:45,598 [INFO] Activator:177 - 
+
+
+2022-05-25 17:49:45,600 [INFO] Activator:178 - !SESSION log4j initialized
+2022-05-25 17:49:50,278 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
