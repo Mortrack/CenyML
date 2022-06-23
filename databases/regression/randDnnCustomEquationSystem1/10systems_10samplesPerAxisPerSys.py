@@ -45,7 +45,7 @@ for currentSystem in range(1, totalSystemsEvaluated+1):
     for currentSample1 in range(1, samplesGenPerAxisPerSystem+1):
         x1 = (sampleTime * currentSample1)
         for currentSample2 in range(1, samplesGenPerAxisPerSystem+1):
-            currentRandomValue1 = (random.random()*2-1)*10 # We generate random values from -10 up to +10
+            currentRandomValue1 = (random.random()*2-1)*0.1 # We generate random values from -0.1 up to +0.1
             x2 = (sampleTime * currentSample2)
             # LAYER 1
             Ne_1_1 = np.tanh(0 - 0.4*x1 + 0.4*x2)
