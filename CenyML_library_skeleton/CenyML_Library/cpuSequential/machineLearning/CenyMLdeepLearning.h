@@ -44,8 +44,31 @@ struct singleNeuronDnnStruct {
    double bestAccuracy;
    double *w_new;
 };
+struct dnnStruct {
+   double *X;
+   double *w_first;
+   double *Y;
+   int n;
+   int m;
+   int p;
+   char isInitial_w;
+   char isClassification;
+   double threshold;
+   int desiredValueForGroup1;
+   int desiredValueForGroup2;
+   int activationFunctionToBeUsed;
+   double learningRate;
+   double stopAboveThisAccuracy;
+   int maxEpochs;
+   char isReportLearningProgress;
+   int reportEachSpecifiedEpochs;
+   double *w_best;
+   double bestAccuracy;
+   double *w_new;
+};
 
 void getSingleNeuronDNN(struct singleNeuronDnnStruct *);
+void getDNN(struct dnnStruct *);
 static void getReluActivation(double *, double *, struct singleNeuronDnnStruct *);
 static void getDerivateReluActivation(double *, double *, double *, struct singleNeuronDnnStruct *);
 static void getTanhActivation(double *, double *, struct singleNeuronDnnStruct *);
